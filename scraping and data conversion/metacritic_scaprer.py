@@ -47,7 +47,7 @@ def gen_url(category:str, name: str) -> str:
     return f"https://www.metacritic.com/{category}/{sanitize_name(name)}/user-reviews/"
 
 def gen_search_url(name: str) -> str:
-    return f"https://www.metacritic.com/search/{sanitize_name(name)}/?category=13"
+    return f"https://www.metacritic.com/search/{name}/?category=13"
 
 def remove_vars(data: str) -> str:
     vars = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","x","y","z"]
@@ -58,18 +58,22 @@ def remove_vars(data: str) -> str:
         data = data.replace(f":[{var}]}}",":0}")
     return data
 
-def find_url(name: str) -> str:
+def find_url(category: str, name: str) -> str:
     try:
         request = requests.get(gen_search_url(name), headers={"User-Agent": "Mozilla/5.0"})
         request.raise_for_status()
         soup = bs4.BeautifulSoup(request.text, "html.parser")
-        first_link = soup.find_all("a", class_="c-pageSiteSearch-results-item")
-        if len(first_link) == 0:
+        links = soup.find_all("a", class_="c-pageSiteSearch-results-item")
+        if len(links) == 0:
             raise ValueError("Could not find url")
-        first_link = first_link[0]
+        first_link = None
+        for link in links:
+            link_text:str = link["href"]
+            if link_text.count(f"/{category}/") == 1:
+                first_link = link
+                break
         first_link = first_link["href"]
     except Exception as e:
-        print(f"\033[31mFailed to find url for {name}: {e}\033[0m")
         raise e
     return "https://www.metacritic.com" + first_link
 
@@ -83,7 +87,7 @@ def scrape(category:str, name: str, tmp: str | None) -> list[(str,str)]:
     url = gen_url(category, name)
     request = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     if request.status_code == 404:
-        new_url = find_url(name)
+        new_url = find_url(category,name)
         request = requests.get(new_url, headers={"User-Agent": "Mozilla/5.0"})
         request.raise_for_status()
     else:
