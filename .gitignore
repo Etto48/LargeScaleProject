@@ -1,0 +1,6 @@
+.venv/
+.vscode/
+error/
+games/
+tmp/
+error.txt
