@@ -4,6 +4,7 @@ import bs4
 import json
 import dirtyjson
 import os
+import rich.progress
 
 def get_json_len(data: str) -> int:
     depth = 0
@@ -150,26 +151,36 @@ def main(args):
     with open(args.dataset, "r") as f:
         data = json.load(f)
     names: list[str] = [x["name"] for x in data]
-    for i,name in enumerate(names):
-        short_name = name[:50]
-        print(f"Scraping {short_name}... ({i+1}/{len(names)} {i/len(names)*100:.1f}%)", end="\033[J\r")
-        name = name.strip()
-        try:
-            reviews = scrape(args.category, name, args.tmp)
-        except Exception as e:
-            if type(e) == dirtyjson.Error:
-                print(f"\033[31mFailed to scrape {name}: {e}\033[0m")
-                exit(1)
-            elif type(e) == requests.exceptions.HTTPError:
-                print(f"\033[31mFailed to scrape {name}: {e}\033[0m")
-                if e.response.status_code == 404:
-                    print(f"url: {gen_url(args.category, name)}")
-                    continue
-            print(f"\033[31mFailed to scrape {name}: {e}\033[0m")
-            continue
-        data[i]["reviews"] = reviews
+    with rich.progress.Progress(
+            *rich.progress.Progress.get_default_columns(),
+            rich.progress.MofNCompleteColumn(),
+            rich.progress.TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
+        ) as progress:
+        task = progress.add_task("Scraping", total=len(names), filename="")
+        for i,name in enumerate(names):
+            progress.update(task, filename=name)
+            #print(f"Scraping {short_name}... ({i+1}/{len(names)} {i/len(names)*100:.1f}%)", end="\033[J\r")
+            name = name.strip()
+            try:
+                reviews = scrape(args.category, name, args.tmp)
+            except Exception as e:
+                if type(e) == dirtyjson.Error:
+                    progress.console.print(f"[red]Failed to scrape {name}: {e}")
+                    exit(1)
+                elif type(e) == requests.exceptions.HTTPError:
+                    progress.console.print(f"[red]Failed to scrape {name}: {e}")
+                    if e.response.status_code == 404:
+                        progress.console.print(f"url: {gen_url(args.category, name)}")
+                        continue
+                progress.console.print(f"[red]Failed to scrape {name}: {e}")
+                continue
+            progress.update(task, advance=1)
+            data[i]["reviews"] = reviews
+
+    progress.refresh()
     with open(args.dataset, "w") as f:
         json.dump(data, f, indent=4)
+    print(f"Saved to {args.dataset}")
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape metacritic")
