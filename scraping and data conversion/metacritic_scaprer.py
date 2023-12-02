@@ -133,7 +133,13 @@ def scrape(category:str, name: str, tmp: str | None) -> list[(str,str)]:
     for review in raw_reviews:
         try:
             quote = review["quote"]
-            score = review["score"]
+            try:
+                score = int(review["score"])
+            except ValueError as e:
+                if score == "f":
+                    score = 0
+                else:
+                    raise e
             author = review["author"]
             date = review["date"]
             clean_reviews.append({"quote": quote, "score": score, "author": author, "date": date})
@@ -175,12 +181,23 @@ def main(args):
                 progress.console.print(f"[red]Failed to scrape {name}: {e}")
                 continue
             progress.update(task, advance=1)
+            s = 0
+            for review in reviews:
+                s += review['score']
+            if len(reviews) == 0:
+                score = None
+            else:
+                score = s / len(reviews)
+            if score is not None:
+                data[i]["user_review"] = score
+            else:
+                data[i]["user_review"] = None
             data[i]["reviews"] = reviews
 
     progress.refresh()
     with open(args.dataset, "w") as f:
         json.dump(data, f, indent=4)
-    print(f"Saved to {args.dataset}")
+    print(f"\033[32mSaved to {args.dataset}\033[0m")
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape metacritic")
