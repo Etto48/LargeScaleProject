@@ -148,7 +148,7 @@ def scrape(category:str, name: str, tmp: str | None) -> list[(str,str)]:
     
     if tmp is not None:
         with open(os.path.join(tmp, file_name), "w") as f:
-            json.dump(clean_reviews, f)
+            json.dump(clean_reviews, f, indent=4)
     
     return clean_reviews
         
