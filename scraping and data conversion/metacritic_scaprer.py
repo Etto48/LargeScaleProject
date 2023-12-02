@@ -166,6 +166,8 @@ def main(args):
             print(f"\033[31mFailed to scrape {name}: {e}\033[0m")
             continue
         data[i]["reviews"] = reviews
+    with open(args.dataset, "w") as f:
+        json.dump(data, f, indent=4)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape metacritic")
