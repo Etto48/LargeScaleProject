@@ -20,6 +20,8 @@ def get_json_len(data: str) -> int:
 def sanitize_name(name: str) -> str:
     name = name.replace(":", "")
     name = name.replace("'", "")
+    name = name.replace("\"", "")
+    name = name.replace("|", "")
     name = name.replace(".", "")
     name = name.replace(",", " ")
     name = name.replace(";", "")
