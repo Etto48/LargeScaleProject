@@ -6,6 +6,7 @@ import dirtyjson
 import os
 import rich.progress
 import rich.text
+import urllib.parse
 
 def get_json_len(data: str) -> int:
     depth = 0
@@ -33,7 +34,8 @@ def gen_url(category:str, name: str) -> str:
     return f"https://www.metacritic.com/{category}/{sanitize_name(name)}/user-reviews/"
 
 def gen_search_url(name: str) -> str:
-    return f"https://www.metacritic.com/search/{name}/?category=13"
+    escaped_name = urllib.parse.quote(name)
+    return f"https://www.metacritic.com/search/{escaped_name}/?category=13"
 
 def remove_vars(data: str) -> str:
     vars = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","x","y","z"]
