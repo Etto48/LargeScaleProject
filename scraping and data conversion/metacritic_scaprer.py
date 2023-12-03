@@ -5,6 +5,7 @@ import json
 import dirtyjson
 import os
 import rich.progress
+import rich.text
 
 def get_json_len(data: str) -> int:
     depth = 0
@@ -19,28 +20,10 @@ def get_json_len(data: str) -> int:
     return skip
 
 def sanitize_name(name: str) -> str:
-    name = name.replace(":", "")
-    name = name.replace("'", "")
-    name = name.replace("\"", "")
-    name = name.replace("|", "")
-    name = name.replace(".", "")
-    name = name.replace(",", " ")
-    name = name.replace(";", "")
-    name = name.replace("/", "")
     name = name.replace("&", "and")
-    name = name.replace("(", "")
-    name = name.replace(")", "")
-    name = name.replace("[", "")
-    name = name.replace("]", "")
-    name = name.replace("!", "")
-    name = name.replace("?", "")
-    name = name.replace("$", "")
-    name = name.replace("#", "")
-    name = name.replace("@", "")
-    name = name.replace("%", "")
-    name = name.replace("*", "")
-    name = name.replace("~", "")
     name = name.replace("- ", "")
+    #remove every character that is not alphanumeric or whitespace
+    name = "".join([x for x in name if x.isalnum() or x == " " or x == "-"])
     name = " ".join(name.split())
     name = name.replace(" ", "-")
     name = name.lower()
@@ -61,6 +44,19 @@ def remove_vars(data: str) -> str:
         data = data.replace(f":[{var}]}}",":0}")
     return data
 
+def score_difference(name1: str, name2: str) -> float:
+    s_name1 = sanitize_name(name1)
+    s_name2 = sanitize_name(name2)
+    max_len = max(len(s_name1), len(s_name2))
+    differences = 0
+    for i in range(max_len):
+        try:
+            if s_name1[i] != s_name2[i]:
+                differences += 1
+        except IndexError:
+            differences += 1
+    return differences / max_len
+
 def find_url(category: str, name: str) -> str:
     try:
         request = requests.get(gen_search_url(name), headers={"User-Agent": "Mozilla/5.0"})
@@ -72,9 +68,13 @@ def find_url(category: str, name: str) -> str:
         first_link = None
         for link in links:
             link_text:str = link["href"]
+            game_name = link.find_all("p")[0].text.strip()
             if link_text.count(f"/{category}/") == 1:
-                first_link = link
-                break
+                if score_difference(name, game_name) < 0.2:
+                    first_link = link
+                    break
+        if first_link is None:
+            raise ValueError("Could not find url")
         first_link = first_link["href"]
     except Exception as e:
         raise e
@@ -156,7 +156,7 @@ def main(args):
     assert args.category in ["game", "movie", "music"]
     with open(args.dataset, "r") as f:
         data = json.load(f)
-    names: list[str] = [x["name"] for x in data]
+    names: list[str] = [x["Name"] for x in data]
     with rich.progress.Progress(
             *rich.progress.Progress.get_default_columns(),
             rich.progress.MofNCompleteColumn(),
@@ -164,22 +164,20 @@ def main(args):
         ) as progress:
         task = progress.add_task("Scraping", total=len(names), filename="")
         for i,name in enumerate(names):
-            progress.update(task, filename=name)
-            #print(f"Scraping {short_name}... ({i+1}/{len(names)} {i/len(names)*100:.1f}%)", end="\033[J\r")
+            max_name_len = 30
+            short_name_len = len(name) if len(name) < max_name_len else max_name_len - len("...")
+            short_name = name[:short_name_len] + ("..." if len(name) > short_name_len else "")
+            progress.update(task, filename=short_name)
             name = name.strip()
             try:
                 reviews = scrape(args.category, name, args.tmp)
             except Exception as e:
                 if type(e) == dirtyjson.Error:
-                    progress.console.print(f"[red]Failed to scrape {name}: {e}")
+                    progress.console.print(rich.text.Text.styled(f"Fatal error while parsing {name}: {e}","red"))
                     exit(1)
-                elif type(e) == requests.exceptions.HTTPError:
-                    progress.console.print(f"[red]Failed to scrape {name}: {e}")
-                    if e.response.status_code == 404:
-                        progress.console.print(f"url: {gen_url(args.category, name)}")
-                        continue
-                progress.console.print(f"[red]Failed to scrape {name}: {e}")
-                continue
+                else:
+                    progress.console.print(rich.text.Text.styled(f"Failed to scrape {name} ({sanitize_name(name)}): {e}","red"))
+                    continue
             progress.update(task, advance=1)
             s = 0
             for review in reviews:
