@@ -185,19 +185,20 @@ def main(args):
                 reviews = scrape(args.category, name, args.tmp)
             except Exception as e:
                 if type(e) == dirtyjson.Error:
-                    progress.console.print(rich.text.Text.styled(f"Fatal error while parsing {name}: {e}","red"))
+                    progress.console.print(rich.text.Text.styled(f"Fatal error while parsing \"{name}\": {e}","red"))
                     exit(1)
                 else:
-                    progress.console.print(rich.text.Text.styled(f"Failed to scrape {name} ({sanitize_name(name)}): {e}","red"))
+                    progress.console.print(rich.text.Text.styled(f"Failed to scrape \"{name}\" ({sanitize_name(name)}): {e}","red"))
             progress.update(task, advance=1)
             s = 0
             for review in reviews:
                 s += review['score']
             if len(reviews) == 0:
                 score = None
-                progress.console.print(rich.text.Text.styled(f"No reviews found for {name} ({sanitize_name(name)})","yellow"))
+                progress.console.print(rich.text.Text.styled(f"No reviews found for \"{name}\" ({sanitize_name(name)})","yellow"))
             else:
                 score = s / len(reviews)
+                progress.console.print(rich.text.Text.styled(f"Found {len(reviews)} reviews for \"{name}\" ({sanitize_name(name)})","green"))
             if score is not None:
                 data[i]["user_review"] = score
             else:
