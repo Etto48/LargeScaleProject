@@ -90,7 +90,18 @@ def scrape(category:str, name: str, tmp: str | None) -> list[(str,str)]:
     url = gen_url(category, name)
     request = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     if request.status_code == 404:
-        new_url = find_url(category,name)
+        try:
+            new_url = find_url(category,name)
+        except ValueError as e:
+            if str(e) == "Could not find url":
+                if tmp is not None:
+                    with open(os.path.join(tmp, file_name), "w") as f:
+                        json.dump([], f, indent=4)
+                return []
+            else:
+                raise e
+            
+            
         request = requests.get(new_url, headers={"User-Agent": "Mozilla/5.0"})
         request.raise_for_status()
     else:
@@ -169,6 +180,7 @@ def main(args):
             short_name = name[:short_name_len] + ("..." if len(name) > short_name_len else "")
             progress.update(task, filename=short_name)
             name = name.strip()
+            reviews = []
             try:
                 reviews = scrape(args.category, name, args.tmp)
             except Exception as e:
@@ -177,13 +189,13 @@ def main(args):
                     exit(1)
                 else:
                     progress.console.print(rich.text.Text.styled(f"Failed to scrape {name} ({sanitize_name(name)}): {e}","red"))
-                    continue
             progress.update(task, advance=1)
             s = 0
             for review in reviews:
                 s += review['score']
             if len(reviews) == 0:
                 score = None
+                progress.console.print(rich.text.Text.styled(f"No reviews found for {name} ({sanitize_name(name)})","yellow"))
             else:
                 score = s / len(reviews)
             if score is not None:
