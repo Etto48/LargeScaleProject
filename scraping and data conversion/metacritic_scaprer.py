@@ -7,6 +7,7 @@ import os
 import rich.progress
 import rich.text
 import urllib.parse
+import unidecode
 
 def get_json_len(data: str) -> int:
     depth = 0
@@ -21,6 +22,7 @@ def get_json_len(data: str) -> int:
     return skip
 
 def sanitize_name(name: str) -> str:
+    name = unidecode.unidecode(name)
     name = name.replace("&", "and")
     name = name.replace("- ", "")
     #remove every character that is not alphanumeric or whitespace
@@ -34,7 +36,12 @@ def gen_url(category:str, name: str) -> str:
     return f"https://www.metacritic.com/{category}/{sanitize_name(name)}/user-reviews/"
 
 def gen_search_url(name: str) -> str:
+    name = unidecode.unidecode(name)
     name = name.replace("/"," ")
+    name = name.replace("&", "and")
+    name = name.replace("#", "")
+    name = name.replace("%", "")
+    name = name.replace("?", "")
     escaped_name = urllib.parse.quote(name)
     return f"https://www.metacritic.com/search/{escaped_name}/?category=13"
 
@@ -176,40 +183,47 @@ def main(args):
             rich.progress.MofNCompleteColumn(),
             rich.progress.TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
         ) as progress:
-        task = progress.add_task("Scraping", total=len(names), filename="")
-        for i,name in enumerate(names):
-            max_name_len = 30
-            short_name_len = len(name) if len(name) < max_name_len else max_name_len - len("...")
-            short_name = name[:short_name_len] + ("..." if len(name) > short_name_len else "")
-            progress.update(task, filename=short_name)
-            name = name.strip()
-            reviews = []
-            try:
-                reviews = scrape(args.category, name, args.tmp)
-            except Exception as e:
-                if type(e) == dirtyjson.Error:
-                    progress.console.print(rich.text.Text.styled(f"Fatal error while parsing \"{name}\": {e}","red"))
-                    exit(1)
-                if type(e) == requests.exceptions.HTTPError and e.response.status_code == 404:
-                    progress.console.print(rich.text.Text.styled(f"Fatal error while searching \"{name}\": {e}","red"))
-                    exit(1)
+        with open("error.log", "w") as error_log:
+            task = progress.add_task("Scraping", total=len(names), filename="")
+            for i,name in enumerate(names):
+                max_name_len = 30
+                short_name_len = len(name) if len(name) < max_name_len else max_name_len - len("...")
+                short_name = name[:short_name_len] + ("..." if len(name) > short_name_len else "")
+                progress.update(task, filename=short_name)
+                name = name.strip()
+                reviews = []
+                try:
+                    reviews = scrape(args.category, name, args.tmp)
+                except Exception as e:
+                    if type(e) == dirtyjson.Error:
+                        text = f"Fatal error while parsing \"{name}\": {e}"
+                        error_log.writelines([text])
+                        progress.console.print(rich.text.Text.styled(text,"red"))
+                        exit(1)
+                    if type(e) == requests.exceptions.HTTPError and e.response.status_code == 404:
+                        text = f"Fatal error while searching \"{name}\": {e}"
+                        error_log.writelines([text])
+                        progress.console.print(rich.text.Text.styled(text,"red"))
+                        exit(1)
+                    else:
+                        text = f"Failed to scrape \"{name}\" ({sanitize_name(name)}): {e}"
+                        error_log.writelines([text])
+                        progress.console.print(rich.text.Text.styled(text,"red"))
+                progress.update(task, advance=1)
+                s = 0
+                for review in reviews:
+                    s += review['score']
+                if len(reviews) == 0:
+                    score = None
+                    progress.console.print(rich.text.Text.styled(f"No reviews found for \"{name}\" ({sanitize_name(name)})","yellow"))
                 else:
-                    progress.console.print(rich.text.Text.styled(f"Failed to scrape \"{name}\" ({sanitize_name(name)}): {e}","red"))
-            progress.update(task, advance=1)
-            s = 0
-            for review in reviews:
-                s += review['score']
-            if len(reviews) == 0:
-                score = None
-                progress.console.print(rich.text.Text.styled(f"No reviews found for \"{name}\" ({sanitize_name(name)})","yellow"))
-            else:
-                score = s / len(reviews)
-                progress.console.print(rich.text.Text.styled(f"Found {len(reviews)} reviews for \"{name}\" ({sanitize_name(name)})","green"))
-            if score is not None:
-                data[i]["user_review"] = score
-            else:
-                data[i]["user_review"] = None
-            data[i]["reviews"] = reviews
+                    score = s / len(reviews)
+                    progress.console.print(rich.text.Text.styled(f"Found {len(reviews)} reviews for \"{name}\" ({sanitize_name(name)})","green"))
+                if score is not None:
+                    data[i]["user_review"] = score
+                else:
+                    data[i]["user_review"] = None
+                data[i]["reviews"] = reviews
 
     progress.refresh()
     with open(args.dataset, "w") as f:
