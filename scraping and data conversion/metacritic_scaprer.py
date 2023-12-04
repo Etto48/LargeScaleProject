@@ -183,7 +183,7 @@ def main(args):
             rich.progress.MofNCompleteColumn(),
             rich.progress.TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
         ) as progress:
-        with open("error.log", "w") as error_log:
+        with open("error.log", "wb") as error_log:
             task = progress.add_task("Scraping", total=len(names), filename="")
             for i,name in enumerate(names):
                 max_name_len = 30
@@ -197,17 +197,17 @@ def main(args):
                 except Exception as e:
                     if type(e) == dirtyjson.Error:
                         text = f"Fatal error while parsing \"{name}\": {e}"
-                        error_log.writelines([text])
+                        error_log.writelines([text.encode("utf-8")])
                         progress.console.print(rich.text.Text.styled(text,"red"))
                         exit(1)
                     if type(e) == requests.exceptions.HTTPError and e.response.status_code == 404:
                         text = f"Fatal error while searching \"{name}\": {e}"
-                        error_log.writelines([text])
+                        error_log.writelines([text.encode("utf-8")])
                         progress.console.print(rich.text.Text.styled(text,"red"))
                         exit(1)
                     else:
                         text = f"Failed to scrape \"{name}\" ({sanitize_name(name)}): {e}"
-                        error_log.writelines([text])
+                        error_log.writelines([text.encode("utf-8")])
                         progress.console.print(rich.text.Text.styled(text,"red"))
                 progress.update(task, advance=1)
                 s = 0
