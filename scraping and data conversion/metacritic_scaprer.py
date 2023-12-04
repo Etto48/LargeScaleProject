@@ -34,6 +34,7 @@ def gen_url(category:str, name: str) -> str:
     return f"https://www.metacritic.com/{category}/{sanitize_name(name)}/user-reviews/"
 
 def gen_search_url(name: str) -> str:
+    name = name.replace("/"," ")
     escaped_name = urllib.parse.quote(name)
     return f"https://www.metacritic.com/search/{escaped_name}/?category=13"
 
@@ -188,6 +189,9 @@ def main(args):
             except Exception as e:
                 if type(e) == dirtyjson.Error:
                     progress.console.print(rich.text.Text.styled(f"Fatal error while parsing \"{name}\": {e}","red"))
+                    exit(1)
+                if type(e) == requests.exceptions.HTTPError and e.response.status_code == 404:
+                    progress.console.print(rich.text.Text.styled(f"Fatal error while searching \"{name}\": {e}","red"))
                     exit(1)
                 else:
                     progress.console.print(rich.text.Text.styled(f"Failed to scrape \"{name}\" ({sanitize_name(name)}): {e}","red"))
