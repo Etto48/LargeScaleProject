@@ -196,21 +196,21 @@ def main(args):
                 reviews = []
                 try:
                     reviews = scrape(args.category, name, args.tmp)
+                except dirtyjson.Error as e:
+                    text = f"Fatal error while parsing \"{name}\": {e}"
+                    error_log.writelines([text.encode("utf-8")])
+                    progress.console.print(rich.text.Text.styled(text,"red"))
+                    exit(1)
+                except requests.exceptions.HTTPError as e:
+                    text = f"Error while searching \"{name}\": {e}"
+                    error_log.writelines([text.encode("utf-8")])
+                    progress.console.print(rich.text.Text.styled(text,"red"))
+                except KeyboardInterrupt:
+                    return
                 except Exception as e:
-                    if type(e) == dirtyjson.Error:
-                        text = f"Fatal error while parsing \"{name}\": {e}"
-                        error_log.writelines([text.encode("utf-8")])
-                        progress.console.print(rich.text.Text.styled(text,"red"))
-                        exit(1)
-                    if type(e) == requests.exceptions.HTTPError and e.response.status_code == 404:
-                        text = f"Fatal error while searching \"{name}\": {e}"
-                        error_log.writelines([text.encode("utf-8")])
-                        progress.console.print(rich.text.Text.styled(text,"red"))
-                        exit(1)
-                    else:
-                        text = f"Failed to scrape \"{name}\" ({sanitize_name(name)}): {e}"
-                        error_log.writelines([text.encode("utf-8")])
-                        progress.console.print(rich.text.Text.styled(text,"red"))
+                    text = f"Failed to scrape \"{name}\" ({sanitize_name(name)}): {e}"
+                    error_log.writelines([text.encode("utf-8")])
+                    progress.console.print(rich.text.Text.styled(text,"red"))
                 progress.update(task, advance=1)
                 s = 0
                 for review in reviews:
