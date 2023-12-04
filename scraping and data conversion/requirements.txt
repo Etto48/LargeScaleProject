@@ -2,3 +2,5 @@ requests
 bs4
 dirtyjson
 rich
+urllib
+unidecode
