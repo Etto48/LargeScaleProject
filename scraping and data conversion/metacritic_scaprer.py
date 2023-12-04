@@ -42,6 +42,8 @@ def gen_search_url(name: str) -> str:
     name = name.replace("#", "")
     name = name.replace("%", "")
     name = name.replace("?", "")
+    name = name.replace("[", "")
+    name = name.replace("]", "")
     escaped_name = urllib.parse.quote(name)
     return f"https://www.metacritic.com/search/{escaped_name}/?category=13"
 
