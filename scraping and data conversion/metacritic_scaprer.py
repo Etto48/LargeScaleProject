@@ -38,6 +38,7 @@ def gen_url(category:str, name: str) -> str:
 def gen_search_url(name: str) -> str:
     name = unidecode.unidecode(name)
     name = name.replace("/"," ")
+    name = name.replace("\\","")
     name = name.replace("&", "and")
     name = name.replace("#", "")
     name = name.replace("%", "")
