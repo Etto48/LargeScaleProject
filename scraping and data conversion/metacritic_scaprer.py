@@ -152,7 +152,10 @@ def scrape(category:str, name: str, tmp: str | None) -> list[(str,str)]:
     try:
         raw_reviews = json_data[-1]["items"]
     except KeyError:
-        raw_reviews = json_data[-1]["item"]["default"]
+        try:
+            raw_reviews = json_data[-1]["item"]["default"]
+        except KeyError:
+            return []
     clean_reviews = []
     for review in raw_reviews:
         try:
@@ -184,7 +187,7 @@ def main(args):
     with rich.progress.Progress(
             *rich.progress.Progress.get_default_columns(),
             rich.progress.MofNCompleteColumn(),
-            rich.progress.TextColumn("[bold blue]{task.fields[filename]}", justify="right"),
+            rich.progress.TextColumn("{task.fields[filename]}", justify="right", markup=False, style="bold blue"),
         ) as progress:
         with open("error.log", "wb") as error_log:
             task = progress.add_task("Scraping", total=len(names), filename="")
@@ -199,18 +202,18 @@ def main(args):
                     reviews = scrape(args.category, name, args.tmp)
                 except dirtyjson.Error as e:
                     text = f"Fatal error while parsing \"{name}\": {e}"
-                    error_log.writelines([text.encode("utf-8")])
+                    error_log.write((text + "\n").encode("utf-8"))
                     progress.console.print(rich.text.Text.styled(text,"red"))
                     exit(1)
                 except requests.exceptions.HTTPError as e:
                     text = f"Error while searching \"{name}\": {e}"
-                    error_log.writelines([text.encode("utf-8")])
+                    error_log.write((text + "\n").encode("utf-8"))
                     progress.console.print(rich.text.Text.styled(text,"red"))
                 except KeyboardInterrupt:
                     return
                 except Exception as e:
                     text = f"Failed to scrape \"{name}\" ({sanitize_name(name)}): {e}"
-                    error_log.writelines([text.encode("utf-8")])
+                    error_log.write((text + "\n").encode("utf-8"))
                     progress.console.print(rich.text.Text.styled(text,"red"))
                 progress.update(task, advance=1)
                 s = 0
