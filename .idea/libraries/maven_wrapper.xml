@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="maven-wrapper">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/gc_server/gc_server/.mvn/wrapper/maven-wrapper.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
