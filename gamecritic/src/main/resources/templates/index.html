@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,13 +11,25 @@
         <!-- Bootstrap JavaScript -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <img src="/favicon.svg" width="30" height="30" class="d-inline-block align-top" alt="">
-            <a class="navbar-brand" href="/">GameCritic</a>
-        </nav>
-        <main>
-            
+    <body class="d-flex flex-column h-100">
+        <header th:replace="~{fragments/general.html :: header}"></header>
+        <main class="main">
+            <div class="container">
+                <article>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam a purus hendrerit enim porttitor tristique. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean ac vestibulum erat. Etiam blandit, dui at condimentum lobortis, erat ligula suscipit magna, vitae vestibulum diam urna non purus. Nunc ornare pellentesque tellus at ornare. Nunc ex orci, molestie quis cursus in, lacinia quis urna. Aenean lacinia augue ut nulla faucibus, id blandit tellus pretium. Donec tempus pellentesque diam a pellentesque. Fusce sed ipsum non ipsum sagittis varius. Mauris molestie eros non mauris congue porttitor. Quisque malesuada molestie placerat. Aliquam a ultricies tortor. Praesent iaculis augue diam, id sodales purus volutpat in. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent congue condimentum quam.</article>
+            </div>
+            <div class="container">
+                <article>Suspendisse aliquet, nibh vel molestie fringilla, nulla purus finibus velit, non maximus sem augue quis elit. Donec in mollis nibh, nec sollicitudin tortor. Suspendisse id aliquam felis. Suspendisse tempus consectetur massa in consequat. Quisque blandit ex vitae ligula lacinia, a egestas sem sagittis. Duis faucibus sem ut tellus tincidunt, non rhoncus quam luctus. Praesent consectetur hendrerit metus sit amet viverra. Quisque ac maximus velit. Vestibulum non risus scelerisque, tristique augue eget, maximus nisi. Etiam eget massa ipsum. Praesent non dui nisi.</article>
+            </div>
+            <div class="container">
+                <article>Pellentesque eget fermentum diam. Duis ac urna sed dui aliquam feugiat. Suspendisse ligula sem, placerat et lorem eget, maximus rhoncus nibh. Aenean sed tortor aliquam, tincidunt mi in, consectetur elit. Sed sit amet metus elit. Praesent ornare suscipit luctus. Donec auctor convallis turpis a tincidunt. Suspendisse sit amet dolor lacus. Ut non ipsum tortor.</article>
+            </div>
+            <div class="container">
+                <article>Etiam dignissim lacus quis tincidunt feugiat. Mauris molestie mi diam, a suscipit ante accumsan eu. In maximus orci vitae urna sodales, eu ultrices nisl ultrices. Sed ac sem sollicitudin, eleifend turpis vitae, sagittis massa. Vivamus ultrices lacus in lobortis luctus. Praesent vitae ligula et metus tristique elementum eu vitae quam. Aenean ut vehicula arcu. Duis sagittis dignissim leo, mattis eleifend tellus placerat eget. Quisque molestie lacus metus, congue ultrices lacus gravida in. Duis faucibus nibh in nisi suscipit iaculis. Maecenas et est ultricies, mollis elit vel, tempor nibh. Pellentesque vitae bibendum quam.</article>
+            </div>
+            <div class="container">
+                <article>Vestibulum non quam leo. Mauris iaculis scelerisque est sed congue. Phasellus dignissim, leo quis venenatis ullamcorper, tellus tellus ultrices purus, vel porta purus metus molestie diam. Sed tincidunt turpis ut rhoncus vehicula. Aliquam egestas id dui sed posuere. Nam vitae elit ante. Cras tortor metus, bibendum id sagittis eu, sollicitudin ultrices turpis. Donec mollis at neque sit amet varius. Integer lacinia ac neque vitae viverra. Suspendisse facilisis augue erat, in vulputate orci feugiat id. Nulla imperdiet tempor pellentesque. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent sit amet velit tempor, lacinia ipsum et, luctus turpis. Donec venenatis diam quam, sed sagittis lorem finibus quis. Etiam posuere congue enim, vel ornare massa posuere sit amet. Vestibulum non purus velit.</article>
+            </div>
         </main>
+        <footer th:replace="~{fragments/general.html :: footer}"></footer>
     </body>
 </html>
