@@ -3,6 +3,8 @@
 .idea/
 error/
 games/
+images/image_cache/
 tmp/
+users/
 error.txt
 scraping and data conversion/error.log

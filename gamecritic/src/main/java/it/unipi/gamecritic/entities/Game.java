@@ -11,5 +11,7 @@ public class Game {
     public String perspective;
     public String gameplay;
     public String setting;
-    
+    public String description;
+    public Integer user_score;
+    public String img;
 }
