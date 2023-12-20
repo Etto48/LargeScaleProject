@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+  	<head>
+		<meta th:replace="~{fragments/general.html :: head}"/>
+		<title th:text="'GameCritic - ' + ${game.name}"></title>
+		<link rel="stylesheet" href="/css/game.css">
+	</head>
+	<body class="d-flex flex-column h-100">
+		<header th:replace="~{fragments/general.html :: header}"></header>
+		<div class="score-bg" th:classappend="${game.user_score > 4 ? game.user_score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}"></div>
+		<main class="card container p-0 mt-5">
+			<div class="d-flex game-card">
+				<div class="bg-black rounded game-image-container">
+					<img th:src="${game.img}" class="mx-auto d-block" alt="Game Image">
+				</div>
+				<div class="d-flex flex-column game-info-container">
+					<h1 class="fw-bold mt-3" style="font-size: 2em" th:text="${game.name}"></h1>
+					<div class="container h-100 d-flex flex-column">
+						<div class="d-flex flex-row row">
+							<h2 class="fs-4 fw-bold my-auto row">Genre</h2>
+							<span class="mx-auto my-auto row" th:text="${game.genre}"></span>
+						</div>
+						<div class="d-flex flex-row row">
+							<h2 class="fs-4 fw-bold my-auto row">Developers</h2>
+							<span class="mx-auto my-auto row" th:each="developer : ${game.developers}">
+								<span th:text="${developer}"></span>
+								<span th:unless="${developerStat.last}">,</span>
+							</span>
+						</div>
+						<div class="d-flex flex-row row">
+							<h2 class="fs-4 fw-bold my-auto row">Publishers</h2>
+							<span class="mx-auto my-auto row" th:each="publisher : ${game.publishers}">
+								<span th:text="${publisher}"></span>
+								<span th:unless="${publisherStat.last}">,</span>
+							</span>
+						</div>
+						<div class="d-flex flex-row row mt-auto mb-3">
+							<h2 class="fs-3 fw-bold my-auto col">User Score</h2>
+							<div class="col">
+								<div class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto" th:classappend="${game.user_score > 4 ? game.user_score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}" style="width: 5em; height: 5em;">
+									<span style="font-size: 3em;" th:text="${game.user_score}"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="d-flex flex-column container">
+				<p th:text="${game.description}"></p>
+			</div>
+			<div class="d-flex top-reviews">
+				<div class="m-2 d-flex flex-column" th:each="review : ${game.top_reviews}">
+					<div class="d-flex flex-row">
+						<div class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto" th:classappend="${review.score > 4 ? review.score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}" style="width: 3em; height: 3em;">
+							<span style="font-size: 2em;" th:text="${review.score}"></span>
+						</div>
+						<div class="d-flex flex-column ms-2">
+							<h2 class="fs-5 fw-bold my-auto" th:text="${review.author}"></h2>
+							<small class="text-secondary" th:text="${review.date}"></small>
+						</div>
+					</div>
+					<p class="my-auto p-2" th:text="${#strings.abbreviate(review.quote,120)}"></p>
+					<button class="btn btn-primary my-auto" type="button"
+						th:onclick="'showReview(' + ${review.id} + ');'">
+						Read More
+					</button>
+					<div th:id="'review-' + ${review.id}" class="card my-auto long-review flex-column">
+						<div class="d-flex flex-row mb-2">
+							<div class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto" th:classappend="${review.score > 4 ? review.score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}" style="width: 3em; height: 3em;">
+								<span style="font-size: 2em;" th:text="${review.score}"></span>
+							</div>
+							<div class="d-flex flex-column ms-2">
+								<h2 class="fs-5 fw-bold my-auto" th:text="${review.author}"></h2>
+								<small class="text-secondary" th:text="${review.date}"></small>
+							</div>
+							<button class="btn ms-auto" type="button"
+								th:onclick="'hideReview(' + ${review.id} + ');'">
+								<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+									<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+								</svg>
+							</button>
+						</div>
+						<p th:text="${review.quote}"></p>
+					</div>
+				</div>
+			</div>
+			<script>
+				function showReview(id) {
+					document.getElementById('review-' + id).classList.add("show-review");
+					disableScroll();
+				}
+				function hideReview(id) {
+					document.getElementById('review-' + id).classList.remove("show-review");
+					enableScroll();
+				}
+			</script>
+		</main>
+		<footer th:replace="~{fragments/general.html :: footer}"></footer>
+  	</body>
+</html>

@@ -77,6 +77,7 @@ public class Error implements ErrorController {
         Integer status_code = Integer.parseInt(status.toString());
         model.addAttribute("status", status_code);
         model.addAttribute("status_string", errors.get(status_code));
+        model.addAttribute("request", request);
         return "error";
     }
 }

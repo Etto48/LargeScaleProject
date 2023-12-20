@@ -2,19 +2,20 @@ package it.unipi.gamecritic.controllers;
 
 import java.util.Vector;
 
-import it.unipi.gamecritic.entities.Game;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
-public class Index {
-    @RequestMapping(value = "/")
-	public String home(Model model, HttpServletRequest request) {
-		Vector<Game> games = new Vector<Game>();
-		games.add(new Game() {
+public class Game {
+    @RequestMapping(value = "/game/{id}")
+    public String game(@PathVariable(value="id") Integer id, Model model, HttpServletRequest request) {
+        // do the query in mongodb
+        Vector<it.unipi.gamecritic.entities.Game> games = new Vector<it.unipi.gamecritic.entities.Game>();
+		games.add(new it.unipi.gamecritic.entities.Game() {
 			{
 				id=0;
 				name = "The Witcher 3: Wild Hunt";
@@ -69,7 +70,7 @@ public class Index {
 				};
 			}
 		});
-		games.add(new Game() {
+		games.add(new it.unipi.gamecritic.entities.Game() {
 			{
 				id=1;
 				name = "The Elder Scrolls V: Skyrim";
@@ -124,8 +125,7 @@ public class Index {
 				};
 			}
 		});
-
-		games.add(new Game() {
+		games.add(new it.unipi.gamecritic.entities.Game() {
 			{
 				id=2;
 				name = "The Legend of Zelda: Breath of the Wild";
@@ -180,8 +180,15 @@ public class Index {
 				};
 			}
 		});
-		model.addAttribute("games", games);
-		model.addAttribute("request", request);
-		return "index";
-	}
+		it.unipi.gamecritic.entities.Game game = games.get(id);
+		if (game == null) {
+			// 404
+			return "404";
+		}
+		else {
+        	model.addAttribute("game", game);
+        	model.addAttribute("request", request);
+			return "game";
+		}
+    }
 }

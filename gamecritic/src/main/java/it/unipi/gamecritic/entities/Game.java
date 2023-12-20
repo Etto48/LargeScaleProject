@@ -3,6 +3,7 @@ package it.unipi.gamecritic.entities;
 import java.util.Vector;
 
 public class Game {
+    public Integer id;
     public String name;
     public String release;
     public Vector<String> publishers;
@@ -12,6 +13,7 @@ public class Game {
     public String gameplay;
     public String setting;
     public String description;
-    public Integer user_score;
+    public Float user_score;
     public String img;
+    public Vector<Review> top_reviews;
 }
