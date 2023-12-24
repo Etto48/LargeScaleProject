@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import it.unipi.gamecritic.entities.Game;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class Index {
     @RequestMapping(value = "/")
-	public String home(Model model, HttpServletRequest request) {
+	public String home(Model model, HttpServletRequest request, HttpSession session) {
+		model.addAttribute("request", request);
+		model.addAttribute("user", session.getAttribute("user"));
+
 		Vector<Game> games = new Vector<Game>();
 		games.add(new Game() {
 			{
@@ -180,8 +184,8 @@ public class Index {
 				};
 			}
 		});
+
 		model.addAttribute("games", games);
-		model.addAttribute("request", request);
 		return "index";
 	}
 }

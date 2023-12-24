@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+  	<head>
+		<meta th:replace="~{fragments/general.html :: head}"/>
+		<title th:text="'GameCritic - ' + ${viewed_user_username} + ' - Reviews'"></title>
+		<link rel="stylesheet" href="/css/reviews.css">
+	</head>
+	<body class="d-flex flex-column h-100">
+        <header th:replace="~{fragments/general.html :: header}"></header>
+        <div th:replace="~{fragments/score.html :: score_bg(${avg_score})}"></div>
+        <main class="container d-flex p-0">
+            <div>
+                <div th:replace="~{fragments/review.html :: list_reviews(${reviews},'game')}"></div>
+            </div>
+            <div>
+                <div class="card p-2 mt-3 aggregation-card">
+                    <div class="d-flex flex-row mb-4">
+                        <div th:replace="~{fragments/score.html :: score_big(${avg_score})}"></div>
+                        <a class="fs-1 fw-bold text-light ms-4 my-auto" th:text="${viewed_user_username}" th:href="'/user/' + ${viewed_user_username}"></a>
+                    </div>
+                    <div th:replace="~{fragments/score.html :: score_distribution(${score_distribution})}"></div>
+                </div>
+            </div>
+        </main>
+        <footer th:replace="~{fragments/general.html :: footer}"></footer>
+    </body>
+</html>

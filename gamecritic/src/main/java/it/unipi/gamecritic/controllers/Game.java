@@ -2,17 +2,22 @@ package it.unipi.gamecritic.controllers;
 
 import java.util.Vector;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class Game {
     @RequestMapping(value = "/game/{id}")
-    public String game(@PathVariable(value="id") Integer id, Model model, HttpServletRequest request) {
+    public String game(@PathVariable(value="id") Integer id, Model model, HttpServletRequest request, HttpSession session) {
+		model.addAttribute("request", request);
+		model.addAttribute("user", session.getAttribute("user"));
         // do the query in mongodb
         Vector<it.unipi.gamecritic.entities.Game> games = new Vector<it.unipi.gamecritic.entities.Game>();
 		games.add(new it.unipi.gamecritic.entities.Game() {
@@ -180,15 +185,76 @@ public class Game {
 				};
 			}
 		});
-		it.unipi.gamecritic.entities.Game game = games.get(id);
-		if (game == null) {
-			// 404
-			return "404";
-		}
-		else {
-        	model.addAttribute("game", game);
-        	model.addAttribute("request", request);
+		try {
+			it.unipi.gamecritic.entities.Game game = games.get(id);
+			model.addAttribute("game", game);
 			return "game";
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
 		}
     }
+
+	@RequestMapping("/game/{id}/reviews") 
+	public String game_reviews(@PathVariable(value="id") Integer id, Model model, HttpServletRequest request, HttpSession session) {
+		model.addAttribute("request", request);
+		model.addAttribute("user", session.getAttribute("user"));
+		// do the query in mongodb
+		Vector<it.unipi.gamecritic.entities.Review> reviews = new Vector<it.unipi.gamecritic.entities.Review>();
+		reviews.add(new it.unipi.gamecritic.entities.Review() {
+			{
+				id=0;
+				author = "Pippo";
+				date = "2015-05-12";
+				game = "The Witcher 3: Wild Hunt";
+				quote = "The Witcher 3: Wild Hunt is a thoughtful, diverse, and frequently awe-inspiring adventure. Its stories are deep and satisfying, unafraid to touch on themes of personal character, presenting players with choices and consequences that aren’t about turning into a hero or a villain. In the end, it’s quite simply one of the best RPGs ever made.";
+				score = 9;
+			}
+		});
+		reviews.add(new it.unipi.gamecritic.entities.Review() {
+			{
+				id=1;
+				author = "Pluto";
+				date = "2015-05-12";
+				game = "The Witcher 3: Wild Hunt";
+				quote = "Wild Hunt is an immaculately detailed adventure, with evocative writing, jaw-droppingly gorgeous art, and a neck-snapping soundtrack. But it’s the stories that you weave, with the consequences of your choices echoing across the game world, that make Wild Hunt something special. In a time of constant sword and sorcery overkill, Wild Hunt is an exemplary reminder of what can be achieved, even by a small team, even with an old-fashioned approach.";
+				score = 6;
+			}
+		});
+		reviews.add(new it.unipi.gamecritic.entities.Review() {
+			{
+				id=2;
+				author = "Paperino";
+				date = "2015-05-12";
+				game = "The Witcher 3: Wild Hunt";
+				quote = "The Witcher 3: Wild Hunt encompasses what I hope is the future of RPGs. It stands out for its wonderful writing, variety of quests and things to do in the world, and how your choices have impact on the political whirlwind around you. Usually something is sacrificed when creating a world this ambitious, but everything felt right on cue. I couldn’t put it down, and it’s the first RPG in a long time that I’ve wanted to play through twice.";
+				score = 3;
+			}
+		});
+		if (reviews.size() == 0) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+		}
+		String game_name = reviews.get(0).game;
+		Float avg_score = 0f;
+		for (it.unipi.gamecritic.entities.Review review : reviews) {
+			avg_score += review.score;
+		}
+		avg_score /= reviews.size();
+		Vector<Float> score_distribution = new Vector<Float>();
+		for (int i = 0; i < 10; i++) {
+			score_distribution.add(0f);
+		}
+		for (it.unipi.gamecritic.entities.Review review : reviews) {
+			score_distribution.set(review.score - 1, score_distribution.get(review.score - 1) + 1);
+		}
+		for (int i = 0; i < 10; i++) {
+			score_distribution.set(i, score_distribution.get(i) / reviews.size() * 100);
+		}
+		model.addAttribute("score_distribution", score_distribution);
+		model.addAttribute("avg_score", avg_score);
+		model.addAttribute("reviews", reviews);
+		model.addAttribute("game_id", id);
+		model.addAttribute("game_name", game_name);
+		
+		return "game_reviews";
+	}
 }

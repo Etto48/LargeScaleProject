@@ -1,0 +1,74 @@
+.aggregation-card {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.aggregation-card a {
+    width: calc(100% - 104px);
+}
+
+main {
+    flex-direction: column-reverse;
+}
+
+main>div:first-child {
+    margin: 0;
+    flex: 1 0 0%;
+}
+
+main>div:last-child {
+    margin: 0;
+    width: 100%;
+    flex: 1 0 0%;
+}
+
+@media (min-width: 768px) {
+
+    .aggregation-card {
+        width: 240px;
+        position: fixed;
+    }
+
+    main>div:first-child {
+        margin-right: 20px;
+        flex: 1 0 0%;
+    }
+
+    main>div:last-child {
+        margin-left: 20px;
+        width: 33.33333333%;
+        flex: 0 0 auto;
+    }
+
+    main {
+        flex-direction: row;
+    }
+}
+
+@media (min-width: 992px) {
+    .aggregation-card {
+        width: 320px;
+        position: fixed;
+    }
+}
+
+@media (min-width: 1200px) {
+    .aggregation-card {
+        width: 379.99px;
+        position: fixed;
+    }
+}
+
+@media (min-width: 1400px) {
+    .aggregation-card {
+        width: 440px;
+        position: fixed;
+    }
+}
+
+@media (max-height: 604px) {
+    .aggregation-card {
+        width: 100%;
+        position: relative;
+    }
+}

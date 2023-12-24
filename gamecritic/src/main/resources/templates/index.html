@@ -16,9 +16,8 @@
                             <h2 th:text="${game.name}"></h2>
                             <p th:text="${#strings.abbreviate(game.description,512)}"></p>
                         </div>
-                        <div class="ratio ratio-1x1 green-bg rounded d-flex text-center mt-auto"
-                            th:classappend="${game.user_score > 4 ? game.user_score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}" style="width: 5em;">
-                            <span style="font-size: 3em;" th:text="${game.user_score}"></span>
+                        <div class="mt-auto">
+                            <div th:replace="~{fragments/score.html :: score_big(${game.user_score})}"></div>
                         </div>
                     </div>
                 </a>

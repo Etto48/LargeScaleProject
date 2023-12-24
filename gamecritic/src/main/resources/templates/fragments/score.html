@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <div th:fragment="score_big(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto square-5" th:classappend="${score > 4 ? score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}">
+            <span class="fs-score" th:text="${#numbers.formatDecimal(score,0,1)}"></span>
+        </div>
+
+        <div th:fragment="score_small(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto square-3" th:classappend="${score > 4 ? score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}">
+            <span class="fs-score-small" th:text="${score}"></span>
+        </div>
+
+        <div th:fragment="score_bg(score)" class="position-fixed w-100 score-bg" th:classappend="${score == null ? 'bg-secondary' : score > 4 ? score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}"></div>
+        
+        <div th:fragment="score_distribution(distribution)" class="w-100" style="height: 200px;">
+            <canvas id="score-distribution-chart" th:attr="data-distribution=${distribution}"></canvas>
+            <script>
+                const ctx = document.getElementById('score-distribution-chart');
+                let width, height, gradient;
+                function getGradient(ctx, chartArea, alpha) {
+                const chartWidth = chartArea.right - chartArea.left;
+                const chartHeight = chartArea.bottom - chartArea.top;
+                if (!gradient || width !== chartWidth || height !== chartHeight) {
+                    // Create the gradient because this is either the first render
+                    // or the size of the chart has changed
+                    width = chartWidth;
+                    height = chartHeight;
+                    var gradient = ctx.createLinearGradient(0, 0, chartWidth, 0);
+                    gradient.addColorStop(0, 'rgb(211, 50, 66,' + alpha + ')');
+                    gradient.addColorStop(0.5, 'rgb(249, 192, 0,' + alpha + ')');
+                    gradient.addColorStop(1, 'rgb(48, 135, 82,' + alpha + ')');
+                }
+
+                return gradient;
+                }
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                        datasets: [{
+                            label: 'Percentage',
+                            data: JSON.parse(ctx.getAttribute('data-distribution')),
+                            borderColor: function(context) {
+                                const chart = context.chart;
+                                const {ctx, chartArea} = chart;
+                        
+                                if (!chartArea) {
+                                  // This case happens on initial chart load
+                                    return;
+                                }
+                                return getGradient(ctx, chartArea, 1);
+                            },
+                            backgroundColor: function(context) {
+                                const chart = context.chart;
+                                const {ctx, chartArea} = chart;
+                        
+                                if (!chartArea) {
+                                  // This case happens on initial chart load
+                                    return;
+                                }
+                                return getGradient(ctx, chartArea, 0.5);
+                            },
+                            borderWidth: 1,
+                            tension: 0.3,
+                            fill: 'origin'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(val, index) {
+                                        return val + '%';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            </script>
+        </div>
+    </body>
+</html>

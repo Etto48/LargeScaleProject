@@ -1,0 +1,42 @@
+main {
+    margin-top: 15vh;
+    margin-bottom: 15vh;
+}
+
+main.container {
+    max-width: 500px;
+    
+}
+
+main a {
+    width: fit-content;
+}
+
+form {
+    display: none;
+}
+
+form.show {
+    display: flex;
+}
+
+.form-swap-btn {
+    border-radius: 5px 5px 0 0;
+    border-bottom: 4px solid transparent;
+    transition: border-bottom 0.2s ease-in-out;
+}
+
+.form-swap-btn:not(:disabled)
+{
+    color: #898989;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.form-swap-btn:disabled {
+    color: #ffffff;
+    font-weight: bold;
+    opacity: 1;
+    cursor: default;
+    border-bottom: 4px solid #ffffff;
+}

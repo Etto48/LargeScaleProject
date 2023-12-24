@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+  	<head>
+		<meta th:replace="~{fragments/general.html :: head}"/>
+		<title th:text="'GameCritic - ' + ${viewed_user.username}"></title>
+		<link rel="stylesheet" href="/css/user.css">
+	</head>
+	<body class="d-flex flex-column h-100">
+        <header th:replace="~{fragments/general.html :: header}"></header>
+        <div th:replace="~{fragments/score.html :: score_bg(${avg_top_score})}"></div>
+        <main class="container flex-column card p-0 mt-5">
+            <div class="d-flex p-5 user-card">
+                <img class="rounded-circle user-image" th:src="'/user_image/' + ${viewed_user.username} + '.png'" alt="User Image">
+                <div class="d-flex flex-column h-100 user-info">
+                    <h1 class="fs-1 fw-bold" th:text="${viewed_user.username}"></h1>
+                </div>
+            </div>
+            <div class="mx-4 mt-2 d-flex flex-row">
+				<h2 class="fs-3">Reviews</h2>
+				<a th:href="'/user/' + ${viewed_user.username} + '/reviews'" class="d-flex flex-row text-secondary"><small class="my-auto ms-3">SHOW ALL</small></a>
+			</div>
+			<hr class="mx-3 mb-2 mt-0"/>
+            <div th:replace="~{fragments/review.html :: top_reviews(${viewed_user.top_reviews},'game')}"></div>
+        </main>
+        <footer th:replace="~{fragments/general.html :: footer}"></footer>
+    </body>
+</html>

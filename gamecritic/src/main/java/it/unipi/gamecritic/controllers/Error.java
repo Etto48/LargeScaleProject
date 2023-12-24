@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class Error implements ErrorController {
@@ -72,9 +73,10 @@ public class Error implements ErrorController {
     );
 
     @RequestMapping(value = "/error")
-    public String handleError(Model model, HttpServletRequest request) {
+    public String handleError(Model model, HttpServletRequest request, HttpSession session) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         Integer status_code = Integer.parseInt(status.toString());
+        model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("status", status_code);
         model.addAttribute("status_string", errors.get(status_code));
         model.addAttribute("request", request);

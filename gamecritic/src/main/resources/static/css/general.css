@@ -1,0 +1,107 @@
+.score-bg {
+    height: 38vh;
+}
+
+.review-actions button {
+    font-size: 14px;
+}
+
+#user-dropdown {
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    z-index: 8;
+    padding: 10px;
+    width: 120px;
+    margin-top: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+#user-dropdown.show {
+    display: flex;
+}
+
+#header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 7;
+}
+
+small {
+    font-size: 0.8em;
+}
+
+.hover-text-highlight {
+    transition: text-shadow 0.5s;
+}
+
+.hover-text-highlight:hover {
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
+}
+
+.square-5 {
+    width: 5em;
+    height: 5em;
+}
+
+.square-3 {
+    width: 3em;
+    height: 3em;
+}
+
+.fs-score {
+    font-size: 3em;
+}
+
+.fs-score-small {
+    font-size: 2em;
+}
+
+.top-reviews {
+    flex-direction: column;
+    min-height: 180px;
+}
+
+.long-review.show-review {
+    display: flex;
+}
+
+div:has(.long-review.show-review)::after {
+    content: "";
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.long-review {
+    display: none; 
+    position: fixed; 
+    background-color: #212529;
+    z-index: 10; 
+    color: white; 
+    padding: 1em; 
+    overflow: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 512px;
+}
+
+@media (min-width: 768px) {
+    .top-reviews {
+        flex-direction: row;
+    }
+}
+
+@media (min-width: 992px) {
+    .top-reviews {
+        flex-direction: row;
+    }
+}
