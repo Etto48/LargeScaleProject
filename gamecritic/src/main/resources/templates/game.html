@@ -8,7 +8,7 @@
 	<body class="d-flex flex-column h-100">
 		<header th:replace="~{fragments/general.html :: header}"></header>
 		<div th:replace="~{fragments/score.html :: score_bg(${game.user_score})}"></div>
-		<main class="card container p-0 mt-5">
+		<main class="card container p-0 mt-5 shadow">
 			<div class="d-flex game-card">
 				<div class="bg-black rounded game-image-container overflow-hidden">
 					<img th:src="${game.img}" class="mx-auto d-block h-100" alt="Game Image">
