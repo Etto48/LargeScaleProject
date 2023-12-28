@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <div th:fragment="comment(comment)" class="ms-2 my-2 me-0 d-flex flex-column">
+            <div class="d-flex flex-column comment-body p-2 mb-3">
+                <div class="d-flex flex-row">
+                    <img class="rounded-circle me-2 my-auto" th:src="'/user_image/' + ${comment.author} + '.png'" alt="User Image" style="width: 25px; height: 25px">
+                    <a class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${#uris.escapePathSegment(comment.author)}" th:text="${comment.author}"></a>
+                </div>
+                <div class="d-flex flex-row">
+                    <span class="my-2" th:text="${comment.quote}"></span>
+                    <button class="btn btn-dark respond-button align-self-end ms-auto">
+                        <i class="bi bi-chat-fill"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="d-flex d-row" th:if="${comment.comments.size() > 0}">
+                <div class="vr me-2 rounded" style="width: 3px"></div>
+                <div class="d-flex flex-column" style="width: 100%;">
+                    <div th:each="comment : ${comment.comments}" th:insert="~{fragments/comment.html :: comment(${comment})}"></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

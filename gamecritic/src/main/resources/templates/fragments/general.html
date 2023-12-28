@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head th:fragment="head">
         <meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
 		<meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 		<!-- Bootstrap CSS -->
@@ -32,25 +32,28 @@
                         </a>
                     </li>
                 </ul>
-                <form th:if="${request.requestURI} != '/authentication'" class="me-2 col" role="search">
-                    <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+                <form id="search-form" class="me-2 col" role="search" autocomplete="off">
+                    <input id="search-text" type="search" class="form-control" placeholder="Search..." aria-label="Search" autocomplete="off">
+                    <div id="search-results"></div>
                 </form>
-                <div th:if="${user} != null">
+                <script src="/js/search.js"></script>
+                <script>prepareSearch();</script> 
+                <div th:if="${user != null}">
                     <button type="button" class="btn btn-dark d-flex flex-row border rounded p-1" onclick="showDropdown();">
                         <img class="d-inline-block align-top rounded-circle me-2" th:src="'/user_image/' + ${user.username} + '.png'" width="28" height="28" alt="Avatar"/>
                         <span th:text="${user.username}"></span>
                         <i class="bi bi-chevron-down my-auto mx-2"></i>
                     </button>
                     <div id="user-dropdown" class="card">
-                        <a class="dropdown-item hover-text-highlight" th:href="'/user/' + ${user.username}">
+                        <a class="dropdown-item hover-text-highlight" th:href="'/user/' + ${#uris.escapePathSegment(user.username)}">
                             <i class="bi bi-person-fill"></i>
                             Profile
                         </a>
-                        <a class="dropdown-item hover-text-highlight" th:href="'/user/' + ${user.username} + '/reviews'">
+                        <a class="dropdown-item hover-text-highlight" th:href="'/user/' + ${#uris.escapePathSegment(user.username)} + '/reviews'">
                             <i class="bi bi-chat-left-text-fill"></i>
                               Reviews
                         </a>
-                        <a class="dropdown-item hover-text-highlight" th:href="'/user/' + ${user.username} + '/settings'">
+                        <a class="dropdown-item hover-text-highlight" th:href="'/user/' + ${#uris.escapePathSegment(user.username)} + '/settings'">
                             <i class="bi bi-gear-fill"></i>
                             Settings
                         </a>
@@ -71,7 +74,7 @@
                         }
                     </script>
                 </div>
-                <div th:if="${user} == null and ${request.requestURI} != '/authentication'" class="text-end">
+                <div th:if="${user == null}" class="text-end">
                     <button type="button" class="btn btn-outline-light me-2" onclick="location.href='/authentication?mode=login'">Login</button>
                     <button type="button" class="btn btn-light" onclick="location.href='/authentication?mode=signup'">Sign up</button>
                 </div>

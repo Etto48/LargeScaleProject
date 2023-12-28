@@ -10,7 +10,7 @@
             <span class="fs-score-small" th:text="${score}"></span>
         </div>
 
-        <div th:fragment="score_bg(score)" class="position-fixed w-100 score-bg" th:classappend="${score == null ? 'bg-secondary' : score > 4 ? score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}"></div>
+        <div th:fragment="score_bg(score)" class="position-fixed w-100 score-bg shadow" th:classappend="${score == null ? 'bg-secondary' : score > 4 ? score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}"></div>
         
         <div th:fragment="score_distribution(distribution)" class="w-100" style="height: 200px;">
             <canvas id="score-distribution-chart" th:attr="data-distribution=${distribution}"></canvas>

@@ -94,6 +94,60 @@ div:has(.long-review.show-review)::after {
     max-width: 512px;
 }
 
+#search-results.show {
+    display: flex;
+}
+
+#search-results {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    background-color: #212529;
+    border-radius: 0 0 5px 5px;
+    padding: 1em;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.search-result:hover::after {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.search-result::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0);
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 5px;
+}
+
+.search-result {
+    position: relative;
+    color: white;
+    width: 100%;
+    padding: 0.5em;
+    border-radius: 5px;
+}
+
+.search-result img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
+#search-form.list #search-text {
+    border-radius: 5px 5px 0 0;
+}
+
+#search-form #search-text {
+    border-radius: 5px;
+}   
+
 @media (min-width: 768px) {
     .top-reviews {
         flex-direction: row;

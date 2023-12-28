@@ -1,0 +1,33 @@
+main.container {
+    max-width: 600px;
+}
+
+div.comment-body {
+    box-shadow: 0 0 0 0 rgb(0, 0, 0, 0.2);
+    transition: box-shadow 0.2s ease-in-out;
+    border-radius: 5px;
+}
+
+div.comment-body:hover {
+    box-shadow: 0 5px 10px 0 rgb(0, 0, 0, 0.2);
+}
+
+div.comment-body .respond-button {
+    opacity: 0.1;
+    height: fit-content;
+    width: fit-content;
+    transition: opacity 0.2s ease-in-out;
+}
+
+div.comment-body:hover .respond-button {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    div.comment-body {
+        box-shadow: 0 5px 10px 0 rgb(0, 0, 0, 0.2);
+    }
+    div.comment-body .respond-button { 
+        opacity: 1;
+    }
+}

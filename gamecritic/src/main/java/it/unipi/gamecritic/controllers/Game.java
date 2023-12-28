@@ -14,8 +14,8 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class Game {
-    @RequestMapping(value = "/game/{id}")
-    public String game(@PathVariable(value="id") Integer id, Model model, HttpServletRequest request, HttpSession session) {
+    @RequestMapping(value = "/game/{name}")
+    public String game(@PathVariable(value="name") String name, Model model, HttpServletRequest request, HttpSession session) {
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
         // do the query in mongodb
@@ -185,17 +185,25 @@ public class Game {
 				};
 			}
 		});
-		try {
-			it.unipi.gamecritic.entities.Game game = games.get(id);
-			model.addAttribute("game", game);
+	
+		boolean found = false;
+		for (it.unipi.gamecritic.entities.Game game : games) {
+			if (game.name.equals(name)) {
+				model.addAttribute("game", game);
+				found = true;
+			}
+		}
+		if (found) {
 			return "game";
-		} catch (Exception e) {
+		}
+		else
+		{
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
 		}
     }
 
-	@RequestMapping("/game/{id}/reviews") 
-	public String game_reviews(@PathVariable(value="id") Integer id, Model model, HttpServletRequest request, HttpSession session) {
+	@RequestMapping("/game/{name}/reviews") 
+	public String game_reviews(@PathVariable(value="name") String name, Model model, HttpServletRequest request, HttpSession session) {
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
 		// do the query in mongodb
@@ -233,7 +241,6 @@ public class Game {
 		if (reviews.size() == 0) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
 		}
-		String game_name = reviews.get(0).game;
 		Float avg_score = 0f;
 		for (it.unipi.gamecritic.entities.Review review : reviews) {
 			avg_score += review.score;
@@ -252,8 +259,7 @@ public class Game {
 		model.addAttribute("score_distribution", score_distribution);
 		model.addAttribute("avg_score", avg_score);
 		model.addAttribute("reviews", reviews);
-		model.addAttribute("game_id", id);
-		model.addAttribute("game_name", game_name);
+		model.addAttribute("game_name", name);
 		
 		return "game_reviews";
 	}

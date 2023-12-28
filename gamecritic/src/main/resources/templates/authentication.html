@@ -7,87 +7,89 @@
 		<link rel="stylesheet" href="/css/authentication.css">
 	</head>
 	<body class="d-flex flex-column h-100">
-        <main class="container card shadow">
-            <a class="d-flex d-row mt-4 mb-3 text-light text-decoration-none mx-auto p-1" href="/">
-                <img src="/favicon_bw_light.svg" width="50" height="50" class="d-inline-block align-top my-auto me-1" alt="">
-                <h1 class="fs-1 ms-1 my-auto fw-bold">GameCritic</h1>
-            </a>
-            <div class="d-flex flex-row mt-3">
-                <button id="login_button" class="btn btn-dark col form-swap-btn" onclick="swapForm('login')" type="button">Login</button>
-                <button id="sign_up_button" class="btn btn-dark col form-swap-btn" disabled onclick="swapForm('sign_up')" type="button">Sign up</button>
-            </div>
-            <hr class="mb-2 mt-0"/>
-            <span id="error" class="my-1 text-danger"></span>
-            <form id="login_form" class="flex-column swappable-form">
-                <input class="my-2" id="username_login" type="text" placeholder="Username" name="username" required/>
-                <input class="my-2" id="password_login" type="password" placeholder="Password" name="password" required/>
-                <button class="btn btn-primary my-3" type="submit">Login</button>
-            </form>
-            <form id="sign_up_form" class="flex-column swappable-form show">
-                <input class="my-2" id="username_sign_up" type="text" placeholder="Username" name="username" required/>
-                <input class="my-2" id="email_sign_up" type="email" placeholder="Email" name="email" required/>
-                <input class="my-2" id="password_sign_up" type="password" placeholder="Password" name="password" required/>
-                <input class="my-2" id="password_check_sign_up" type="password" placeholder="Repeat password" name="password_check" required/>
-                <button class="btn btn-primary my-3" type="submit">Sign up</button>
-            </form>
-            <script>
-                prepareForm("login_form","login");
-                prepareForm("sign_up_form","sign_up");
-            </script>
-            <script>
-                function swapForm(to_mode = null) {
-                    var current_mode = document.getElementById("login_form").classList.contains("show") ? "login" : "sign_up";
-                    if (current_mode == to_mode) {
-                        return;
-                    }
-                    else if (to_mode == null) {
-                        if (current_mode == "login") {
-                            to_mode = "sign_up";
+        <div class="main-wrapper">
+            <main class="container card shadow">
+                <a class="d-flex d-row mt-4 mb-3 text-light text-decoration-none mx-auto p-1" href="/">
+                    <img src="/favicon_bw_light.svg" width="50" height="50" class="d-inline-block align-top my-auto me-1" alt="">
+                    <h1 class="fs-1 ms-1 my-auto fw-bold">GameCritic</h1>
+                </a>
+                <div class="d-flex flex-row mt-3">
+                    <button id="login_button" class="btn btn-dark col form-swap-btn" onclick="swapForm('login')" type="button">Login</button>
+                    <button id="sign_up_button" class="btn btn-dark col form-swap-btn" disabled onclick="swapForm('sign_up')" type="button">Sign up</button>
+                </div>
+                <hr class="mb-2 mt-0"/>
+                <span id="error" class="my-1 text-danger"></span>
+                <form id="login_form" class="flex-column swappable-form">
+                    <input class="my-2" id="username_login" type="text" placeholder="Username" name="username" required/>
+                    <input class="my-2" id="password_login" type="password" placeholder="Password" name="password" required/>
+                    <button class="btn btn-primary my-3" type="submit">Login</button>
+                </form>
+                <form id="sign_up_form" class="flex-column swappable-form show">
+                    <input class="my-2" id="username_sign_up" type="text" placeholder="Username" name="username" required/>
+                    <input class="my-2" id="email_sign_up" type="email" placeholder="Email" name="email" required/>
+                    <input class="my-2" id="password_sign_up" type="password" placeholder="Password" name="password" required/>
+                    <input class="my-2" id="password_check_sign_up" type="password" placeholder="Repeat password" name="password_check" required/>
+                    <button class="btn btn-primary my-3" type="submit">Sign up</button>
+                </form>
+                <script>
+                    prepareForm("login_form","login");
+                    prepareForm("sign_up_form","sign_up");
+                </script>
+                <script>
+                    function swapForm(to_mode = null) {
+                        var current_mode = document.getElementById("login_form").classList.contains("show") ? "login" : "sign_up";
+                        if (current_mode == to_mode) {
+                            return;
+                        }
+                        else if (to_mode == null) {
+                            if (current_mode == "login") {
+                                to_mode = "sign_up";
+                            }
+                            else {
+                                to_mode = "login";
+                            }
+                        }
+
+                        if (to_mode == "login") {
+                            var username = document.getElementById("username_sign_up").value;
                         }
                         else {
-                            to_mode = "login";
+                            var username = document.getElementById("username_login").value;
                         }
-                    }
 
-                    if (to_mode == "login") {
-                        var username = document.getElementById("username_sign_up").value;
-                    }
-                    else {
-                        var username = document.getElementById("username_login").value;
-                    }
+                        var form = document.getElementById("login_form");
+                        form.reset();
+                        form.classList.toggle("show");
+                        form = document.getElementById("sign_up_form");
+                        form.reset();
+                        form.classList.toggle("show");
 
-                    var form = document.getElementById("login_form");
-                    form.reset();
-                    form.classList.toggle("show");
-                    form = document.getElementById("sign_up_form");
-                    form.reset();
-                    form.classList.toggle("show");
+                        if (to_mode == "login") {
+                            document.getElementById("username_login").value = username;
+                        }
+                        else {
+                            document.getElementById("username_sign_up").value = username;
+                        }
 
-                    if (to_mode == "login") {
-                        document.getElementById("username_login").value = username;
-                    }
-                    else {
-                        document.getElementById("username_sign_up").value = username;
-                    }
+                        var login_button = document.getElementById("login_button");
+                        var sign_up_button = document.getElementById("sign_up_button");
+                        if (to_mode == "login") {
+                            login_button.setAttribute("disabled", true);
+                            sign_up_button.removeAttribute("disabled");
+                        }
+                        else {
+                            sign_up_button.setAttribute("disabled", true);
+                            login_button.removeAttribute("disabled");
+                        }
 
-                    var login_button = document.getElementById("login_button");
-                    var sign_up_button = document.getElementById("sign_up_button");
-                    if (to_mode == "login") {
-                        login_button.setAttribute("disabled", true);
-                        sign_up_button.removeAttribute("disabled");
+                        var error = document.getElementById("error");
+                        error.innerHTML = "";
                     }
-                    else {
-                        sign_up_button.setAttribute("disabled", true);
-                        login_button.removeAttribute("disabled");
-                    }
-
-                    var error = document.getElementById("error");
-                    error.innerHTML = "";
-                }
-            </script>
-            <script th:if="${default_mode} == 'login'">
-                swapForm("login");
-            </script>
-        </main>
+                </script>
+                <script th:if="${default_mode} == 'login'">
+                    swapForm("login");
+                </script>
+            </main>
+        </div>
     </body>
 </html>

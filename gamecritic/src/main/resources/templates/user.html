@@ -17,7 +17,7 @@
             </div>
             <div class="mx-4 mt-2 d-flex flex-row">
 				<h2 class="fs-3">Reviews</h2>
-				<a th:href="'/user/' + ${viewed_user.username} + '/reviews'" class="d-flex flex-row text-secondary"><small class="my-auto ms-3">SHOW ALL</small></a>
+				<a th:href="'/user/' + ${#uris.escapePathSegment(viewed_user.username)} + '/reviews'" class="d-flex flex-row text-secondary"><small class="my-auto ms-3">SHOW ALL</small></a>
 			</div>
 			<hr class="mx-3 mb-2 mt-0"/>
             <div th:replace="~{fragments/review.html :: top_reviews(${viewed_user.top_reviews},'game')}"></div>

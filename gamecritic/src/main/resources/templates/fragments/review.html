@@ -7,8 +7,8 @@
                 <div class="d-flex flex-row">
                     <div th:replace="~{fragments/score.html :: score_small(${review.score})}"></div>
                     <div class="d-flex flex-column ms-2">
-                        <a th:if="${title_mode} == 'user'" class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${review.author}" th:text="${review.author}"></a>
-                        <a th:if="${title_mode} == 'game'" class="fs-6 fw-bold my-auto text-light" th:href="'/game/' + ${review.game_id}" th:text="${review.game}"></a>
+                        <a th:if="${title_mode} == 'user'" class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${#uris.escapePathSegment(review.author)}" th:text="${review.author}"></a>
+                        <a th:if="${title_mode} == 'game'" class="fs-6 fw-bold my-auto text-light" th:href="'/game/' + ${#uris.escapePathSegment(review.game)}" th:text="${review.game}"></a>
                         <small class="text-secondary" th:text="${review.date}"></small>
                     </div>
                 </div>
@@ -21,8 +21,8 @@
                     <div class="d-flex flex-row mb-2">
                         <div th:replace="~{fragments/score.html :: score_small(${review.score})}"></div>
                         <div class="d-flex flex-column ms-2">
-                            <a th:if="${title_mode} == 'user'" class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${review.author}" th:text="${review.author}"></a>
-                            <a th:if="${title_mode} == 'game'" class="fs-6 fw-bold my-auto text-light" th:href="'/game/' + ${review.game_id}" th:text="${review.game}"></a>
+                            <a th:if="${title_mode} == 'user'" class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${#uris.escapePathSegment(review.author)}" th:text="${review.author}"></a>
+                            <a th:if="${title_mode} == 'game'" class="fs-6 fw-bold my-auto text-light" th:href="'/game/' + ${#uris.escapePathSegment(review.game)}" th:text="${review.game}"></a>
                             <small class="text-secondary" th:text="${review.date}"></small>
                         </div>
                         <button class="btn btn-dark ms-auto py-0" type="button"
@@ -31,16 +31,17 @@
                         </button>
                     </div>
                     <p th:text="${review.quote}"></p>
+                    <div th:replace="~{fragments/review.html :: review_actions(${review})}"></div>
                 </div>
             </div>
         </div>
 
-        <div class="d-flex flex-row-reverse review-actions" th:fragment="review_actions">
+        <div class="d-flex flex-row-reverse review-actions" th:fragment="review_actions(review)">
             <button class="btn btn-dark">
                 <i class="bi bi-heart text-secondary"></i>
                 <span class="text-secondary">Like</span>
             </button>
-            <button class="btn btn-dark">
+            <button class="btn btn-dark" th:onclick="'window.location.href=\'/comments/' + ${review.id} + '\''">
                 <i class="bi bi-chat-fill text-secondary"></i>
                 <span class="text-secondary">Comments</span>
             </button>
@@ -51,14 +52,28 @@
                 <div class="d-flex flex-row">
                     <div th:replace="~{fragments/score.html :: score_small(${review.score})}"></div>
                     <div class="d-flex flex-column ms-2">
-                        <a th:if="${title_mode} == 'user'" class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${review.author}" th:text="${review.author}"></a>
-                        <a th:if="${title_mode} == 'game'" class="fs-6 fw-bold my-auto text-light" th:href="'/game/' + ${review.game_id}" th:text="${review.game}"></a>
+                        <a th:if="${title_mode} == 'user'" class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${#uris.escapePathSegment(review.author)}" th:text="${review.author}"></a>
+                        <a th:if="${title_mode} == 'game'" class="fs-6 fw-bold my-auto text-light" th:href="'/game/' + ${#uris.escapePathSegment(review.game)}" th:text="${review.game}"></a>
                         <small class="text-secondary" th:text="${review.date}"></small>
                     </div>
                 </div>
                 <p class="my-auto p-2 mb-auto h-100" th:text="${review.quote}"></p>
-                <div th:replace="~{fragments/review.html :: review_actions}"></div>
+                <div th:replace="~{fragments/review.html :: review_actions(${review})}"></div>
             </div>
+        </div>
+
+        <div class="d-flex flex-column" th:fragment="full_review(review)">
+            <a class="fs-3 d-flex text-light fw-bold mt-2 mx-auto" th:text="${review.game}" th:href="'/game/' + ${#uris.escapePathSegment(review.game)}"></a>
+            <hr/>
+            <div class="d-flex flex-row">
+                <div th:replace="~{fragments/score.html :: score_small(${review.score})}"></div>
+                <div class="d-flex flex-column mx-2">
+                    <a class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${#uris.escapePathSegment(review.author)}" th:text="${review.author}"></a>
+                    <small class="text-secondary" th:text="${review.date}"></small>
+                </div>
+            </div>
+            <p class="my-auto p-2 mb-auto h-100" th:text="${review.quote}"></p>
+            <hr/>
         </div>
     </body>
 </html>

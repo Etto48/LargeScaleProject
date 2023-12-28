@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+    <head>
+        <meta th:replace="~{fragments/general.html :: head}"/>
+        <title>GameCritic - Review - Comments</title>
+        <link rel="stylesheet" href="/css/comments.css">
+    </head>
+    <body class="d-flex flex-column h-100">
+        <header th:replace="~{fragments/general.html :: header}"></header>
+        <div th:replace="~{fragments/score.html :: score_bg(${review.score})}"></div>
+        <main class="container d-flex flex-column card shadow py-2 my-5">
+            <div th:replace="~{fragments/review.html :: full_review(${review})}"></div>
+            <div th:each="comment : ${comments}">
+                <div th:replace="~{fragments/comment.html :: comment(${comment})}"></div>
+            </div>
+        </main>
+        <footer th:replace="~{fragments/general.html :: footer}"></footer>
+    </body>
+</html>

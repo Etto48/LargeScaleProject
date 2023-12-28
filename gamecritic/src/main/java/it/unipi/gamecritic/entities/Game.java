@@ -16,4 +16,62 @@ public class Game {
     public Float user_score;
     public String img;
     public Vector<Review> top_reviews;
+
+    public Game(
+        Integer id,
+        String name,
+        Float user_score,
+        String description
+        ) {
+        this.id = id;
+        this.name = name;
+        this.user_score = user_score;
+        this.description = description;
+    }
+
+    public Game(
+        Integer id, 
+        String name, 
+        String release, 
+        Vector<String> publishers, 
+        Vector<String> developers, 
+        String genre, 
+        String perspective, 
+        String gameplay, 
+        String setting, 
+        String description, 
+        Float user_score, 
+        String img, 
+        Vector<Review> top_reviews
+        ) {
+        this.id = id;
+        this.name = name;
+        this.release = release;
+        this.publishers = publishers;
+        this.developers = developers;
+        this.genre = genre;
+        this.perspective = perspective;
+        this.gameplay = gameplay;
+        this.setting = setting;
+        this.description = description;
+        this.user_score = user_score;
+        this.img = img;
+        this.top_reviews = top_reviews;
+    }
+
+    public Game() {
+        id = null;
+        name = null;
+        release = null;
+        publishers = null;
+        developers = null;
+        genre = null;
+        perspective = null;
+        gameplay = null;
+        setting = null;
+        description = null;
+        user_score = null;
+        img = null;
+        top_reviews = null;
+    }
 }

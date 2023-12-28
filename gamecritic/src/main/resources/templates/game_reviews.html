@@ -16,7 +16,7 @@
                 <div class="card p-2 mt-3 aggregation-card shadow">
                     <div class="d-flex flex-row mb-4">
                         <div th:replace="~{fragments/score.html :: score_big(${avg_score})}"></div>
-                        <a class="fs-5 fw-bold text-light ms-4 my-auto" th:text="${game_name}" th:href="'/game/' + ${game_id}"></a>
+                        <a class="fs-5 fw-bold text-light ms-4 my-auto" th:text="${game_name}" th:href="'/game/' + ${#uris.escapePathSegment(game_name)}"></a>
                     </div>
                     <div th:replace="~{fragments/score.html :: score_distribution(${score_distribution})}"></div>
                 </div>

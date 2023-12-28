@@ -16,7 +16,7 @@
                 <div class="card p-2 mt-3 aggregation-card shadow">
                     <div class="d-flex flex-row mb-4">
                         <div th:replace="~{fragments/score.html :: score_big(${avg_score})}"></div>
-                        <a class="fs-1 fw-bold text-light ms-4 my-auto" th:text="${viewed_user_username}" th:href="'/user/' + ${viewed_user_username}"></a>
+                        <a class="fs-1 fw-bold text-light ms-4 my-auto" th:text="${viewed_user_username}" th:href="'/user/' + ${#uris.escapePathSegment(viewed_user_username)}"></a>
                     </div>
                     <div th:replace="~{fragments/score.html :: score_distribution(${score_distribution})}"></div>
                 </div>

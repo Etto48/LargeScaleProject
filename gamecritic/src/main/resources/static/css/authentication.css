@@ -1,11 +1,13 @@
-main {
-    margin-top: 15vh;
-    margin-bottom: 15vh;
+
+
+.main-wrapper {
+    height: 424px;
+    margin-top: calc(50vh - 424px / 2);
+    margin-bottom: calc(50vh - 424px / 2);
 }
 
 main.container {
-    max-width: 500px;
-    
+    max-width: 400px;
 }
 
 main a {
@@ -22,6 +24,7 @@ form.show {
 
 .form-swap-btn {
     border-radius: 5px 5px 0 0;
+    border: none;
     border-bottom: 4px solid transparent;
     transition: border-bottom 0.2s ease-in-out;
 }

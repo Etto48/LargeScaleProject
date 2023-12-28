@@ -29,13 +29,13 @@ public class User {
                         username = "Pippo";
                         password_hash = "5f4dcc3b5aa765d61d8327deb882cf99";
                         email = "pippo@gmail.com";
-                        image_data = "";
                         top_reviews = new Vector<it.unipi.gamecritic.entities.Review>()
                         {
                             {
                                 add(new it.unipi.gamecritic.entities.Review()
                                 {
                                     {
+                                        id = 0;
                                         game_id = 5;
                                         game = "Super Mario Bros";
                                         date = "2021-01-01";
@@ -47,6 +47,7 @@ public class User {
                                 add(new it.unipi.gamecritic.entities.Review()
                                 {
                                     {
+                                        id = 1;
                                         game_id = 6;
                                         game = "Super Mario Bros 2";
                                         date = "2021-01-01";
@@ -58,6 +59,7 @@ public class User {
                                 add(new it.unipi.gamecritic.entities.Review()
                                 {
                                     {
+                                        id = 2;
                                         game_id = 7;
                                         game = "Super Mario Bros 3";
                                         date = "2021-01-01";
@@ -76,7 +78,6 @@ public class User {
                         username = "Pluto";
                         password_hash = "5f4dcc3b5aa765d61d8327deb882cf99";
                         email = "pluto@gmail.com";
-                        image_data = "";
                     }
                 });
                 add(new it.unipi.gamecritic.entities.User()
@@ -85,7 +86,6 @@ public class User {
                         username = "Paperino";
                         password_hash = "5f4dcc3b5aa765d61d8327deb882cf99";
                         email = "paperino@gmail.com";
-                        image_data = "";
                     }
                 });
             }

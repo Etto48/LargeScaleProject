@@ -46,7 +46,6 @@ public class Authentication {
         user.password_hash = password;
         user.email = "";
         user.top_reviews = null;
-        user.image_data = "";
 
         session.setAttribute("user", user);
         
@@ -73,7 +72,6 @@ public class Authentication {
         user.password_hash = password;
         user.email = email;
         user.top_reviews = null;
-        user.image_data = "";
         
         session.setAttribute("user", user);
 
