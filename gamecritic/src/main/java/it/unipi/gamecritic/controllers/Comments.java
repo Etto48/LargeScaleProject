@@ -19,6 +19,7 @@ public class Comments {
         model.addAttribute("request", request);
         model.addAttribute("user", session.getAttribute("user"));
 
+        // TODO: get comments from database
         Vector<Comment> comments = new Vector<Comment>();
         comments.add(new Comment() {
             {

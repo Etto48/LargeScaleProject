@@ -2,7 +2,7 @@ function login() {
     var username = document.getElementById("username_login").value;
     var password = document.getElementById("password_login").value;
     $.ajax({
-        url: "/process_login",
+        url: "/api/login",
         type: "POST",
         data: {
             username: username,
@@ -36,7 +36,7 @@ function sign_up() {
     else 
     {
         $.ajax({
-            url: "/process_sign_up",
+            url: "/api/sign_up",
             type: "POST",
             data: {
                 username: username,

@@ -2,6 +2,8 @@
 // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
 var keys = {37: 1, 38: 1, 39: 1, 40: 1};
 
+var canScroll = true;
+
 function preventDefault(e) {
   e.preventDefault();
 }
@@ -26,6 +28,7 @@ var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewh
 
 // call this to Disable
 function disableScroll() {
+  canScroll = false;
   window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
   window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
   window.addEventListener('touchmove', preventDefault, wheelOpt); // mobile
@@ -34,8 +37,17 @@ function disableScroll() {
 
 // call this to Enable
 function enableScroll() {
+  canScroll = true;
   window.removeEventListener('DOMMouseScroll', preventDefault, false);
   window.removeEventListener(wheelEvent, preventDefault, wheelOpt); 
   window.removeEventListener('touchmove', preventDefault, wheelOpt);
   window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
+}
+
+function toggleScroll() {
+  if (canScroll) {
+    disableScroll();
+  } else {
+    enableScroll();
+  }
 }

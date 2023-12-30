@@ -60,6 +60,7 @@
 			</div>
 			<hr class="mx-3 mb-2 mt-0"/>
 			<div th:replace="~{fragments/review.html :: top_reviews(${game.top_reviews},'user')}"></div>
+			<div th:replace="~{fragments/review.html :: create_new(${game.name})}"></div>
 		</main>
 		<footer th:replace="~{fragments/general.html :: footer}"></footer>
   	</body>

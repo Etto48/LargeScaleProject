@@ -75,5 +75,28 @@
             <p class="my-auto p-2 mb-auto h-100" th:text="${review.quote}"></p>
             <hr/>
         </div>
+
+        <div class="create-new-review" th:fragment="create_new(game_name)" th:if="${user != null}">
+            <button class="btn btn-dark w-100" id="create-new-review-button" onclick="toggleNewReview()">
+                <i id="create-new-review-button-text" class="fs-1 bi bi-plus-circle-fill"></i>
+            </button>
+            <div id="new-review-form" class="card p-2 new-review-form">
+                <form>
+                    <div class="d-flex flex-row">
+                        <div th:replace="~{fragments/score.html :: score_big(score=5, id='new-review-score-display', format='int')}"></div>
+                        <div class="fs-5 fw-bold my-auto mx-2" id="new-review-comment" style="width: calc(100% - 7em);">Mixed</div>
+                        <button class="btn btn-dark ms-auto h-50"><i class="bi bi-x fs-2" onclick="toggleNewReview()"></i></button>
+                    </div>
+                    <input type="hidden" id="new-review-game" th:value="${game_name}"/>
+                    <input title="score" type="range" min="1" max="10" value="5" class="form-range" id="new-review-score"/>
+                    <textarea id="new-review-quote" class="form-control mb-2" th:placeholder="'Write here your review of ' + ${game_name}" rows="5" cols="100"></textarea>
+                    <button type="submit" class="btn btn-primary w-100">Create review</button>
+                </form>
+            </div>
+            <script src="/js/create_review.js"></script>
+            <script>
+                prepareReviewForm();
+            </script>
+        </div>
     </body>
 </html>

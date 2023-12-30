@@ -41,22 +41,26 @@ small {
     text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
 }
 
-.square-5 {
+.score-big {
     width: 5em;
     height: 5em;
 }
 
-.square-3 {
+.score-small {
     width: 3em;
     height: 3em;
 }
 
-.fs-score {
+.score-big span {
     font-size: 3em;
 }
 
-.fs-score-small {
+.score-small span {
     font-size: 2em;
+}
+
+.score-big, .score-small {
+    transition: background-color 0.2s ease-in-out;
 }
 
 .top-reviews {
@@ -100,6 +104,8 @@ div:has(.long-review.show-review)::after {
 
 #search-results {
     display: none;
+    max-height: 40vh;
+    overflow: auto;
     flex-direction: column;
     position: fixed;
     background-color: #212529;
@@ -147,6 +153,36 @@ div:has(.long-review.show-review)::after {
 #search-form #search-text {
     border-radius: 5px;
 }   
+
+.create-new-review {
+    width: calc(100% - 1em);
+    margin: 0.5em;
+}
+
+.create-new-review .new-review-form {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+}
+
+.create-new-review .new-review-form.show {
+    display: flex;
+}
+
+.create-new-review:has(.new-review-form.show)::after {
+    content: "";
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
 
 @media (min-width: 768px) {
     .top-reviews {

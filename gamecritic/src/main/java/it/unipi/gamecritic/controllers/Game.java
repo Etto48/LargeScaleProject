@@ -18,7 +18,8 @@ public class Game {
     public String game(@PathVariable(value="name") String name, Model model, HttpServletRequest request, HttpSession session) {
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
-        // do the query in mongodb
+       
+		// TODO: get the game from the db
         Vector<it.unipi.gamecritic.entities.Game> games = new Vector<it.unipi.gamecritic.entities.Game>();
 		games.add(new it.unipi.gamecritic.entities.Game() {
 			{
@@ -206,7 +207,8 @@ public class Game {
 	public String game_reviews(@PathVariable(value="name") String name, Model model, HttpServletRequest request, HttpSession session) {
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
-		// do the query in mongodb
+		
+		// TODO: get the reviews from the db
 		Vector<it.unipi.gamecritic.entities.Review> reviews = new Vector<it.unipi.gamecritic.entities.Review>();
 		reviews.add(new it.unipi.gamecritic.entities.Review() {
 			{

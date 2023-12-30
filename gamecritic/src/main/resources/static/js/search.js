@@ -4,6 +4,14 @@ function prepareSearch() {
         search();
     });
 
+    document.getElementById("search-text").addEventListener("input", function(event) {
+        if (document.getElementById("search-text").value.length > 0) {
+            search();
+        } else {
+            hideSearchResults();
+        }
+    });
+
     document.addEventListener("click", function(event) {
         if (!event.target.closest("#search-results")) {
             hideSearchResults();
@@ -28,7 +36,7 @@ function prepareSearch() {
 
 function search() {
     $.ajax({
-        url: "/search",
+        url: "/api/search",
         type: "GET",
         data: {
             query: document.getElementById("search-text").value
@@ -60,17 +68,28 @@ function handleSearchResults(data) {
     
     var result = "";
 
-    result += "<div class=\"search-header\">Games</div><hr class=\"mx-0 mt-0 mb-1\"/>";
+    if (data.games.length != 0)
+    {
+        result += "<div class=\"search-header\">Games</div><hr class=\"mx-0 mt-0 mb-1\"/>";
 
-    data.games.forEach(function(game) {
-        result += "<a class=\"game-result search-result\" href=\"/game/" + encodeURIComponent(game.name) + "\">" + sanitize(game.name) + "</a>";
-    });
+        data.games.forEach(function(game) {
+            result += "<a class=\"game-result search-result\" href=\"/game/" + encodeURIComponent(game.name) + "\">" + sanitize(game.name) + "</a>";
+        });
+    }
 
-    result += "<div class=\"search-header\">Users</div><hr class=\"mx-0 mt-0 mb-1\"/>";
+    if (data.users.length != 0)
+    {
+        result += "<div class=\"search-header\">Users</div><hr class=\"mx-0 mt-0 mb-1\"/>";
 
-    data.users.forEach(function(user) {
-        result += "<a class=\"user-result search-result\" href=\"/user/" + encodeURIComponent(user.username) + "\"><img src=\"/user_image/"+ encodeURIComponent(user.username)+".png\" alt=\"User Image\"></image>" + sanitize(user.username) + "</a>";
-    });
+        data.users.forEach(function(user) {
+            result += "<a class=\"user-result search-result\" href=\"/user/" + encodeURIComponent(user.username) + "\"><img src=\"/user_image/"+ encodeURIComponent(user.username)+".png\" alt=\"User Image\"></image>" + sanitize(user.username) + "</a>";
+        });
+    }
+
+    if (data.games.length == 0 && data.users.length == 0)
+    {
+        result += "<div class=\"search-header\">No Results</div><hr class=\"mx-0 mt-0 mb-1\"/>";
+    }
 
     document.getElementById("search-results").innerHTML = result;
     document.getElementById("search-results").classList.add("show");

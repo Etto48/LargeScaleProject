@@ -1,4 +1,4 @@
-package it.unipi.gamecritic.controllers;
+package it.unipi.gamecritic.controllers.api;
 
 import java.util.List;
 import java.util.Vector;
@@ -22,9 +22,15 @@ public class Search {
         public List<it.unipi.gamecritic.entities.Game> games;
     }
 
-    @RequestMapping(value = "/search", params = "query", produces = "application/json")
+    @RequestMapping(value = "/api/search", produces = "application/json")
     @ResponseBody
-    public String search(HttpServletRequest request, HttpSession session, @RequestParam("query") String query) {
+    public String search(
+        @RequestParam(value = "query", required = true) String query,
+        HttpServletRequest request, 
+        HttpSession session) {
+
+
+        // TODO: search for users and games in the database
         List<it.unipi.gamecritic.entities.User> users = new Vector<>();
         List<it.unipi.gamecritic.entities.Game> games = new Vector<>();
 
@@ -67,6 +73,18 @@ public class Search {
             9.5f,
             "The Last of Us Part II is a 2020 action-adventure game developed by Naughty Dog and published by Sony Interactive Entertainment for the PlayStation 4. Set five years after The Last of Us (2013), the game focuses on two playable characters in a post-apocalyptic United States whose lives intertwine: Ellie, who sets out for revenge after suffering a tragedy, and Abby, a soldier who becomes involved in a conflict with a cult."
         ));
+
+        // filter results
+        for (int i = users.size(); i > 0; i--) {
+            if (!users.get(i - 1).username.toLowerCase().contains(query.toLowerCase())) {
+                users.remove(i - 1);
+            }
+        }
+        for (int i = games.size(); i > 0; i--) {
+            if (!games.get(i - 1).name.toLowerCase().contains(query.toLowerCase())) {
+                games.remove(i - 1);
+            }
+        }
 
         SearchResponse result = new SearchResponse();
         result.users = users;

@@ -20,6 +20,7 @@ public class User {
         model.addAttribute("request", request);
         model.addAttribute("user", session.getAttribute("user"));
 
+        // TODO: get user from database
         Vector<it.unipi.gamecritic.entities.User> users = new Vector<it.unipi.gamecritic.entities.User>()
         {
             {
@@ -113,6 +114,8 @@ public class User {
         model.addAttribute("request", request);
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("viewed_user_username", username);
+
+        // TODO: get reviews from database
         Vector<Review> reviews = new Vector<Review>()
         {
             {

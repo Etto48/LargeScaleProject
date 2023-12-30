@@ -2,15 +2,16 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
     <body>
-        <div th:fragment="score_big(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto square-5" th:classappend="${score > 4 ? score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}">
-            <span class="fs-score" th:text="${#numbers.formatDecimal(score,0,1)}"></span>
+        <div th:fragment="score_big(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-big" th:classappend="${score > 3 ? score > 6 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}" th:attrappend="id=${id != null ? id + '-bg' : ''}">
+            <span th:if="${format == none}" th:text="${#numbers.formatDecimal(score,0,1)}" th:attrappend="id=${id != null ? id : ''}"></span>
+            <span th:if="${format == 'int'}" th:text="${score}" th:attrappend="id=${id != null ? id : ''}"></span>
         </div>
 
-        <div th:fragment="score_small(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto square-3" th:classappend="${score > 4 ? score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}">
-            <span class="fs-score-small" th:text="${score}"></span>
+        <div th:fragment="score_small(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-small" th:classappend="${score > 3 ? score > 6 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}">
+            <span th:text="${score}"></span>
         </div>
 
-        <div th:fragment="score_bg(score)" class="position-fixed w-100 score-bg shadow" th:classappend="${score == null ? 'bg-secondary' : score > 4 ? score > 7 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}"></div>
+        <div th:fragment="score_bg(score)" class="position-fixed w-100 score-bg" th:classappend="${score == null ? 'bg-secondary' : score > 3 ? score > 6 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}"></div>
         
         <div th:fragment="score_distribution(distribution)" class="w-100" style="height: 200px;">
             <canvas id="score-distribution-chart" th:attr="data-distribution=${distribution}"></canvas>

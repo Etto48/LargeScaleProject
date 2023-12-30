@@ -17,6 +17,7 @@ public class Index {
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
 
+		// TODO: get games from database
 		Vector<Game> games = new Vector<Game>();
 		games.add(new Game() {
 			{

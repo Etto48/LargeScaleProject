@@ -24,6 +24,26 @@ span.row span {
     flex-direction: column;
 }
 
+#new-review-quote {
+    resize: none;
+}
+
+#new-review-score::-webkit-slider-runnable-track {
+    background: linear-gradient(to right, #d33242, #f9c000, #308752);
+}
+
+#new-review-score::-moz-range-track {
+    background: linear-gradient(to right, #d33242, #f9c000, #308752);
+}
+
+#create-new-review-button:has(.bi-check-circle-fill) {
+    opacity: 1;
+}
+
+#create-new-review-button-text.bi-check-circle-fill{
+    color: #308752;
+}
+
 @media (min-width: 768px) {
 
     .game-image-container {

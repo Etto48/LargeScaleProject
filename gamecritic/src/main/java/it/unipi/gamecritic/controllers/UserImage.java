@@ -13,6 +13,7 @@ public class UserImage {
     @RequestMapping(value = "/user_image/{username}.png", produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
     public byte[] userImage(@PathVariable(value="username") String username) {
+        // TODO: get user image from database
         Vector<String> example = new Vector<String>()
         {
             {
