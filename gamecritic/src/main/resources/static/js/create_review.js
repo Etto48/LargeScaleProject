@@ -60,7 +60,7 @@ function createReview() {
         data: {
             game: document.getElementById("new-review-game").value,
             score: document.getElementById("new-review-score").value,
-            quote: document.getElementById("new-review-comment").innerHTML
+            quote: document.getElementById("new-review-quote").value
         },
         success: function (data) {
             closeNewReview();
