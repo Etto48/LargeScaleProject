@@ -85,7 +85,7 @@
                     <div class="d-flex flex-row">
                         <div th:replace="~{fragments/score.html :: score_big(score=5, id='new-review-score-display', format='int')}"></div>
                         <div class="fs-5 fw-bold my-auto mx-2" id="new-review-comment" style="width: calc(100% - 7em);">Mixed</div>
-                        <button class="btn btn-dark ms-auto h-50"><i class="bi bi-x fs-2" onclick="toggleNewReview()"></i></button>
+                        <button class="btn btn-dark ms-auto h-50" type="button"><i class="bi bi-x fs-2" onclick="toggleNewReview();"></i></button>
                     </div>
                     <input type="hidden" id="new-review-game" th:value="${game_name}"/>
                     <input title="score" type="range" min="1" max="10" value="5" class="form-range" id="new-review-score"/>

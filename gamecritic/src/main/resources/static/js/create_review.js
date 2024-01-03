@@ -2,13 +2,15 @@ function toggleNewReview() {
     document.getElementById("new-review-form").classList.toggle("show");
 }
 
-function closeNewReview() {
+function closeNewReview(posted) {
     document.getElementById("new-review-form").classList.remove("show");
-    var button = document.getElementById("create-new-review-button");
-    var button_text = document.getElementById("create-new-review-button-text");
-    button_text.classList.remove("bi-plus-circle-fill");
-    button_text.classList.add("bi-check-circle-fill");
-    button.disabled = true;
+    if (posted) {
+        var button = document.getElementById("create-new-review-button");
+        var button_text = document.getElementById("create-new-review-button-text");
+        button_text.classList.remove("bi-plus-circle-fill");
+        button_text.classList.add("bi-check-circle-fill");
+        button.disabled = true;   
+    }
 }
 
 function enableSlider() {
@@ -63,7 +65,7 @@ function createReview() {
             quote: document.getElementById("new-review-quote").value
         },
         success: function (data) {
-            closeNewReview();
+            closeNewReview(true);
         },
         error: function (data) {
             alert("Error creating review");
