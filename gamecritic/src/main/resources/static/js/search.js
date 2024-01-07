@@ -81,4 +81,5 @@ function resizeSearchResults() {
     var searchText = document.getElementById("search-text");
 
     searchResults.style.width = searchText.clientWidth + "px";
+    searchResults.style.left = searchText.offsetLeft + "px";
 }

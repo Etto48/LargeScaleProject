@@ -2,6 +2,26 @@
     height: 38vh;
 }
 
+#go-to-top-div
+{
+    position: fixed;
+    bottom: -100px; 
+    right: 10px; 
+    height: 4em; 
+    width: 4em;
+    transition: bottom 0.2s ease-in-out;
+}
+
+#go-to-top-div.show 
+{
+    bottom: 10px;
+}
+
+#go-to-top-div button i 
+{
+    font-size: 2em;
+}
+
 .review-actions button {
     font-size: 14px;
 }
@@ -154,34 +174,12 @@ div:has(.long-review.show-review)::after {
     border-radius: 5px;
 }   
 
-.create-new-review {
-    width: calc(100% - 1em);
-    margin: 0.5em;
+.underline-on-hover {
+    text-decoration: none;
 }
 
-.create-new-review .new-review-form {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10;
-    transform: translate(-50%, -50%);
-    flex-direction: column;
-}
-
-.create-new-review .new-review-form.show {
-    display: flex;
-}
-
-.create-new-review:has(.new-review-form.show)::after {
-    content: "";
-    position: fixed;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+.underline-on-hover:hover {
+    text-decoration: underline;
 }
 
 @media (min-width: 768px) {

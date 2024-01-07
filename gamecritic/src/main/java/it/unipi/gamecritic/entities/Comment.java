@@ -4,6 +4,7 @@ import java.util.Vector;
 
 public class Comment {
     public String author;
+    public Integer id;
     public Integer review_id;
     public String quote;
     public Vector<Comment> comments;

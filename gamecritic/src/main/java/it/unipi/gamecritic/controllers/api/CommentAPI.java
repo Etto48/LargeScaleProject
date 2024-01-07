@@ -8,12 +8,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.google.gson.Gson;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CommentAPI {
-    @RequestMapping(value = "/api/comment/new", method = RequestMethod.POST)
+    static Integer id = 69; // TODO: get the id of the new comment from the database
+    public class NewCommentInfo {
+        public Integer id;
+        public String author;
+        public NewCommentInfo(Integer id, String author) {
+            this.id = id;
+            this.author = author;
+        }
+    }
+
+    @RequestMapping(value = "/api/comment/new", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String new_comment(
         @RequestParam(value = "review_id", required = true) Integer review_id,
@@ -31,7 +43,9 @@ public class CommentAPI {
             // TODO: insert the comment in the database
             System.out.println("New comment for review " + review_id + " (in response to: "+parent_id+") from \"" + user.username + "\":\nquote: \"" + quote + "\"");
 
-            return "success";
+            NewCommentInfo info = new NewCommentInfo(id++, user.username);
+            Gson gson = new Gson();
+            return gson.toJson(info);
         }
     }
 }

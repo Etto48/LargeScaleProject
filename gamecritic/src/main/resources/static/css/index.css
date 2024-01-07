@@ -45,6 +45,25 @@ a.card:hover::after
     animation: loading 1s infinite linear;
 }
 
+nav button.btn:disabled
+{
+    opacity: 1;
+    border-bottom: 4px solid #ffffff;
+    
+}
+
+nav button.btn
+{
+    border: none;
+    border-bottom: 4px solid transparent;
+    border-radius: 5px 5px 0 0;
+}
+
+nav button.btn:not(:disabled)
+{
+    opacity: 0.5;
+}
+
 @media (min-width: 768px)
 {
     #dummy-loading-game div.img

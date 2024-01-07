@@ -23,8 +23,8 @@ public class GameAPI {
         HttpServletRequest request,
         HttpSession session) {
         
-        Integer num_results = 10;
-        Integer offset = page * num_results;
+        //Integer num_results = 10;
+        //Integer offset = page * num_results;
 
         if (kind.equals("hottest"))
         {

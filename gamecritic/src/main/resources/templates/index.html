@@ -8,6 +8,17 @@
     </head>
     <body class="d-flex flex-column h-100">
         <header th:replace="~{fragments/general.html :: header}"></header>
+        <nav class="d-flex flex-column pt-2 pb-4">
+            <ul class="nav nav-pills flex-row justify-content-center mx-auto" id="nav">
+                <li><button class="kind-selector btn btn-dark" disabled id="hottest" onclick="setKind('hottest')">
+                    <i class="bi bi-fire me-2"></i>Hottest</button></li>
+                <li><button class="kind-selector btn btn-dark" id="newest" onclick="setKind('newest')">
+                    <i class="bi bi-asterisk me-2"></i>Newest</button></li>
+                <li><button class="kind-selector btn btn-dark" id="best" onclick="setKind('best')">
+                    <i class="bi bi-bar-chart-line-fill me-2"></i>Best</button></li>
+            </ul>
+            <hr class="mt-0 mx-3">
+        </nav>
         <main class="container flex-column" id="main">
             <script id="game-template" type="text/template">
                 <article>
@@ -40,5 +51,6 @@
                 </div>
             </article>
         </main>
+        <div th:replace="~{fragments/general.html :: go_to_top}"></div>
     </body>
 </html>

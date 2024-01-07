@@ -23,6 +23,7 @@ public class Comments {
         Vector<Comment> comments = new Vector<Comment>();
         comments.add(new Comment() {
             {
+                id = 0;
                 author = "Pippo";
                 review_id = 0;
                 quote = "Yeah pretty much";
@@ -30,6 +31,7 @@ public class Comments {
                     {
                         add(new Comment() {
                             {
+                                id = 1;
                                 author = "Pluto";
                                 review_id = 0;
                                 quote = "I agree";
@@ -37,6 +39,7 @@ public class Comments {
                                     {
                                         add(new Comment() {
                                             {
+                                                id = 2;
                                                 author = "Paperino";
                                                 review_id = 0;
                                                 quote = "I disagree";
@@ -45,6 +48,7 @@ public class Comments {
                                         });
                                         add(new Comment() {
                                             {
+                                                id = 3;
                                                 author = "Topolino";
                                                 review_id = 0;
                                                 quote = "I agree";
@@ -57,6 +61,7 @@ public class Comments {
                         });
                         add(new Comment() {
                             {
+                                id = 4;
                                 author = "Paperino";
                                 review_id = 0;
                                 quote = "I am confused";
@@ -69,6 +74,7 @@ public class Comments {
         });
         comments.add(new Comment() {
             {
+                id = 5;
                 author = "Pluto";
                 review_id = 0;
                 quote = "My opinion is different";

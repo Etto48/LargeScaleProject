@@ -35,13 +35,13 @@
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-lg-0">
                     <li class="d-flex flex-row">
                         <img src="/favicon_bw_light.svg" width="30" height="30" class="d-inline-block align-top my-auto" alt="">
-                        <a href="/" class="nav-link px-2 py-0 my-auto" th:classappend="${request.requestURI == '/' ? 'text-secondary' : 'text-light'}">
+                        <a href="/" class="nav-link px-2 py-0 my-auto fw-bold" th:classappend="${request.requestURI == '/' ? 'text-secondary' : 'text-light'}">
                             GameCritic
                         </a>
                     </li>
                 </ul>
-                <form id="search-form" class="me-2 col" role="search" autocomplete="off">
-                    <input id="search-text" type="search" class="form-control" placeholder="Search..." aria-label="Search" autocomplete="off">
+                <form id="search-form" class="me-3 ms-1 col" role="search" autocomplete="off">
+                    <input id="search-text" type="search" class="form-control mx-auto" placeholder="Search..." aria-label="Search" autocomplete="off">
                     <div id="search-results"></div>
                 </form>
                 <script src="/js/search.js"></script>
@@ -123,6 +123,21 @@
                     </a>
                 </div>
             </div>
+            <div th:replace="~{fragments/general.html :: go_to_top}"></div>
         </footer>
+
+        <div th:fragment="go_to_top" id="go-to-top-div">
+            <button class="shadow btn btn-dark border rounded-circle w-100 h-100" id="go-to-top-button" onclick="window.scroll({top: 0, behavior: 'smooth'});">
+                <i class="bi bi-arrow-up-short"></i>
+            </button>
+            <script>
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 100)
+                        document.getElementById('go-to-top-div').classList.add('show');
+                    else
+                        document.getElementById('go-to-top-div').classList.remove('show');
+                });
+            </script>
+        </div>
     </body>
 </html>
