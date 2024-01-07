@@ -16,9 +16,5 @@ public class User {
     }
 
     public User() {
-        username = null;
-        password_hash = null;
-        email = null;
-        top_reviews = null;
     }
 }

@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -15,14 +16,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class Search {
+public class SearchAPI {
     
     public class SearchResponse {
         public List<it.unipi.gamecritic.entities.User> users;
         public List<it.unipi.gamecritic.entities.Game> games;
     }
 
-    @RequestMapping(value = "/api/search", produces = "application/json")
+    @RequestMapping(value = "/api/search", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String search(
         @RequestParam(value = "query", required = true) String query,
@@ -92,8 +93,6 @@ public class Search {
 
         //convert to json
         Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(result);
-
-        return json;
+        return gson.toJson(result);
     }
 }

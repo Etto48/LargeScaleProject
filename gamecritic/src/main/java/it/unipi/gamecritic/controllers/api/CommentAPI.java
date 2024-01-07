@@ -3,6 +3,7 @@ package it.unipi.gamecritic.controllers.api;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,10 +12,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class Comment {
-    @RequestMapping(value = "/api/comment")
+public class CommentAPI {
+    @RequestMapping(value = "/api/comment/new", method = RequestMethod.POST)
     @ResponseBody
-    public String comment(
+    public String new_comment(
         @RequestParam(value = "review_id", required = true) Integer review_id,
         @RequestParam(value = "parent_id", required = false) Integer parent_id,
         @RequestParam(value = "quote", required = true) String quote,

@@ -50,48 +50,22 @@ function search() {
     });
 }
 
-function sanitize(string) {
-    string = string.toString();
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#x27;',
-        "/": '&#x2F;',
-    };
-    const reg = /[&<>"'/]/ig;
-    return string.replace(reg, (match)=>(map[match]));
-}
-
 function handleSearchResults(data) {
-    
-    var result = "";
 
-    if (data.games.length != 0)
-    {
-        result += "<div class=\"search-header\">Games</div><hr class=\"mx-0 mt-0 mb-1\"/>";
+    var template = Handlebars.compile(document.getElementById("search-result-template").innerHTML);
+    data.games.forEach(function (game) {
+        var url = "/game/" + encodeURIComponent(game.name);
+        game.url = url;
+    });
+    data.users.forEach(function (user) {
+        var url = "/user/" + encodeURIComponent(user.username);
+        user.url = url;
+        var img = "/user_image/" + encodeURIComponent(user.username) + ".png";
+        user.img = img;
+    });
+    var html = template({games: data.games, users: data.users})
 
-        data.games.forEach(function(game) {
-            result += "<a class=\"game-result search-result\" href=\"/game/" + encodeURIComponent(game.name) + "\">" + sanitize(game.name) + "</a>";
-        });
-    }
-
-    if (data.users.length != 0)
-    {
-        result += "<div class=\"search-header\">Users</div><hr class=\"mx-0 mt-0 mb-1\"/>";
-
-        data.users.forEach(function(user) {
-            result += "<a class=\"user-result search-result\" href=\"/user/" + encodeURIComponent(user.username) + "\"><img src=\"/user_image/"+ encodeURIComponent(user.username)+".png\" alt=\"User Image\"></image>" + sanitize(user.username) + "</a>";
-        });
-    }
-
-    if (data.games.length == 0 && data.users.length == 0)
-    {
-        result += "<div class=\"search-header\">No Results</div><hr class=\"mx-0 mt-0 mb-1\"/>";
-    }
-
-    document.getElementById("search-results").innerHTML = result;
+    document.getElementById("search-results").innerHTML = html;
     document.getElementById("search-results").classList.add("show");
     document.getElementById("search-form").classList.add("list");
 }

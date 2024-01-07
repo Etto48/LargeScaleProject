@@ -12,14 +12,21 @@ div.comment-body:hover {
     box-shadow: 0 5px 10px 0 rgb(0, 0, 0, 0.2);
 }
 
-div.comment-body .respond-button {
+.respond-button {
     opacity: 0.1;
-    height: fit-content;
-    width: fit-content;
     transition: opacity 0.2s ease-in-out;
 }
 
+div.comment-body .respond-button {
+    height: fit-content;
+    width: fit-content;
+}
+
 div.comment-body:hover .respond-button {
+    opacity: 1;
+}
+
+main .respond-button:hover {
     opacity: 1;
 }
 

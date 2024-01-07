@@ -58,7 +58,7 @@ function enableSlider() {
 function createReview() {
     $.ajax({
         type: "POST",
-        url: "/api/review",
+        url: "/api/review/new",
         data: {
             game: document.getElementById("new-review-game").value,
             score: document.getElementById("new-review-score").value,

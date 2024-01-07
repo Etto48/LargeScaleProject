@@ -60,18 +60,5 @@ public class Game {
     }
 
     public Game() {
-        id = null;
-        name = null;
-        release = null;
-        publishers = null;
-        developers = null;
-        genre = null;
-        perspective = null;
-        gameplay = null;
-        setting = null;
-        description = null;
-        user_score = null;
-        img = null;
-        top_reviews = null;
     }
 }

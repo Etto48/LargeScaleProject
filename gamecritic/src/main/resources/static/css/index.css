@@ -20,3 +20,36 @@ a.card:hover::after
 {
     background-color: rgba(255, 255, 255, 0.05);
 }
+
+@keyframes loading
+{
+    0%
+    {
+        background-position: 0 0;
+    }
+    100%
+    {
+        background-position: 100% 0;
+    }
+}
+
+#dummy-loading-game div.img
+{
+    aspect-ratio: 2/3;
+    width: 100%;
+}
+
+#dummy-loading-game .loading {
+    background: linear-gradient(90deg, #212529 0px, #2c3034 25%, #212529 50%, #2c3034 75%, #212529 100%);
+    background-size: 200% 100%;
+    animation: loading 1s infinite linear;
+}
+
+@media (min-width: 768px)
+{
+    #dummy-loading-game div.img
+    {
+        height: 400px;
+        width: unset;
+    }
+}

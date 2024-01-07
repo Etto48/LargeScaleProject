@@ -7,8 +7,44 @@
             <span th:if="${format == 'int'}" th:text="${score}" th:attrappend="id=${id != null ? id : ''}"></span>
         </div>
 
+        <div th:fragment="score_big_empty" class="loading ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-big">
+            <span></span>
+        </div>
+
+        <div th:fragment="score_big_js" class="
+        {{#score_good}}
+            bg-success text-dark
+        {{/score_good}}
+        {{#score_mid}}
+            bg-warning text-dark
+        {{/score_mid}}
+        {{#score_bad}}
+            bg-danger text-light
+        {{/score_bad}}
+        ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-big">
+            <span>{{game.user_score}}</span>
+        </div>
+
         <div th:fragment="score_small(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-small" th:classappend="${score > 3 ? score > 6 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}">
             <span th:text="${score}"></span>
+        </div>
+
+        <div th:fragment="score_small_empty" class="loading ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-small">
+            <span></span>
+        </div>
+
+        <div th:fragment="score_small_js" class="
+        {{#score_good}}
+            bg-success text-dark
+        {{/score_good}}
+        {{#score_mid}}
+            bg-warning text-dark
+        {{/score_mid}}
+        {{#score_bad}}
+            bg-danger text-light
+        {{/score_bad}}
+        ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-small">
+            <span>{{review.score}}</span>
         </div>
 
         <div th:fragment="score_bg(score)" class="position-fixed w-100 score-bg" th:classappend="${score == null ? 'bg-secondary' : score > 3 ? score > 6 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}"></div>

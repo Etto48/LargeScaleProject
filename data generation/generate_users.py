@@ -19,12 +19,8 @@ def gen_mail(username):
     providers = ["gmail", "yahoo", "outlook", "hotmail"]
     return f"{username}@{random.choice(providers)}.com"
 
-def gen_password_hash():
-    possible_passwords = [
-        "password1234",
-        "abcdefgh1234",
-    ]
-    h = hashlib.sha256(random.choice(possible_passwords).encode()).digest()
+def gen_password_hash(username: str):
+    h = hashlib.sha256(username.encode()).digest()
     h = base64.b64encode(h).decode()
     return h
 
@@ -65,7 +61,7 @@ def main():
         user = {}
         user["username"] = username
         user["email"] = gen_mail(username)
-        user["password_hash"] = gen_password_hash()
+        user["password_hash"] = gen_password_hash(str(username))
         user["image"] = gen_image_data(username, args.image_cache)
         user["top_reviews"] = []
         users.append(user)
