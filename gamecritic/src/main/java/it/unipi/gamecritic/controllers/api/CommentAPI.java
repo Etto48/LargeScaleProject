@@ -34,7 +34,7 @@ public class CommentAPI {
         HttpServletRequest request,
         HttpSession session) {
             
-        it.unipi.gamecritic.entities.User user = (it.unipi.gamecritic.entities.User) session.getAttribute("user");
+        it.unipi.gamecritic.entities.user.User user = (it.unipi.gamecritic.entities.user.User) session.getAttribute("user");
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in to comment");
         }

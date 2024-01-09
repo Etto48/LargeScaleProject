@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+  	<head>
+		<meta th:replace="~{fragments/general.html :: head}"/>
+		<title th:text="'GameCritic - Company Panel - ' + ${company.username}"></title>
+		<link rel="stylesheet" href="/css/company_panel.css">
+		<script src="/js/company_panel.js"></script>
+	</head>
+	<body class="d-flex flex-column h-100">
+        <header th:replace="~{fragments/general.html :: header}"></header>
+		<nav class="d-flex flex-column pt-2 pb-4">
+            <ul class="nav nav-pills flex-row justify-content-center mx-auto" id="nav">
+                <li><button class="kind-selector btn btn-dark" disabled id="edit" onclick="setActiveForm('edit')">
+                    <i class="bi bi-pencil-fill me-2"></i>Edit</button></li>
+                <li><button class="kind-selector btn btn-dark" id="publish" onclick="setActiveForm('publish')">
+                    <i class="bi bi-plus-circle-fill me-2"></i>Publish</button></li>
+                <li><button class="kind-selector btn btn-dark" id="delete" onclick="setActiveForm('delete')">
+                    <i class="bi bi-trash-fill me-2"></i>Delete</button></li>
+            </ul>
+            <hr class="mt-0 mx-3">
+        </nav>
+		<main id="main" class="container d-flex flex-column align-items-center">
+			<form id="edit-form" class="show w-100 flex-column">
+				<select id="game-name-edit" class="form-select" aria-label="Game Name">
+					<option value="" disabled selected>Game Name</option>
+					<option th:each="game : ${games}" th:value="${game.name}" th:text="${game.name}"></option>
+				</select>
+				<textarea id="game-description-edit" class="form-control" placeholder="Game Description"></textarea>
+				<input id="game-img-edit" type="url" class="form-control" placeholder="Game Image URL"/>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-publishers-edit','Add a publisher')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-developers-edit','Add a developer')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-platforms-edit','Add a platform')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-genres-edit','Add a genre')}"></div>
+				<input id="game-release-date-edit" type="text" class="form-control" placeholder="Game Release Date" onfocus="(this.type='date')" onblur="if(this.value==''){this.type='text'}"/>
+				<input type="submit" class="btn btn-primary" value="Edit"/>
+			</form>
+			<form id="publish-form" class="w-100 flex-column">
+				<input id="game-name-publish" type="text" class="form-control" placeholder="Game Name"/>
+				<textarea id="game-description-publish" class="form-control" placeholder="Game Description"></textarea>
+				<input id="game-img-edit" type="url" class="form-control" placeholder="Game Image URL"/>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-publishers-publish','Add a publisher')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-developers-publish','Add a developer')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-platforms-publish','Add a platform')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-genres-publish','Add a genre')}"></div>
+				<input id="game-release-date-publish" type="text" class="form-control" placeholder="Game Release Date" onfocus="(this.type='date')" onblur="if(this.value==''){this.type='text'}"/>
+				<input type="submit" class="btn btn-primary" value="Publish"/>
+			</form>
+			<form id="delete-form" class="w-100 flex-column">
+				<select id="game-name-delete" class="form-select">
+					<option value="" disabled selected>Game Name</option>
+					<option th:each="game : ${games}" th:text="${game.name}"></option>
+				</select>
+				<input type="submit" class="btn btn-primary" value="Delete"/>
+			</form>
+		</main>
+		<script>
+			setupForms();
+		</script>
+        <footer th:replace="~{fragments/general.html :: footer}"></footer>
+    </body>
+</html>

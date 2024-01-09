@@ -1,6 +1,8 @@
-package it.unipi.gamecritic.entities;
+package it.unipi.gamecritic.entities.user;
 
 import java.util.Vector;
+
+import it.unipi.gamecritic.entities.Review;
 
 public class User {
     public String username;
@@ -16,5 +18,9 @@ public class User {
     }
 
     public User() {
+    }
+
+    public String getAccountType() {
+        return "User";
     }
 }

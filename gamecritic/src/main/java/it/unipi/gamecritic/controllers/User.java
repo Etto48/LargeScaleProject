@@ -21,10 +21,10 @@ public class User {
         model.addAttribute("user", session.getAttribute("user"));
 
         // TODO: get user from database
-        Vector<it.unipi.gamecritic.entities.User> users = new Vector<it.unipi.gamecritic.entities.User>()
+        Vector<it.unipi.gamecritic.entities.user.User> users = new Vector<it.unipi.gamecritic.entities.user.User>()
         {
             {
-                add(new it.unipi.gamecritic.entities.User()
+                add(new it.unipi.gamecritic.entities.user.User()
                 {
                     {
                         username = "Pippo";
@@ -73,7 +73,7 @@ public class User {
                         };
                     }
                 });
-                add(new it.unipi.gamecritic.entities.User()
+                add(new it.unipi.gamecritic.entities.user.User()
                 {
                     {
                         username = "Pluto";
@@ -81,7 +81,7 @@ public class User {
                         email = "pluto@gmail.com";
                     }
                 });
-                add(new it.unipi.gamecritic.entities.User()
+                add(new it.unipi.gamecritic.entities.user.User()
                 {
                     {
                         username = "Paperino";
@@ -91,7 +91,7 @@ public class User {
                 });
             }
         };
-        for (it.unipi.gamecritic.entities.User user : users) {
+        for (it.unipi.gamecritic.entities.user.User user : users) {
             if (user.username.equals(username)) {
                 model.addAttribute("viewed_user", user);
                 Float avg_top_score = 0f;

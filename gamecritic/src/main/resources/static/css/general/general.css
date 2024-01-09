@@ -1,5 +1,12 @@
+@import url("/css/general/interfaces/vector_input.css");
+
 .score-bg {
     height: 38vh;
+}
+
+textarea
+{
+    resize: none;
 }
 
 #go-to-top-div
@@ -180,6 +187,25 @@ div:has(.long-review.show-review)::after {
 
 .underline-on-hover:hover {
     text-decoration: underline;
+}
+
+nav button.btn:disabled
+{
+    opacity: 1;
+    border-bottom: 4px solid #ffffff;
+    
+}
+
+nav button.btn
+{
+    border: none;
+    border-bottom: 4px solid transparent;
+    border-radius: 5px 5px 0 0;
+}
+
+nav button.btn:not(:disabled)
+{
+    opacity: 0.5;
 }
 
 @media (min-width: 768px) {

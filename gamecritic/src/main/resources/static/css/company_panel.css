@@ -1,0 +1,20 @@
+main form 
+{
+    display: none;
+}
+
+main form.show 
+{
+    display: flex;
+}
+
+main form
+{
+    max-width: 600px;
+}
+
+form>select, form>input, form>textarea, form>.vector-input
+{
+    margin: 5px;
+    width: 100%;
+}

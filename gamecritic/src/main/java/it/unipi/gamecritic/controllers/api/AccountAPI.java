@@ -23,15 +23,27 @@ public class AccountAPI {
         @RequestParam(value = "password", required = true) String password) {
         
         // TODO: check if username and password are valid
-
-        it.unipi.gamecritic.entities.User user = new it.unipi.gamecritic.entities.User();
+        
+        it.unipi.gamecritic.entities.user.User user = null;
+        if(username.equals("company"))
+        {
+            user = new it.unipi.gamecritic.entities.user.Company();
+        }
+        else if (username.equals("admin"))
+        {
+            user = new it.unipi.gamecritic.entities.user.Admin();
+        }
+        else
+        {
+            user = new it.unipi.gamecritic.entities.user.User();
+        }
+        System.err.println(username);
         user.username = username;
         user.password_hash = password;
         user.email = "";
         user.top_reviews = null;
 
-        session.setAttribute("user", user);
-        
+        session.setAttribute("user", user);        
         
         return "success";
     }
@@ -50,7 +62,7 @@ public class AccountAPI {
         // TODO: check if username and password are valid
         // TODO: insert user in database
 
-        it.unipi.gamecritic.entities.User user = new it.unipi.gamecritic.entities.User();
+        it.unipi.gamecritic.entities.user.User user = new it.unipi.gamecritic.entities.user.User();
         user.username = username;
         user.password_hash = password;
         user.email = email;

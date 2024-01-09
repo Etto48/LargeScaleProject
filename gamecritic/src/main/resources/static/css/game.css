@@ -24,10 +24,6 @@ span.row span {
     flex-direction: column;
 }
 
-#new-review-quote {
-    resize: none;
-}
-
 #new-review-score::-webkit-slider-runnable-track {
     background: linear-gradient(to right, #d33242, #f9c000, #308752);
 }

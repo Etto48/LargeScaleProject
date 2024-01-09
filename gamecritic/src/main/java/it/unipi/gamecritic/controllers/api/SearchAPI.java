@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpSession;
 public class SearchAPI {
     
     public class SearchResponse {
-        public List<it.unipi.gamecritic.entities.User> users;
+        public List<it.unipi.gamecritic.entities.user.User> users;
         public List<it.unipi.gamecritic.entities.Game> games;
     }
 
@@ -32,22 +32,22 @@ public class SearchAPI {
 
 
         // TODO: search for users and games in the database
-        List<it.unipi.gamecritic.entities.User> users = new Vector<>();
+        List<it.unipi.gamecritic.entities.user.User> users = new Vector<>();
         List<it.unipi.gamecritic.entities.Game> games = new Vector<>();
 
-        users.add(new it.unipi.gamecritic.entities.User(
+        users.add(new it.unipi.gamecritic.entities.user.User(
             "Pippo",
             "",
             "",
             new Vector<>()
         ));
-        users.add(new it.unipi.gamecritic.entities.User(
+        users.add(new it.unipi.gamecritic.entities.user.User(
             "Pluto",
             "",
             "",
             new Vector<>()
         ));
-        users.add(new it.unipi.gamecritic.entities.User(
+        users.add(new it.unipi.gamecritic.entities.user.User(
             "Paperino",
             "",
             "",
