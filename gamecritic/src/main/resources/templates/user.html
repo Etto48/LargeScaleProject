@@ -11,9 +11,14 @@
         <main class="container flex-column card p-0 mt-5 shadow">
             <div class="d-flex p-5 user-card">
                 <img class="rounded-circle user-image" th:src="'/user_image/' + ${viewed_user.username} + '.png'" alt="User Image">
-                <div class="d-flex flex-column h-100 user-info">
+                <div class="d-flex flex-column w-100 user-info">
                     <h1 class="fs-1 fw-bold" th:text="${viewed_user.username}"></h1>
                     <a th:href="'mailto:' + ${viewed_user.email}" class="underline-on-hover fs-4 text-secondary" th:text="${viewed_user.email}"></a>
+                    <div class="d-flex flex-row mt-auto justify-content-end gap-2">
+                        <button th:replace="~{fragments/follow.html :: user}"></button>
+                        <button th:replace="~{fragments/edit.html :: user}"></button>
+                        <button th:replace="~{fragments/delete.html :: user}"></button>
+                    </div>
                 </div>
             </div>
             <div class="mx-4 mt-2 d-flex flex-row">

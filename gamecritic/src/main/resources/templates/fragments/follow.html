@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <button th:fragment="user" th:if="${user != null && user.username != viewed_user.username}" class="btn btn-secondary" type="button" onclick="">
+            <i class="bi bi-person-fill-add me-2"></i>Follow
+        </button>
+    </body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <body>
+        <button id="ban-user-button" th:fragment="user" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-danger" type="button">
+            <i class="bi bi-person-fill-slash me-2"></i>Ban
+            <script th:inline="javascript">
+                document.getElementById('ban-user-button').onclick = function()
+                {
+                    /*<![CDATA[*/
+                    banUser(/*[[${viewed_user.username}]]*/ null);
+                    /*]]>*/
+                }
+            </script>
+        </button>
+        <button th:fragment="comment(comment_id)" th:id="'delete-comment-'+ ${comment_id}" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-danger" type="button">
+            <i class="bi bi-trash-fill me-2"></i>Delete
+            <script th:inline="javascript">
+                document.getElementById('delete-comment-'+/*[[${comment_id}]]*/ null).onclick = function()
+                {
+                    /*<![CDATA[*/
+                    deleteComment(/*[[${comment_id}]]*/ null);
+                    /*]]>*/
+                }
+            </script>
+        </button>
+        <button th:fragment="review(review_id)" th:id="'delete-review-'+ ${review_id}" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-danger" type="button">
+            <i class="bi bi-trash-fill me-2"></i>Delete
+            <script th:inline="javascript">
+                document.getElementById('delete-review-'+/*[[${review_id}]]*/ null).onclick = function()
+                {
+                    /*<![CDATA[*/
+                    deleteReview(/*[[${review_id}]]*/ null);
+                    /*]]>*/
+                }
+            </script>
+        </button>
+        <button id="delete-game-button" th:fragment="game" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-danger" type="button">
+            <i class="bi bi-trash-fill me-2"></i>Delete
+            <script th:inline="javascript">
+                document.getElementById('delete-game-button').onclick = function()
+                {
+                    /*<![CDATA[*/
+                    deleteGame(/*[[${game.name}]]*/ null);
+                    /*]]>*/
+                }
+            </script>
+        </button>
+        </body>
+</html>
