@@ -34,7 +34,12 @@ public class Index {
 						add("CD Projekt Red");
 					}
 				};
-				genre = "Action RPG";
+				genres = new Vector<String>() {
+					{
+						add("Action");
+						add("RPG");
+					}
+				};
 				perspective = "Third-person";
 				gameplay = "Open world";
 				setting = "Fantasy";
@@ -89,7 +94,12 @@ public class Index {
 						add("Bethesda Game Studios");
 					}
 				};
-				genre = "Action RPG";
+				genres = new Vector<String>() {
+					{
+						add("Action");
+						add("RPG");
+					}
+				};
 				perspective = "First-person";
 				gameplay = "Open world";
 				setting = "Fantasy";
@@ -145,7 +155,12 @@ public class Index {
 						add("Nintendo EPD");
 					}
 				};
-				genre = "Action-adventure";
+				genres = new Vector<String>() {
+					{
+						add("Action");
+						add("Adventure");
+					}
+				};
 				perspective = "Third-person";
 				gameplay = "Open world";
 				setting = "Fantasy";

@@ -21,11 +21,11 @@
         </nav>
 		<main id="main" class="container d-flex flex-column align-items-center">
 			<form id="edit-form" class="show w-100 flex-column">
-				<select id="game-name-edit" class="form-select" aria-label="Game Name">
+				<select id="game-name-edit" class="form-select" aria-label="Game Name" oninput="loadGameInfo();">
 					<option value="" disabled selected>Game Name</option>
 					<option th:each="game : ${games}" th:value="${game.name}" th:text="${game.name}"></option>
 				</select>
-				<textarea id="game-description-edit" class="form-control" placeholder="Game Description"></textarea>
+				<textarea id="game-description-edit" class="form-control" placeholder="Game Description" rows="5"></textarea>
 				<input id="game-img-edit" type="url" class="form-control" placeholder="Game Image URL"/>
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-publishers-edit','Add a publisher')}"></div>
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-developers-edit','Add a developer')}"></div>
@@ -36,8 +36,8 @@
 			</form>
 			<form id="publish-form" class="w-100 flex-column">
 				<input id="game-name-publish" type="text" class="form-control" placeholder="Game Name"/>
-				<textarea id="game-description-publish" class="form-control" placeholder="Game Description"></textarea>
-				<input id="game-img-edit" type="url" class="form-control" placeholder="Game Image URL"/>
+				<textarea id="game-description-publish" class="form-control" placeholder="Game Description" rows="5"></textarea>
+				<input id="game-img-publish" type="url" class="form-control" placeholder="Game Image URL"/>
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-publishers-publish','Add a publisher')}"></div>
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-developers-publish','Add a developer')}"></div>
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-platforms-publish','Add a platform')}"></div>
@@ -50,6 +50,7 @@
 					<option value="" disabled selected>Game Name</option>
 					<option th:each="game : ${games}" th:text="${game.name}"></option>
 				</select>
+				<input type="text" class="form-control" id="game-name-repeat-delete" placeholder="Repeat Game Name"/>
 				<input type="submit" class="btn btn-primary" value="Delete"/>
 			</form>
 		</main>

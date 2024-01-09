@@ -8,7 +8,8 @@ public class Game {
     public String release;
     public Vector<String> publishers;
     public Vector<String> developers;
-    public String genre;
+    public Vector<String> genres;
+    public Vector<String> platforms;
     public String perspective;
     public String gameplay;
     public String setting;
@@ -35,7 +36,8 @@ public class Game {
         String release, 
         Vector<String> publishers, 
         Vector<String> developers, 
-        String genre, 
+        Vector<String> genres, 
+        Vector<String> platforms,
         String perspective, 
         String gameplay, 
         String setting, 
@@ -49,7 +51,8 @@ public class Game {
         this.release = release;
         this.publishers = publishers;
         this.developers = developers;
-        this.genre = genre;
+        this.platforms = platforms;
+        this.genres = genres;
         this.perspective = perspective;
         this.gameplay = gameplay;
         this.setting = setting;

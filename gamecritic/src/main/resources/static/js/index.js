@@ -3,7 +3,7 @@ var kind = "hottest";
 
 function addGames(page) {
     $.ajax({
-        url: "/api/topgames",
+        url: "/api/top-games",
         type: "GET",
         data: {
             page: page,
