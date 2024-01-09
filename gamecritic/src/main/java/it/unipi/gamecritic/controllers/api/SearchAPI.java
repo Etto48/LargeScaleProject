@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import it.unipi.gamecritic.entities.Game;
+import it.unipi.gamecritic.entities.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -32,43 +34,43 @@ public class SearchAPI {
 
 
         // TODO: search for users and games in the database
-        List<it.unipi.gamecritic.entities.user.User> users = new Vector<>();
-        List<it.unipi.gamecritic.entities.Game> games = new Vector<>();
+        List<User> users = new Vector<>();
+        List<Game> games = new Vector<>();
 
-        users.add(new it.unipi.gamecritic.entities.user.User(
+        users.add(new User(
             "Pippo",
             "",
             "",
             new Vector<>()
         ));
-        users.add(new it.unipi.gamecritic.entities.user.User(
+        users.add(new User(
             "Pluto",
             "",
             "",
             new Vector<>()
         ));
-        users.add(new it.unipi.gamecritic.entities.user.User(
+        users.add(new User(
             "Paperino",
             "",
             "",
             new Vector<>()
         ));
 
-        games.add(new it.unipi.gamecritic.entities.Game(
+        games.add(new Game(
             0,
             "The Legend of Zelda: Breath of the Wild",
             9.5f,
             "The Legend of Zelda: Breath of the Wild is a 2017 action-adventure game developed and published by Nintendo for the Nintendo Switch and Wii U consoles. Breath of the Wild is part of the Legend of Zelda franchise and is set at the end of the series' timeline; the player controls Link, who awakens from a hundred-year slumber to defeat Calamity Ganon before it can destroy the kingdom of Hyrule."
         ));
 
-        games.add(new it.unipi.gamecritic.entities.Game(
+        games.add(new Game(
             1,
             "The Witcher 3: Wild Hunt",
             9.5f,
             "The Witcher 3: Wild Hunt is a 2015 action role-playing game developed and published by Polish developer CD Projekt Red and is based on The Witcher series of fantasy novels written by Andrzej Sapkowski. It is the sequel to the 2011 game The Witcher 2: Assassins of Kings and the third main installment in the The Witcher's video game series, played in an open world with a third-person perspective."
         ));
 
-        games.add(new it.unipi.gamecritic.entities.Game(
+        games.add(new Game(
             2,
             "The Last of Us Part II",
             9.5f,
@@ -90,10 +92,10 @@ public class SearchAPI {
         SearchResponse result = new SearchResponse();
         result.users = new Vector<>();
         result.games = new Vector<>();
-        for (it.unipi.gamecritic.entities.user.User user : users) {
+        for (User user : users) {
             result.users.add(user.username);
         }
-        for (it.unipi.gamecritic.entities.Game game : games) {
+        for (Game game : games) {
             result.games.add(game.name);
         }
 

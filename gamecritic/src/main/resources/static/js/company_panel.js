@@ -44,8 +44,8 @@ function editGame() {
             alert("Game edited successfully!");
             resetForms();
         },
-        error: function (error) {
-            alert("Error editing game: " + error);
+        error: function (xhr, status, error) {
+            alert("Error editing game: " + xhr.status + " " + xhr.statusText);
         }
     });
 }
@@ -70,8 +70,8 @@ function publishGame() {
             alert("Game published successfully!");
             resetForms();
         },
-        error: function (error) {
-            alert("Error publishing game: " + error);
+        error: function (xhr, status, error) {
+            alert("Error publishing game: " + xhr.status + " " + xhr.statusText);
         }
     });
 }
@@ -98,8 +98,8 @@ function deleteGame() {
             alert("Game deleted successfully!");
             resetForms();
         },
-        error: function (error) {
-            alert("Error deleting game: " + error);
+        error: function (xhr, status, error) {
+            alert("Error deleting game: " + xhr.status + " " + xhr.statusText);
         }
     });
 }
@@ -151,8 +151,8 @@ function loadGameInfo() {
             document.getElementById("game-release-date-edit").type = "date";
             document.getElementById("game-release-date-edit").value = data.release;
         },
-        error: function (error) {
-            console.log(error);
+        error: function (xhr, status, error) {
+            console.log("Error loading game info: " + xhr.status + " " + xhr.statusText);
         }
     });
 }

@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.server.PathParam;
 
 @Controller
-public class Comments {
+public class CommentsController {
     @RequestMapping("/comments/{review_id}")
     public String comments(@PathParam("review_id") String review_id, Model model, HttpServletRequest request, HttpSession session) {
         model.addAttribute("request", request);

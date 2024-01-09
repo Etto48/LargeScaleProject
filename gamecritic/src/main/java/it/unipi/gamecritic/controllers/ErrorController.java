@@ -2,7 +2,6 @@ package it.unipi.gamecritic.controllers;
 
 import java.util.Map;
 
-import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class Error implements ErrorController {
+public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
     private static Map<Integer,String> errors = Map.ofEntries(
         Map.entry(100, "Continue"),
         Map.entry(101, "Switching Protocols"),

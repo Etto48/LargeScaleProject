@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import it.unipi.gamecritic.entities.user.Admin;
+import it.unipi.gamecritic.entities.user.Company;
+import it.unipi.gamecritic.entities.user.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -24,20 +27,19 @@ public class AccountAPI {
         
         // TODO: check if username and password are valid
         
-        it.unipi.gamecritic.entities.user.User user = null;
+        User user = null;
         if(username.equals("company"))
         {
-            user = new it.unipi.gamecritic.entities.user.Company();
+            user = new Company();
         }
         else if (username.equals("admin"))
         {
-            user = new it.unipi.gamecritic.entities.user.Admin();
+            user = new Admin();
         }
         else
         {
-            user = new it.unipi.gamecritic.entities.user.User();
+            user = new User();
         }
-        System.err.println(username);
         user.username = username;
         user.password_hash = password;
         user.email = "";
@@ -62,7 +64,7 @@ public class AccountAPI {
         // TODO: check if username and password are valid
         // TODO: insert user in database
 
-        it.unipi.gamecritic.entities.user.User user = new it.unipi.gamecritic.entities.user.User();
+        User user = new User();
         user.username = username;
         user.password_hash = password;
         user.email = email;
