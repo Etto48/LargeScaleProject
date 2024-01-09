@@ -19,8 +19,8 @@ import jakarta.servlet.http.HttpSession;
 public class SearchAPI {
     
     public class SearchResponse {
-        public List<it.unipi.gamecritic.entities.user.User> users;
-        public List<it.unipi.gamecritic.entities.Game> games;
+        public List<String> users;
+        public List<String> games;
     }
 
     @RequestMapping(value = "/api/search", method = RequestMethod.GET, produces = "application/json")
@@ -88,8 +88,14 @@ public class SearchAPI {
         }
 
         SearchResponse result = new SearchResponse();
-        result.users = users;
-        result.games = games;
+        result.users = new Vector<>();
+        result.games = new Vector<>();
+        for (it.unipi.gamecritic.entities.user.User user : users) {
+            result.users.add(user.username);
+        }
+        for (it.unipi.gamecritic.entities.Game game : games) {
+            result.games.add(game.name);
+        }
 
         //convert to json
         Gson gson = new GsonBuilder().create();

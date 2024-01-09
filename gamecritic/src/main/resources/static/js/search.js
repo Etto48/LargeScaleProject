@@ -53,17 +53,24 @@ function search() {
 function handleSearchResults(data) {
 
     var template = Handlebars.compile(document.getElementById("search-result-template").innerHTML);
+    new_data = {
+        games: [],
+        users: []
+    }
     data.games.forEach(function (game) {
-        var url = "/game/" + encodeURIComponent(game.name);
-        game.url = url;
+        var new_game = {};
+        new_game.name = game;
+        new_game.url = "/game/" + encodeURIComponent(game);
+        new_data.games.push(new_game);
     });
     data.users.forEach(function (user) {
-        var url = "/user/" + encodeURIComponent(user.username);
-        user.url = url;
-        var img = "/user_image/" + encodeURIComponent(user.username) + ".png";
-        user.img = img;
+        var new_user = {};
+        new_user.username = user;
+        new_user.url = "/user/" + encodeURIComponent(user);
+        new_user.img = "/user_image/" + encodeURIComponent(user) + ".png";
+        new_data.users.push(new_user);
     });
-    var html = template({games: data.games, users: data.users})
+    var html = template(new_data);
 
     document.getElementById("search-results").innerHTML = html;
     document.getElementById("search-results").classList.add("show");
