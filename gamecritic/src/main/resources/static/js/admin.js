@@ -26,7 +26,7 @@ function deleteReview(id) {
     }
     $.ajax({
         url: "/api/admin/delete/review",
-        data: {review_id: id},
+        data: {id: id},
         type: "POST",
         success: function () {
             alert("Review deleted!");
@@ -44,7 +44,7 @@ function deleteComment(id) {
     }
     $.ajax({
         url: "/api/admin/delete/comment",
-        data: {comment_id: id},
+        data: {id: id},
         type: "POST",
         success: function () {
             alert("Comment deleted!");

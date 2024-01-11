@@ -24,52 +24,6 @@ span.row span {
     flex-direction: column;
 }
 
-#new-review-score::-webkit-slider-runnable-track {
-    background: linear-gradient(to right, #d33242, #f9c000, #308752);
-}
-
-#new-review-score::-moz-range-track {
-    background: linear-gradient(to right, #d33242, #f9c000, #308752);
-}
-
-#create-new-review-button:has(.bi-check-circle-fill) {
-    opacity: 1;
-}
-
-#create-new-review-button-text.bi-check-circle-fill{
-    color: #308752;
-}
-
-.create-new-review {
-    width: calc(100% - 1em);
-    margin: 0.5em;
-}
-
-.create-new-review .new-review-form {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10;
-    transform: translate(-50%, -50%);
-    flex-direction: column;
-}
-
-.create-new-review .new-review-form.show {
-    display: flex;
-}
-
-.create-new-review:has(.new-review-form.show)::after {
-    content: "";
-    position: fixed;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-}
-
 @media (min-width: 768px) {
 
     .game-image-container {

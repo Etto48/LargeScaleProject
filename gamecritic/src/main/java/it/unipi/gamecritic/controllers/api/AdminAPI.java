@@ -44,7 +44,7 @@ public class AdminAPI {
     @RequestMapping(value = "/api/admin/delete/review", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String admin_delete_review(
-        @RequestParam(value = "review_id", required = true) Integer review_id,
+        @RequestParam(value = "id", required = true) Integer id,
         HttpServletRequest request,
         HttpSession session)
     {
@@ -54,7 +54,7 @@ public class AdminAPI {
             if(user.getAccountType().equals("Admin"))
             {
                 // TODO: delete review
-                System.out.println("Delete review " + review_id + " by " + user.username);
+                System.out.println("Delete review " + id + " by " + user.username);
                 return "{}";
             }
             else
@@ -71,7 +71,7 @@ public class AdminAPI {
     @RequestMapping(value = "/api/admin/delete/comment", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String admin_delete_comment(
-        @RequestParam(value = "comment_id", required = true) Integer comment_id,
+        @RequestParam(value = "id", required = true) Integer id,
         HttpServletRequest request,
         HttpSession session)
     {
@@ -81,7 +81,7 @@ public class AdminAPI {
             if(user.getAccountType().equals("Admin"))
             {
                 // TODO: delete comment
-                System.out.println("Delete comment " + comment_id + " by " + user.username);
+                System.out.println("Delete comment " + id + " by " + user.username);
                 return "{}";
             }
             else
@@ -109,6 +109,31 @@ public class AdminAPI {
             {
                 // TODO: delete game
                 System.out.println("Delete game \"" + name + "\" by " + user.username);
+                return "{}";
+            }
+            else
+            {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not an admin");
+            }
+        }
+        else
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in to perform this action");
+        }
+    }
+
+    @RequestMapping(value = "/api/admin/stats", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public String admin_stats(
+        HttpServletRequest request,
+        HttpSession session)
+    {
+        User user = (User) session.getAttribute("user");
+        if (user != null)
+        {
+            if(user.getAccountType().equals("Admin"))
+            {
+                // TODO: get stats
                 return "{}";
             }
             else

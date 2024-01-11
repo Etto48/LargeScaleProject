@@ -77,7 +77,7 @@
             <hr/>
         </div>
 
-        <div class="create-new-review" th:fragment="create_new(game_name)" th:if="${user != null}">
+        <div class="create-new-review position-relative" th:fragment="create_new(game_name)" th:if="${user != null}">
             <button class="btn btn-dark w-100" id="create-new-review-button" onclick="toggleNewReview()">
                 <i id="create-new-review-button-text" class="fs-1 bi bi-plus-circle-fill"></i>
             </button>

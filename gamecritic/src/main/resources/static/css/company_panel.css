@@ -1,14 +1,14 @@
-main form 
+main>form, main>div 
 {
     display: none;
 }
 
-main form.show 
+main>form.show, main>div.show
 {
     display: flex;
 }
 
-main form
+main>form
 {
     max-width: 600px;
 }

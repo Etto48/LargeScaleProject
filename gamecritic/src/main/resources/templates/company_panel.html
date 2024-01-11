@@ -5,6 +5,7 @@
 		<title th:text="'GameCritic - Company Panel - ' + ${company.username}"></title>
 		<link rel="stylesheet" href="/css/company_panel.css">
 		<script src="/js/company_panel.js"></script>
+		<script src="/js/stats.js"></script>
 	</head>
 	<body class="d-flex flex-column h-100">
         <header th:replace="~{fragments/general.html :: header}"></header>
@@ -16,6 +17,8 @@
                     <i class="bi bi-plus-circle-fill me-2"></i>Publish</button></li>
                 <li><button class="kind-selector btn btn-dark" id="delete" onclick="setActiveForm('delete')">
                     <i class="bi bi-trash-fill me-2"></i>Delete</button></li>
+				<li><button class="kind-selector btn btn-dark" id="stats" onclick="setActiveForm('stats')">
+					<i class="bi bi-bar-chart-line-fill me-2"></i>Stats</button></li>
             </ul>
             <hr class="mt-0 mx-3">
         </nav>
@@ -53,6 +56,7 @@
 				<input type="text" class="form-control" id="game-name-repeat-delete" placeholder="Repeat Game Name"/>
 				<input type="submit" class="btn btn-primary" value="Delete"/>
 			</form>
+			<div th:replace="~{fragments/interfaces.html :: stats('stats-form')}"></div>
 		</main>
 		<script>
 			setupForms();

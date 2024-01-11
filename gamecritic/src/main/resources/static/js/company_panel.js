@@ -2,11 +2,16 @@ function setActiveForm(form) {
     document.getElementById("edit").disabled = false;
     document.getElementById("publish").disabled = false;
     document.getElementById("delete").disabled = false;
+    document.getElementById("stats").disabled = false;
     document.getElementById(form).disabled = true;
     document.getElementById("edit-form").classList.remove("show");
     document.getElementById("publish-form").classList.remove("show");
     document.getElementById("delete-form").classList.remove("show");
+    document.getElementById("stats-form").classList.remove("show");
     document.getElementById(form + "-form").classList.add("show");
+    if (form == "stats") {
+        loadStats("company");
+    }
 }
 
 function setupForms() {
