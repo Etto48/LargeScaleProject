@@ -1,10 +1,10 @@
 package it.unipi.gamecritic.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import it.unipi.gamecritic.entities.Game;
@@ -30,19 +30,22 @@ public class IndexController {
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
 		List<DBObject> game = gameRepository.findByDynamicAttribute("Name","Halo 2");
+		//logger.info(game.get(0).toString());
+
+
+		Game g = new Game();
+		g.setCustomAttributes(game.get(0));
+			ArrayList<?> c = (ArrayList<?>) g.customAttributes.get("reviews");
+			logger.info(c.get(0).getClass().toString());
+			LinkedHashMap<String, ?> l = (LinkedHashMap<String, ?>) c.get(0);
+			for (String k : l.keySet()) {
+				logger.info(k + ": " + l.get(k).toString());
+			}
 
 		if (game == null){
 
 		}
-		for (String key: game.get(0).keySet()){
-			logger.info("oren");
-			Object o = game.get(0).get(key);
-			while (o instanceof ArrayList<?>){
-				logger.info(o.getClass().toString());
-				o = ((ArrayList<?>) o).get(0);
-			}
-			logger.info(game.get(0).get(key).getClass().getName() + " "+ game.get(0).get(key).toString());
-		}
+
 
 		// TODO: get games from database
 		Vector<Game> games = new Vector<Game>();
