@@ -36,15 +36,12 @@
             </div>
         </div>
 
-        <div class="d-flex flex-row justify-content-end review-actions" th:fragment="review_actions(review)">
+        <div class="d-flex flex-row justify-content-end review-actions gap-2" th:fragment="review_actions(review)">
             <button class="btn btn-dark" th:onclick="'window.location.href=\'/comments/' + ${review.id} + '\''">
                 <i class="bi bi-chat-fill text-secondary"></i>
                 <span class="text-secondary">Comments</span>
             </button>
-            <button class="btn btn-dark">
-                <i class="bi bi-heart text-secondary"></i>
-                <span class="text-secondary">Like</span>
-            </button>
+            <button th:replace="~{fragments/like.html :: review(${review.id})}"></button>
             <button th:replace="~{fragments/delete.html :: review(${review.id})}"></button>
         </div>
 

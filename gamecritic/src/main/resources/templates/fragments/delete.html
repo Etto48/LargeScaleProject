@@ -12,7 +12,7 @@
                 }
             </script>
         </button>
-        <button th:fragment="comment(comment_id)" th:id="'delete-comment-'+ ${comment_id}" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-danger" type="button">
+        <button th:fragment="comment(comment_id)" th:id="'delete-comment-'+ ${comment_id}" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-dark text-danger" type="button">
             <i class="bi bi-trash-fill me-2"></i>Delete
             <script th:inline="javascript">
                 document.getElementById('delete-comment-'+/*[[${comment_id}]]*/ null).onclick = function()
@@ -23,7 +23,7 @@
                 }
             </script>
         </button>
-        <button th:fragment="review(review_id)" th:id="'delete-review-'+ ${review_id}" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-danger" type="button">
+        <button th:fragment="review(review_id)" th:id="'delete-review-'+ ${review_id}" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-dark text-danger" type="button">
             <i class="bi bi-trash-fill me-2"></i>Delete
             <script th:inline="javascript">
                 document.getElementById('delete-review-'+/*[[${review_id}]]*/ null).onclick = function()

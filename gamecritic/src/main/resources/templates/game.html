@@ -4,6 +4,7 @@
 		<meta th:replace="~{fragments/general.html :: head}"/>
 		<title th:text="'GameCritic - ' + ${game.name}"></title>
 		<link rel="stylesheet" href="/css/game.css">
+		<script src="/js/like.js"></script>
 	</head>
 	<body class="d-flex flex-column h-100">
 		<header th:replace="~{fragments/general.html :: header}"></header>
@@ -56,7 +57,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="d-flex flex-row justify-content-end p-3">
+			<div class="d-flex flex-row justify-content-end p-3 gap-2">
+				<button th:replace="~{fragments/like.html :: game}"></button>
 				<button th:replace="~{fragments/delete.html :: game}"></button>
 			</div>
 			<div class="mx-4 mt-2 d-flex flex-row">

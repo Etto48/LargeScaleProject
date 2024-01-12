@@ -17,11 +17,6 @@ div.comment-body:has(button):hover {
     transition: opacity 0.2s ease-in-out;
 }
 
-div.comment-body .respond-button {
-    height: fit-content;
-    width: fit-content;
-}
-
 div.comment-body:hover .respond-button {
     opacity: 1;
 }

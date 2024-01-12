@@ -40,13 +40,24 @@ textarea
     flex-direction: column;
     z-index: 8;
     padding: 10px;
-    width: 120px;
     margin-top: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
 #user-dropdown.show {
     display: flex;
+}
+
+#user-dropdown-button {
+    min-width: 170px;
+}
+
+#user-dropdown-button i {
+    transition: transform 0.1s ease-in-out;
+}
+
+div:has(#user-dropdown.show) #user-dropdown-button i {
+    transform: rotate(180deg);
 }
 
 #header {
@@ -253,6 +264,11 @@ nav button.btn:not(:disabled)
     left: 0;
     width: 100vw;
     height: 100vh;
+}
+
+.like-button .like-text {
+    display: inline-block;
+    min-width: 50px;
 }
 
 @media (min-width: 768px) {

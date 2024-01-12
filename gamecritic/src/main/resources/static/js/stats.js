@@ -127,12 +127,12 @@ function enableSetMinHeightGraphStats() {
     });
 }
 
-function loadStats(mode = 'company') {
+function loadStats() {
     document.getElementById("stats-container").innerHTML = "";
     // company or admin
     $.ajax({
         type: "GET",
-        url: "/api/"+mode+"/stats",
+        url: "/api/stats",
         success: function (response) {
             // build html
             response.forEach(stat => {

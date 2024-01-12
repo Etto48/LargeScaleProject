@@ -1,5 +1,7 @@
 package it.unipi.gamecritic.controllers.api;
 
+import java.util.Vector;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,12 +10,35 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.google.gson.Gson;
+
 import it.unipi.gamecritic.entities.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminAPI {
+    public void ban(String username, User user) {
+        // TODO: ban user
+        System.out.println("Ban user \"" + username + "\" by " + user.username);
+    }
+
+    public void delete_review(Integer id, User user) {
+        // TODO: delete review
+        System.out.println("Delete review " + id + " by " + user.username);
+    }
+
+    public void delete_comment(Integer id, User user) {
+        // TODO: delete comment
+        System.out.println("Delete comment " + id + " by " + user.username);
+    }
+
+    public void delete_game(String name, User user) {
+        // TODO: delete game
+        System.out.println("Delete game \"" + name + "\" by " + user.username);
+    }
+
+
     @RequestMapping(value = "/api/admin/ban", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String admin_ban(
@@ -26,8 +51,7 @@ public class AdminAPI {
         {
             if(user.getAccountType().equals("Admin"))
             {
-                // TODO: ban user
-                System.out.println("Ban user \"" + username + "\" by " + user.username);
+                ban(username, user); 
                 return "{}";
             }
             else
@@ -53,8 +77,7 @@ public class AdminAPI {
         {
             if(user.getAccountType().equals("Admin"))
             {
-                // TODO: delete review
-                System.out.println("Delete review " + id + " by " + user.username);
+                delete_review(id, user);
                 return "{}";
             }
             else
@@ -80,8 +103,7 @@ public class AdminAPI {
         {
             if(user.getAccountType().equals("Admin"))
             {
-                // TODO: delete comment
-                System.out.println("Delete comment " + id + " by " + user.username);
+                delete_comment(id, user);
                 return "{}";
             }
             else
@@ -107,8 +129,7 @@ public class AdminAPI {
         {
             if(user.getAccountType().equals("Admin"))
             {
-                // TODO: delete game
-                System.out.println("Delete game \"" + name + "\" by " + user.username);
+                delete_game(name, user);
                 return "{}";
             }
             else
@@ -122,9 +143,43 @@ public class AdminAPI {
         }
     }
 
-    @RequestMapping(value = "/api/admin/stats", method = RequestMethod.GET, produces = "application/json")
+    public class TerminalResponse {
+        public String text;
+        public Boolean error;
+
+        public TerminalResponse(String text, Boolean error) {
+            this.text = text;
+            this.error = error;
+        }
+    }
+
+    public Vector<String> tokenize(String command) {
+        Vector<String> tokens = new Vector<String>();
+        String token = "";
+        boolean in_quotes = false;
+        for (int i = 0; i < command.length(); i++) {
+            char c = command.charAt(i);
+            if (c == '"') {
+                in_quotes = !in_quotes;
+            } else if (c == ' ' && !in_quotes) {
+                if (token.length() > 0) {
+                    tokens.add(token);
+                    token = "";
+                }
+            } else {
+                token += c;
+            }
+        }
+        if (token.length() > 0) {
+            tokens.add(token);
+        }
+        return tokens;
+    }
+
+    @RequestMapping(value = "/api/admin/terminal", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public String admin_stats(
+    public String admin_terminal(
+        @RequestParam(value = "command", required = true) String command,
         HttpServletRequest request,
         HttpSession session)
     {
@@ -133,8 +188,52 @@ public class AdminAPI {
         {
             if(user.getAccountType().equals("Admin"))
             {
-                // TODO: get stats
-                return "{}";
+                Vector<String> tokens = tokenize(command);
+                Gson gson = new Gson();
+                if (tokens.size() == 0) {
+                    return gson.toJson(new TerminalResponse("", false));
+                }
+                switch (tokens.get(0)) {
+                    case "ban":
+                        if (tokens.size() == 2) {
+                            ban(tokens.get(1), user);
+                            return gson.toJson(new TerminalResponse("User \"" + tokens.get(1) + "\" banned", false));
+                        }else
+                        {
+                            return gson.toJson(new TerminalResponse("Usage: ban <username>", true));
+                        }
+                    case "delete":
+                        if (tokens.size() == 3) {
+                            switch (tokens.get(1)) {
+                                case "review":
+                                    try {
+                                        delete_review(Integer.parseInt(tokens.get(2)), user);
+                                    } catch (NumberFormatException e) {
+                                        return gson.toJson(new TerminalResponse("Id must be an integer", true));
+                                    }
+                                    break;
+                                case "comment":
+                                    try {
+                                        delete_comment(Integer.parseInt(tokens.get(2)), user);
+                                    } catch (NumberFormatException e) {
+                                        return gson.toJson(new TerminalResponse("Id must be an integer", true));
+                                    }
+                                    break;
+                                case "game":
+                                    delete_game(tokens.get(2), user);
+                                    break;
+                                default:
+                                    return gson.toJson(new TerminalResponse("Usage: delete <review|comment|game> <id|name>", true));
+                            }
+                            return gson.toJson(new TerminalResponse(tokens.get(1) + " \"" + tokens.get(2) + "\" deleted", false));
+                        } else {
+                            return gson.toJson(new TerminalResponse("Usage: delete <review|comment|game> <id|name>", true));
+                        }
+                    case "help":
+                        return gson.toJson(new TerminalResponse("Available commands:\nban <username>\ndelete <review|comment|game> <id|name>\nhelp\n", false));
+                    default:
+                        return gson.toJson(new TerminalResponse("Command not found, use \"help\" for a list of available commands", true));
+                }
             }
             else
             {

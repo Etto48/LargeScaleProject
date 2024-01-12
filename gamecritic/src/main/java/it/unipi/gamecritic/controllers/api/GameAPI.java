@@ -96,5 +96,4 @@ public class GameAPI {
         Gson gson = new Gson();
         return gson.toJson(games);
     }
-
 }

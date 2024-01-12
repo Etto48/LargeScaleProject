@@ -8,13 +8,18 @@ main>form.show, main>div.show
     display: flex;
 }
 
-main>form
+form.mw-600px
 {
     max-width: 600px;
 }
 
 form>select, form>input, form>textarea, form>.vector-input
 {
-    margin: 5px;
     width: 100%;
+}
+
+#terminal-log 
+{
+    height: 30vh;
+    white-space: pre-line;
 }
