@@ -1,10 +1,35 @@
 package it.unipi.gamecritic.entities;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
+@Document(collection = "videogames")
 public class Game {
-    public Integer id;
+    @Id
+    public ObjectId id;
+    @Field("Name")
     public String name;
+    public String Released;
+
+    @Field("customAttributes")
+    public Map<String, Object> customAttributes = new HashMap<>();
+
+    // other fields, getters, setters
+
+    public Map<String, Object> getCustomAttributes() {
+        return customAttributes;
+    }
+
+    public void setCustomAttributes(Map<String, Object> customAttributes) {
+        this.customAttributes = customAttributes;
+    }
+    /*
     public String release;
     public Vector<String> publishers;
     public Vector<String> developers;
@@ -63,5 +88,5 @@ public class Game {
     }
 
     public Game() {
-    }
+    }*/
 }

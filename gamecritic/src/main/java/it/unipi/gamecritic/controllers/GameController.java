@@ -16,13 +16,17 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class GameController {
+
     @RequestMapping(value = "/game/{name}")
     public String game(@PathVariable(value="name") String name, Model model, HttpServletRequest request, HttpSession session) {
+
+
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
-       
+
 		// TODO: get the game from the db
         Vector<Game> games = new Vector<Game>();
+		/*
 		games.add(new Game() {
 			{
 				id=0;
@@ -202,7 +206,7 @@ public class GameController {
 					}
 				};
 			}
-		});
+		});*/
 	
 		boolean found = false;
 		for (Game game : games) {

@@ -1,25 +1,52 @@
 package it.unipi.gamecritic.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import com.mongodb.DBObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import it.unipi.gamecritic.entities.Game;
-import it.unipi.gamecritic.entities.Review;
+import it.unipi.gamecritic.repositories.GameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class IndexController {
+	private final GameRepository gameRepository;
+	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+	@Autowired
+	public IndexController(GameRepository gameRepository) {
+		this.gameRepository = gameRepository;
+	}
     @RequestMapping(value = "/")
 	public String home(Model model, HttpServletRequest request, HttpSession session) {
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
+		List<DBObject> game = gameRepository.findByDynamicAttribute("Name","Halo 2");
+
+		if (game == null){
+
+		}
+		for (String key: game.get(0).keySet()){
+			logger.info("oren");
+			Object o = game.get(0).get(key);
+			while (o instanceof ArrayList<?>){
+				logger.info(o.getClass().toString());
+				o = ((ArrayList<?>) o).get(0);
+			}
+			logger.info(game.get(0).get(key).getClass().getName() + " "+ game.get(0).get(key).toString());
+		}
 
 		// TODO: get games from database
 		Vector<Game> games = new Vector<Game>();
+		/*
 		games.add(new Game() {
 			{
 				id=0;
@@ -200,7 +227,7 @@ public class IndexController {
 					}
 				};
 			}
-		});
+		});*/
 
 		model.addAttribute("games", games);
 		return "index";
