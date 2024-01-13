@@ -5,7 +5,7 @@
         <div th:fragment="comment(comment)" class="ms-2 my-2 me-0 d-flex flex-column" th:id="'comment-' + ${comment.id}">
             <div class="d-flex flex-column comment-body p-2 mb-3">
                 <div class="d-flex flex-row">
-                    <img class="rounded-circle me-2 my-auto" th:src="'/user_image/' + ${comment.author} + '.png'" alt="User Image" style="width: 25px; height: 25px">
+                    <img class="rounded-circle me-2 my-auto" th:src="'/user-image/' + ${comment.author} + '.png'" alt="User Image" style="width: 25px; height: 25px">
                     <a class="fs-6 fw-bold my-auto text-light" th:href="'/user/' + ${#uris.escapePathSegment(comment.author)}" th:text="${comment.author}"></a>
                 </div>
                 <div class="d-flex flex-row">

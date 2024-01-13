@@ -38,7 +38,7 @@ public class UserAPI {
         }
     }
 
-    @RequestMapping(value = "/api/user/edit", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/api/user/edit", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String user_edit(
         @RequestParam(value = "email", required = false) String email,
@@ -81,7 +81,7 @@ public class UserAPI {
                     byte[] image_bytes = image.getBytes();
                     String image_b64 = java.util.Base64.getEncoder().encodeToString(image_bytes);
                     // TODO: save image in the database    
-                    System.out.println("Image uploaded: " + image_b64);
+                    System.out.println("Image uploaded: " + image.getBytes().length/1024f + "KB");
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while processing image");
                 }

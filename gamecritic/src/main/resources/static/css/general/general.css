@@ -267,8 +267,13 @@ nav button.btn:not(:disabled)
 }
 
 .like-button .like-text {
+    min-width: 38px;
     display: inline-block;
-    min-width: 50px;
+    text-align: left;
+}
+
+.review-actions .like-button .like-text {
+    min-width: 33px;
 }
 
 @media (min-width: 768px) {

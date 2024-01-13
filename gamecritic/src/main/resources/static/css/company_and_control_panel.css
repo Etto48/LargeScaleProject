@@ -20,6 +20,14 @@ form>select, form>input, form>textarea, form>.vector-input
 
 #terminal-log 
 {
-    height: 30vh;
+    height: calc(100vh - 350px);
     white-space: pre-line;
+}
+
+@media (min-width: 992px)
+{
+    #terminal-log 
+    {
+        height: calc(100vh - 312px);
+    }
 }

@@ -74,7 +74,7 @@
                 <script>prepareSearch();</script> 
                 <div th:if="${user != null}">
                     <button id="user-dropdown-button" type="button" class="btn btn-dark d-flex flex-row border rounded p-1" onclick="showDropdown();">
-                        <img class="d-inline-block align-top rounded-circle me-2" th:src="'/user_image/' + ${user.username} + '.png'" width="28" height="28" alt="Avatar"/>
+                        <img class="d-inline-block align-top rounded-circle me-2" th:src="'/user-image/' + ${user.username} + '.png'" width="28" height="28" alt="Avatar"/>
                         <span th:text="${user.username}"></span>
                         <i class="bi bi-chevron-down my-auto ms-auto me-2"></i>
                     </button>
@@ -83,7 +83,7 @@
                             <i class="bi bi-person-fill"></i>
                             Profile
                         </a>
-                        <a th:if="${user.getAccountType() == 'User'}" class="dropdown-item hover-text-highlight" th:href="'/user/' + ${#uris.escapePathSegment(user.username)} + '/reviews'">
+                        <a class="dropdown-item hover-text-highlight" th:href="'/user/' + ${#uris.escapePathSegment(user.username)} + '/reviews'">
                             <i class="bi bi-chat-left-text-fill"></i>
                             Reviews
                         </a>
@@ -98,10 +98,6 @@
                             <div class="ms-1 text-wrap">
                                 Control Panel
                             </div>
-                        </a>
-                        <a class="dropdown-item hover-text-highlight" th:href="'/user/' + ${#uris.escapePathSegment(user.username)} + '/settings'">
-                            <i class="bi bi-gear-fill"></i>
-                            Settings
                         </a>
                         <hr/>
                         <script src="/js/logout.js"></script>
@@ -119,7 +115,7 @@
             </div>
         </header>
         
-        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top" th:fragment="footer">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-4 border-top" th:fragment="footer">
             <div class="container">
                 <div class="col-md-4 d-flex align-items-center">
                     <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1 d-flex">

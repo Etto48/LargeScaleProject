@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <body>
-        <button th:fragment="user" th:if="${user != null && user.username == viewed_user.username}" class="btn btn-success" type="button" onclick="">
+        <button th:fragment="user" th:if="${user != null && user.username == viewed_user.username}" class="btn btn-success" type="button" onclick="showUserEditForm()">
             <i class="bi bi-person-fill-gear me-2"></i>Edit
         </button>
     </body>

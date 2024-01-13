@@ -4,13 +4,15 @@
 		<meta th:replace="~{fragments/general.html :: head}"/>
 		<title th:text="'GameCritic - ' + ${viewed_user.username}"></title>
 		<link rel="stylesheet" href="/css/user.css">
+        <script src="/js/like.js"></script>
+        <script src="/js/user_edit.js"></script>
 	</head>
 	<body class="d-flex flex-column h-100">
         <header th:replace="~{fragments/general.html :: header}"></header>
         <div th:replace="~{fragments/score.html :: score_bg(${avg_top_score})}"></div>
         <main class="container flex-column card p-0 mt-5 shadow">
             <div class="d-flex p-5 user-card">
-                <img class="rounded-circle user-image" th:src="'/user_image/' + ${viewed_user.username} + '.png'" alt="User Image">
+                <img class="rounded-circle user-image" th:src="'/user-image/' + ${viewed_user.username} + '.png'" alt="User Image">
                 <div class="d-flex flex-column w-100 user-info">
                     <h1 class="fs-1 fw-bold" th:text="${viewed_user.username}"></h1>
                     <a th:href="'mailto:' + ${viewed_user.email}" class="underline-on-hover fs-4 text-secondary" th:text="${viewed_user.email}"></a>
@@ -20,6 +22,39 @@
                         <button th:replace="~{fragments/delete.html :: user}"></button>
                     </div>
                 </div>
+            </div>
+            <div th:if="${user!= null && viewed_user.username == user.username}" id="user-edit" class="position-fixed">
+                <form class="position-fixed card" id="user-edit-form">
+                    <div class="card-body gap-2">
+                        <div class="d-flex flex-row title-container mb-3">
+                            <h3 class="card-title my-auto">Edit Profile</h3>
+                            <button class="btn btn-dark ms-auto" type="button" onclick="hideUserEditForm()">
+                                <i class="bi bi-x ms-auto fs-2"></i>
+                            </button>
+                        </div>
+                        <div id="user-edit-form-content" class="d-flex gap-3">
+                            <input id="user-edit-image-input" type="file" hidden placeholder="Profile Picture">
+                            <label for="user-edit-image-input" id="user-edit-image-label">
+                                <div id="user-edit-image-loading">
+                                    <div class="spinner-border" role="status">
+                                    </div>
+                                </div> 
+                                <i class="bi bi-pencil-fill"></i>
+                            </label>
+                            <div class="d-flex flex-column gap-3">
+                                <input type="text" class="form-control" id="user-edit-email" placeholder="E-mail" th:value="${viewed_user.email}">
+                                <input type="password" class="form-control" id="user-edit-password" placeholder="Password">
+                                <input type="password" class="form-control" id="user-edit-password-confirm" placeholder="Confirm Password">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <script th:inline="javascript">
+                        /*<![CDATA[*/
+                        prepareUserEditForm(/*[[${viewed_user.username}]]*/ null);
+                        /*]]>*/
+                    </script>
+                </form>
             </div>
             <div class="mx-4 mt-2 d-flex flex-row">
 				<h2 class="fs-3">Reviews</h2>

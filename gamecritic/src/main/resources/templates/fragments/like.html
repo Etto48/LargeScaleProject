@@ -9,7 +9,7 @@
                 /*]]>*/
             </script>
         </button>
-        <button th:fragment="review(id)" type="button" class="btn btn-dark like-button" th:id="'like-review-'+${id}+'-button'" th:disabled="${user == null}">
+        <button th:fragment="review(id)" type="button" class="btn btn-dark like-button text-secondary" th:id="'like-review-'+${id}+'-button'" th:disabled="${user == null}">
             <i class="bi bi-heart"></i><span class="like-text mx-2">Like</span><span class="like-count">0</span>
             <script th:inline="javascript">
                 /*<![CDATA[*/

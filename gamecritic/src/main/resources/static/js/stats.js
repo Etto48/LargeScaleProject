@@ -66,67 +66,6 @@ function drawGraphStat(stat) {
     charts_drawn %= chart_colors_faded.length;
 }
 
-function enableSetMinHeightGraphStats() {
-    // this function fixes a bug that I can't even explain...
-    // in a nutshell, the charts were growing when in the same row 
-    // as another type of stat, but they were not shrinking back when they were alone
-    // this hack kinda fixes it
-    // I have not slept this night :(
-
-    function setMinHeight() {
-        var stats = $(".stat");
-        var graph_stats_rows = [];
-        var this_row = [];
-        var last_top = null;
-        var all_graph_stats = true;
-        stats.each(function(index,stat) {
-            var top = stat.getBoundingClientRect().top; 
-            if(last_top == null)
-            {
-                last_top = top;
-            }
-            if(top == last_top)
-            {
-                this_row.push(stat);
-                if(!stat.classList.contains("graph-stat"))
-                {
-                    all_graph_stats = false;
-                }
-            }
-            else
-            {
-                if(all_graph_stats)
-                {
-                    graph_stats_rows.push(this_row);
-                }
-                this_row = [stat];
-                last_top = top;
-                all_graph_stats = stat.classList.contains("graph-stat");
-            }
-            if(index == stats.length - 1)
-            {
-                if(all_graph_stats)
-                {
-                    graph_stats_rows.push(this_row);
-                }
-            }
-        });
-        stats.each(function(index,stat) {
-            $(stat).find(".stat-chart-container").css("height",null);
-        });
-        graph_stats_rows.forEach(row => {
-            row.forEach(stat => {
-                $(stat).find(".stat-chart-container").css("height","150px");
-            });
-        });
-    }
-
-    setMinHeight();
-    window.addEventListener('resize', function() {
-        setMinHeight();
-    });
-}
-
 function loadStats() {
     document.getElementById("stats-container").innerHTML = "";
     // company or admin
@@ -162,7 +101,14 @@ function loadStats() {
                 } 
             });
 
-            enableSetMinHeightGraphStats();
+            var msnry = new Masonry( '#stats-container', {
+                itemSelector: '.stat',
+                columnWidth: '.stat',
+                percentPosition: true
+            });
+
+            msnry.layout();
+            
         },
         error: function (xhr, status, error) {
             alert("Error loading stats: " + xhr.status + " " + xhr.statusText);

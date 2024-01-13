@@ -15,6 +15,123 @@
     flex-direction: column;
 }
 
+#user-edit .card-title {
+    font-size: 2em;
+    height: fit-content;
+}
+
+#user-edit {
+    display: none;
+    z-index: 100;
+    left: 0;
+    top: 0;
+}
+
+#user-edit.show {
+    display: flex;
+}
+
+#user-edit-form {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 456px;
+}
+
+#user-edit-form-content {
+    flex-direction: row;
+}
+
+@media (max-width: 576px) {
+    #user-edit-form {
+        width: 250px;
+    }
+    #user-edit-form-content {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+#user-edit-form .form-group {
+    margin-bottom: 0;
+}
+
+#user-edit.show::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    opacity: 0.5;
+}
+
+#user-edit-image-loading {
+    display: none;
+    position: relative;
+    width: fit-content;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#user-edit-image-loading.show {
+    display: block;
+}
+
+#user-edit-image-label {
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+
+#user-edit-image-label:hover {
+    cursor: pointer;
+}
+
+#user-edit-image-label i {
+    display: block;
+    opacity: 0;
+    width: fit-content;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    font-size: 5em;
+    transform: translate(-50%, -50%);
+    text-shadow: 0 0 2px black;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#user-edit-image-label:hover i {
+    opacity: 1
+}
+
+#user-edit-image-label:has(#user-edit-image-loading.show) i {
+    opacity: 0;
+    transition: unset;
+}
+
+#user-edit-image-label::before {
+    display: block;
+    position: absolute;
+    content: "";
+    width: 200px;
+    height: 200px;
+    background-color: black;
+    opacity: 0.0;
+    border-radius: 50%;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#user-edit-image-label:hover::before,
+#user-edit-image-label:has(#user-edit-image-loading.show)::before {
+    opacity: 0.5;
+}
+
 @media (min-width: 768px) {
 
     .user-image {

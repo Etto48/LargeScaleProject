@@ -275,7 +275,7 @@ public class UserController {
         return "user_reviews";
     }
 
-    @RequestMapping(value = "/user_image/{username}.png", produces = MediaType.IMAGE_PNG_VALUE)
+    @RequestMapping(value = "/user-image/{username}.png", produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
     public byte[] user_image(@PathVariable(value="username") String username) {
         // TODO: get user image from database
