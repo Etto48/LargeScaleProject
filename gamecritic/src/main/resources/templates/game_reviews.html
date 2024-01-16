@@ -11,7 +11,7 @@
         <div th:replace="~{fragments/score.html :: score_bg(${avg_score})}"></div>
         <main class="container d-flex p-0">
             <div>
-                <div class="card mt-3">
+                <div class="card mt-3" th:if="${user != null}">
                     <div th:replace="~{fragments/review.html :: create_new(${game_name})}"></div>
                 </div>
                 <div th:replace="~{fragments/review.html :: list_reviews(${reviews},'user')}"></div>

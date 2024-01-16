@@ -1,5 +1,7 @@
 package it.unipi.gamecritic.controllers.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CommentAPI {
+    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     static Integer id = 69; // TODO: get the id of the new comment from the database
     public class NewCommentInfo {
         public Integer id;
@@ -42,7 +45,7 @@ public class CommentAPI {
         else
         {
             // TODO: insert the comment in the database
-            System.out.println("New comment for review " + review_id + " (in response to: "+parent_id+") from \"" + user.username + "\":\nquote: \"" + quote + "\"");
+            logger.info("New comment for review " + review_id + " (in response to: "+parent_id+") from \"" + user.username + "\":\nquote: \"" + quote + "\"");
 
             NewCommentInfo info = new NewCommentInfo(id++, user.username);
             Gson gson = new Gson();

@@ -2,6 +2,8 @@ package it.unipi.gamecritic.controllers.api;
 
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,24 +20,25 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminAPI {
+    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     public void ban(String username, User user) {
         // TODO: ban user
-        System.out.println("Ban user \"" + username + "\" by " + user.username);
+        logger.info("Ban user \"" + username + "\" by " + user.username);
     }
 
     public void delete_review(Integer id, User user) {
         // TODO: delete review
-        System.out.println("Delete review " + id + " by " + user.username);
+        logger.info("Delete review " + id + " by " + user.username);
     }
 
     public void delete_comment(Integer id, User user) {
         // TODO: delete comment
-        System.out.println("Delete comment " + id + " by " + user.username);
+        logger.info("Delete comment " + id + " by " + user.username);
     }
 
     public void delete_game(String name, User user) {
         // TODO: delete game
-        System.out.println("Delete game \"" + name + "\" by " + user.username);
+        logger.info("Delete game \"" + name + "\" by " + user.username);
     }
 
 

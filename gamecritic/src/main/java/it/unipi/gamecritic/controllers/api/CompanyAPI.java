@@ -2,6 +2,8 @@ package it.unipi.gamecritic.controllers.api;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CompanyAPI {
+    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @RequestMapping(value = "/api/company/edit-game", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String company_edit_game(
@@ -36,7 +39,7 @@ public class CompanyAPI {
             if(user.getAccountType().equals("Company"))
             {
                 // TODO: edit game
-                System.out.println("Edit game \"" + name + "\" by " + user.username + "\ndescription: " + description + "\nimage: " + image + "\nrelease date: " + release_date + "\nplatforms: " + Arrays.toString(platforms) + "\ngenres: " + Arrays.toString(genres) + "\ndevelopers: " + Arrays.toString(developers) + "\npublishers: " + Arrays.toString(publishers));
+                logger.info("Edit game \"" + name + "\" by " + user.username + "\ndescription: " + description + "\nimage: " + image + "\nrelease date: " + release_date + "\nplatforms: " + Arrays.toString(platforms) + "\ngenres: " + Arrays.toString(genres) + "\ndevelopers: " + Arrays.toString(developers) + "\npublishers: " + Arrays.toString(publishers));
                 return "{}";
             }
             else
@@ -70,7 +73,7 @@ public class CompanyAPI {
             if(user.getAccountType().equals("Company"))
             {
                 // TODO: publish game
-                System.out.println("Publish game \"" + name + "\" by " + user.username + "\ndescription: " + description + "\nimage: " + image + "\nrelease date: " + release_date + "\nplatforms: " + Arrays.toString(platforms) + "\ngenres: " + Arrays.toString(genres) + "\ndevelopers: " + Arrays.toString(developers) + "\npublishers: " + Arrays.toString(publishers));
+                logger.info("Publish game \"" + name + "\" by " + user.username + "\ndescription: " + description + "\nimage: " + image + "\nrelease date: " + release_date + "\nplatforms: " + Arrays.toString(platforms) + "\ngenres: " + Arrays.toString(genres) + "\ndevelopers: " + Arrays.toString(developers) + "\npublishers: " + Arrays.toString(publishers));
                 return "{}";
             }
             else
@@ -97,7 +100,7 @@ public class CompanyAPI {
             if(user.getAccountType().equals("Company"))
             {
                 // TODO: delete game
-                System.out.println("Delete game \"" + name + "\" by " + user.username);
+                logger.info("Delete game \"" + name + "\" by " + user.username);
                 return "{}";
             }
             else

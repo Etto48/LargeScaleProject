@@ -2,6 +2,8 @@ package it.unipi.gamecritic.controllers.api;
 
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +20,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ReviewAPI {
+    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @RequestMapping(value = "/api/review/new", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String new_review(
@@ -34,7 +37,7 @@ public class ReviewAPI {
         else
         {
             // TODO: insert the review in the database
-            System.out.println("New review for \"" + game + "\" from \"" + user.username + "\":\nscore: " + score + "\nquote: \"" + quote + "\"");
+            logger.info("New review for \"" + game + "\" from \"" + user.username + "\":\nscore: " + score + "\nquote: \"" + quote + "\"");
 
             return "{}";
         }

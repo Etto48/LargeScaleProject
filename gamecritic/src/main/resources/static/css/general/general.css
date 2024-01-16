@@ -50,6 +50,7 @@ textarea
 
 #user-dropdown-button {
     min-width: 170px;
+    height: 100%;
 }
 
 #user-dropdown-button i {

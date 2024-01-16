@@ -1,5 +1,7 @@
 package it.unipi.gamecritic.controllers.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LikeAPI {
+    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @RequestMapping(value = "/api/like/set/review", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String like_post_review(
@@ -28,7 +31,7 @@ public class LikeAPI {
         if (user != null)
         {
             // TODO: insert the like in the database
-            System.out.println("New like for review " + id + " from \"" + user.username + "\": " + liked);
+            logger.info("New like for review " + id + " from \"" + user.username + "\": " + liked);
             return "{}";
         }
         else
@@ -49,7 +52,7 @@ public class LikeAPI {
         if (user != null)
         {
             // TODO: insert the like in the database
-            System.out.println("New like for game \"" + name + "\" from \"" + user.username + "\": " + liked);
+            logger.info("New like for game \"" + name + "\" from \"" + user.username + "\": " + liked);
             return "{}";
         }
         else

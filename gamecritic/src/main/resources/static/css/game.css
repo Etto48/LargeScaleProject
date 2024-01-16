@@ -8,6 +8,7 @@ span.row span {
 
 .game-image-container {
     width: 100%;
+    height: 450px;
 }
 
 .game-image-container img {

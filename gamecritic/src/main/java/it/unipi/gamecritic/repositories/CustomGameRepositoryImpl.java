@@ -1,7 +1,6 @@
 package it.unipi.gamecritic.repositories;
 
 import com.mongodb.DBObject;
-import it.unipi.gamecritic.entities.Game;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -17,6 +16,9 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
 
     @Override
     public List<DBObject> findByDynamicAttribute(String attributeName, String attributeValue) {
+        if(attributeName == null || attributeValue == null) {
+            return null;
+        }
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));
 
         return mongoTemplate.find(query, DBObject.class, "videogames");

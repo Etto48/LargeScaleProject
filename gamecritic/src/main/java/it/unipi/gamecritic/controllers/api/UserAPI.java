@@ -2,6 +2,8 @@ package it.unipi.gamecritic.controllers.api;
 
 import java.security.MessageDigest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserAPI {
+    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @RequestMapping(value = "/api/user/follow", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String user_follow(
@@ -29,7 +32,7 @@ public class UserAPI {
         if (user != null)
         {
             // TODO: follow user
-            System.out.println("Follow user \"" + username + "\" ("+follow+") by " + user.username);
+            logger.info("Follow user \"" + username + "\" ("+follow+") by " + user.username);
             return "{}";
         }
         else
@@ -53,7 +56,7 @@ public class UserAPI {
             if (email != null)
             {
                 // TODO: save email in the database
-                System.out.println("Email changed: " + email);
+                logger.info("Email changed: " + email);
             }
             if (password != null)
             {
@@ -61,7 +64,7 @@ public class UserAPI {
                     byte[] password_hash = MessageDigest.getInstance("SHA-256").digest(password.getBytes("UTF-8"));
                     String password_hash_b64 = java.util.Base64.getEncoder().encodeToString(password_hash);
                     // TODO: save password in the database
-                    System.out.println("Password changed: " + password_hash_b64);
+                    logger.info("Password changed: " + password_hash_b64);
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while processing password");
                 }
@@ -79,9 +82,10 @@ public class UserAPI {
                 }
                 try {
                     byte[] image_bytes = image.getBytes();
+                    @SuppressWarnings("unused")
                     String image_b64 = java.util.Base64.getEncoder().encodeToString(image_bytes);
                     // TODO: save image in the database    
-                    System.out.println("Image uploaded: " + image.getBytes().length/1024f + "KB");
+                    logger.info("Image uploaded: " + image.getBytes().length/1024f + "KB");
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while processing image");
                 }

@@ -49,7 +49,10 @@ a.card:hover::after
 {
     #dummy-loading-game div.img
     {
-        height: 400px;
-        width: unset;
+        width: 200px;
+    }
+
+    a.card img {
+        width: 200px;
     }
 }

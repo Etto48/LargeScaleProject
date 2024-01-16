@@ -13,6 +13,9 @@ function addGames(page) {
             var tempScrollTop = $(window).scrollTop();
             var template = Handlebars.compile(document.getElementById("game-template").innerHTML);
             data.forEach(function (game) {
+                game.user_score = game.customAttributes.user_score;
+                game.description = game.customAttributes.description;
+                game.img = game.customAttributes.img;
                 var href = "/game/" + encodeURIComponent(game.name);
                 game.user_score = game.user_score.toFixed(1);
                 var max_description_length = 500;
