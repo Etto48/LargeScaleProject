@@ -33,10 +33,10 @@ public class CompanyController {
                 model.addAttribute("user", user);
                 model.addAttribute("request", request);
                 Vector<Game> games = new Vector<>();
-                games.add(new Game(0,"The Legend of Zelda: Breath of the Wild", 9f, ""));
-                games.add(new Game(1,"Super Mario Odyssey", 9f, ""));
-                games.add(new Game(2,"Super Smash Bros. Ultimate", 9f, ""));
-                model.addAttribute("games", games);
+                //games.add(new Game(0,"The Legend of Zelda: Breath of the Wild", 9f, ""));
+                //games.add(new Game(1,"Super Mario Odyssey", 9f, ""));
+                //games.add(new Game(2,"Super Smash Bros. Ultimate", 9f, ""));
+                //model.addAttribute("games", games);
                 return "company_panel";
             } else {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a company");

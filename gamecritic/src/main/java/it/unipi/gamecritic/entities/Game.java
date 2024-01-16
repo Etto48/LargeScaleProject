@@ -1,10 +1,99 @@
 package it.unipi.gamecritic.entities;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
+@Document(collection = "videogames")
 public class Game {
-    public Integer id;
+    @Id
+    public ObjectId id;
+    @Field("Name")
     public String name;
+    public String Released;
+
+    @Field("customAttributes")
+    public Map<String, Object> customAttributes = new HashMap<>();
+
+    // other fields, getters, setters
+
+    public Map<String, Object> getCustomAttributes() {
+        return customAttributes;
+    }
+
+    public void setCustomAttributes(Map<String, Object> customAttributes) {
+        this.customAttributes = customAttributes;
+    }
+
+    public void setCustomAttributes(DBObject db) {
+        try {
+            Map map = new ObjectMapper().readValue(db.toString(), HashMap.class);
+            this.customAttributes = map;
+        }
+        catch (Exception e){
+            System.out.println("Errore creazione game object");
+        }
+    }
+
+    /*
+    private static Map<String, Object> setCustomAttributes(DBObject dbObject) {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        for (String key : dbObject.keySet()) {
+            Object value = dbObject.get(key);
+
+            if (value instanceof Document) {
+                // If the value is a Document, convert it to a HashMap recursively
+                Map<String, Object> nestedHashMap = convertDocumentToHashMap((Document) value);
+                hashMap.put(key, nestedHashMap);
+            } else {
+                // If the value is not a Document, simply put it in the HashMap
+                hashMap.put(key, value);
+            }
+        }
+
+        return hashMap;
+    }*/
+    /*
+    private static Map<String, Object> convertDocumentToHashMap(Document document) {
+        Map<String, Object> hashMap = new HashMap<>();
+
+        // Use reflection to access the fields of the Document class
+        Field[] fields = document.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            // Ensure private fields are accessible
+            field.setAccessible(true);
+
+            try {
+                // Get the value of the field from the document
+                Object value = field.get(document);
+
+                // If the value is a nested Document, convert it to a HashMap recursively
+                if (value instanceof Document) {
+                    Map<String, Object> nestedHashMap = convertDocumentToHashMap((Document) value);
+                    hashMap.put(field.getName(), nestedHashMap);
+                } else {
+                    // If the value is not a Document, simply put it in the HashMap
+                    hashMap.put(field.getName(), value);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace(); // Handle the exception as needed
+            }
+        }
+
+        return hashMap;
+    }
+    }*/
+    /*
     public String release;
     public Vector<String> publishers;
     public Vector<String> developers;
@@ -63,5 +152,5 @@ public class Game {
     }
 
     public Game() {
-    }
+    }*/
 }

@@ -1,25 +1,55 @@
 package it.unipi.gamecritic.controllers;
 
-import java.util.Vector;
+import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBObject;
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import it.unipi.gamecritic.entities.Game;
-import it.unipi.gamecritic.entities.Review;
+import it.unipi.gamecritic.repositories.GameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class IndexController {
+	private final GameRepository gameRepository;
+	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+	@Autowired
+	public IndexController(GameRepository gameRepository) {
+		this.gameRepository = gameRepository;
+	}
     @RequestMapping(value = "/")
 	public String home(Model model, HttpServletRequest request, HttpSession session) {
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
+		List<DBObject> game = gameRepository.findByDynamicAttribute("Name","Halo 2");
+		//logger.info(game.get(0).toString());
+
+
+		Game g = new Game();
+		g.setCustomAttributes(game.get(0));
+			ArrayList<?> c = (ArrayList<?>) g.customAttributes.get("reviews");
+			logger.info(c.get(0).getClass().toString());
+			LinkedHashMap<String, ?> l = (LinkedHashMap<String, ?>) c.get(0);
+			for (String k : l.keySet()) {
+				logger.info(k + ": " + l.get(k).toString());
+			}
+
+		if (game == null){
+
+		}
+
 
 		// TODO: get games from database
 		Vector<Game> games = new Vector<Game>();
+		/*
 		games.add(new Game() {
 			{
 				id=0;
@@ -200,7 +230,7 @@ public class IndexController {
 					}
 				};
 			}
-		});
+		});*/
 
 		model.addAttribute("games", games);
 		return "index";

@@ -55,7 +55,7 @@ public class SearchAPI {
             "",
             new Vector<>()
         ));
-
+        /*
         games.add(new Game(
             0,
             "The Legend of Zelda: Breath of the Wild",
@@ -76,7 +76,7 @@ public class SearchAPI {
             9.5f,
             "The Last of Us Part II is a 2020 action-adventure game developed by Naughty Dog and published by Sony Interactive Entertainment for the PlayStation 4. Set five years after The Last of Us (2013), the game focuses on two playable characters in a post-apocalyptic United States whose lives intertwine: Ellie, who sets out for revenge after suffering a tragedy, and Abby, a soldier who becomes involved in a conflict with a cult."
         ));
-
+        */
         // filter results
         for (int i = users.size(); i > 0; i--) {
             if (!users.get(i - 1).username.toLowerCase().contains(query.toLowerCase())) {
