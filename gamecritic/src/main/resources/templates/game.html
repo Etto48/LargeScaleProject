@@ -8,11 +8,11 @@
 	</head>
 	<body class="d-flex flex-column h-100">
 		<header th:replace="~{fragments/general.html :: header}"></header>
-		<div th:replace="~{fragments/score.html :: score_bg(${game.customAttributes.user_score})}"></div>
+		<div th:replace="~{fragments/score.html :: score_bg(${#maps.containsKey(game.customAttributes,'user_score')?game.customAttributes.user_score:null})}"></div>
 		<main class="card container p-0 mt-5 shadow">
 			<div class="d-flex game-card">
 				<div class="bg-black rounded game-image-container overflow-hidden">
-					<img th:src="${game.customAttributes.img}" class="mx-auto d-block h-100" alt="Game Image">
+					<img th:src="${#maps.containsKey(game.customAttributes,'img')?game.customAttributes.img:'/img/missing_game_image.png'}" class="mx-auto d-block h-100" alt="Game Image">
 				</div>
 				<div class="d-flex flex-column game-info-container">
 					<h1 class="fw-bold mt-3 fs-2" th:text="${game.name}"></h1>
@@ -21,7 +21,7 @@
 							<h2 class="fs-4 fw-bold my-auto row">Release</h2>
 							<span class="mx-auto my-auto row" th:text="${game.released}"></span>
 						</div>
-						<div class="d-flex flex-row row">
+						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'genres')}">
 							<h2 class="fs-4 fw-bold my-auto row">Genres</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
 								<div class="d-flex flex-row" th:each="genre : ${game.customAttributes.genres}">
@@ -30,7 +30,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="d-flex flex-row row">
+						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'developers')}">
 							<h2 class="fs-4 fw-bold my-auto row">Developers</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
 								<div class="d-flex flex-row" th:each="developer : ${game.customAttributes.developers}">
@@ -39,7 +39,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="d-flex flex-row row">
+						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'publishers')}">
 							<h2 class="fs-4 fw-bold my-auto row">Publishers</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
 								<div class="d-flex flex-row" th:each="publisher : ${game.customAttributes.publishers}">
@@ -50,14 +50,14 @@
 						</div>
 						<div class="d-flex flex-row row mt-auto mb-3">
 							<h2 class="fs-3 fw-bold my-auto col">User Score</h2>
-							<div class="col">
-								<div th:replace="~{fragments/score.html :: score_big(${game.customAttributes.user_score})}"></div>
+							<div class="col d-flex justify-content-end">
+								<div th:replace="~{fragments/score.html :: score_big(${#maps.containsKey(game.customAttributes,'user_score')?game.customAttributes.user_score:null})}"></div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="d-flex flex-row justify-content-end p-3 gap-2">
+			<div class="d-flex flex-row justify-content-end px-3 my-2 mx-3 gap-2">
 				<button th:replace="~{fragments/like.html :: game}"></button>
 				<button th:replace="~{fragments/delete.html :: game}"></button>
 			</div>
@@ -66,14 +66,14 @@
 			</div>
 			<hr class="mx-3 mb-2 mt-0"/>
 			<div class="d-flex flex-column container">
-				<p th:text="${game.customAttributes.description}"></p>
+				<p th:text="${#maps.containsKey(game.customAttributes,'description')?game.customAttributes.description:null}"></p>
 			</div>
 			<div class="mx-4 mt-2 d-flex flex-row">
 				<h2 class="fs-3">Reviews</h2>
 				<a th:href="'/game/' + ${#uris.escapePathSegment(game.name)} + '/reviews'" class="d-flex flex-row text-secondary"><small class="my-auto ms-3">SHOW ALL</small></a>
 			</div>
 			<hr class="mx-3 mb-2 mt-0"/>
-			<div th:replace="~{fragments/review.html :: top_reviews(${game.customAttributes.top_reviews},'user')}"></div>
+			<div th:replace="~{fragments/review.html :: top_reviews(${#maps.containsKey(game.customAttributes,'top_reviews')?game.customAttributes.top_reviews:null},'user')}"></div>
 			<div th:replace="~{fragments/review.html :: create_new(${game.name})}"></div>
 		</main>
 		<footer th:replace="~{fragments/general.html :: footer}"></footer>

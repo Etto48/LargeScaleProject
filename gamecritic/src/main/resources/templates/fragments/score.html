@@ -2,9 +2,10 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
     <body>
-        <div th:fragment="score_big(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-big" th:classappend="${score > 3 ? score > 6 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light'}" th:attrappend="id=${id != null ? id + '-bg' : ''}">
-            <span th:if="${format == none}" th:text="${#numbers.formatDecimal(score,0,1)}" th:attrappend="id=${id != null ? id : ''}"></span>
-            <span th:if="${format == 'int'}" th:text="${score}" th:attrappend="id=${id != null ? id : ''}"></span>
+        <div th:fragment="score_big(score)" class="ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-big" th:classappend="${score != null? score > 3 ? score > 6 ? 'bg-success text-dark' : 'bg-warning text-dark' : 'bg-danger text-light' : 'bg-secondary text-light'}" th:attrappend="id=${id != null ? id + '-bg' : ''}">
+            <span th:if="${score == null}">-</span>
+            <span th:if="${score != null && format == none}" th:text="${#numbers.formatDecimal(score,0,1)}" th:attrappend="id=${id != null ? id : ''}"></span>
+            <span th:if="${score != null && format == 'int'}" th:text="${score}" th:attrappend="id=${id != null ? id : ''}"></span>
         </div>
 
         <div th:fragment="score_big_empty" class="loading ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-big">
@@ -21,6 +22,9 @@
         {{#score_bad}}
             bg-danger text-light
         {{/score_bad}}
+        {{#score_none}}
+            bg-secondary text-light
+        {{/score_none}}
         ratio ratio-1x1 green-bg rounded d-flex text-center mb-auto score-big">
             <span>{{game.user_score}}</span>
         </div>

@@ -15,14 +15,32 @@ function addGames(page) {
             data.forEach(function (game) {
                 game.user_score = game.customAttributes.user_score;
                 game.description = game.customAttributes.description;
-                game.img = game.customAttributes.img;
+                if (game.customAttributes.img)
+                {
+                    game.img = game.customAttributes.img;
+                }
+                else
+                {
+                    game.img = "/img/missing_game_image.png";
+                }
+                if(game.customAttributes.user_score) 
+                {
+                    game.user_score = game.user_score.toFixed(1);
+                }
+                else 
+                {
+                    game.user_score = "-";
+                }
                 var href = "/game/" + encodeURIComponent(game.name);
-                game.user_score = game.user_score.toFixed(1);
                 var max_description_length = 500;
                 if (game.description.length > max_description_length) {
                     game.description = game.description.substring(0, max_description_length) + "...";
                 }
-                var template_data = {game: game, href, score_good: game.user_score > 6, score_mid: game.user_score > 3 && game.user_score <= 6, score_bad: game.user_score <= 3};
+                var score_good = game.user_score > 6;
+                var score_mid = game.user_score > 3 && game.user_score <= 6;
+                var score_bad = game.user_score <= 3;
+                var score_none = game.user_score == "-";
+                var template_data = {game: game, href, score_good, score_mid, score_bad, score_none};
                 html = template(template_data);
                 $(html).insertBefore("#dummy-loading-game");
             });

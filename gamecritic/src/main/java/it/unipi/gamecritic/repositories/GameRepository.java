@@ -78,6 +78,37 @@ public interface GameRepository extends MongoRepository<Game, String>, CustomGam
                 new Review(2, 2, "Super Smash Bros. Ultimate", "Paperino", "2021-03-03", "This game is awesome!", 3)
             )
         ));
+
+        // some games with missing fileds
+        games.add(new Game(
+            "The Legend of Zelda: Twilight Princess",
+            "2021-03-03",
+            Map.of(
+                "publishers", publishers,
+                "genres", genres,
+                "platforms", platforms,
+                "user_score", 1.9f,
+                "description", "Super Smash Bros. Ultimate is a 2018 crossover fighting game developed by Bandai Namco Studios and Sora Ltd. and published by Nintendo for the Nintendo Switch. It is the fifth installment in the Super Smash Bros. series, succeeding Super Smash Bros. for Nintendo 3DS and Wii U. The game follows the series' traditional style of gameplay: controlling one of the various characters, players must use differing attacks to weaken their opponents and knock them out of an arena.",
+                "img", "https://upload.wikimedia.org/wikipedia/en/0/0e/The_Legend_of_Zelda_Twilight_Princess_Game_Cover.jpg"
+            ),
+            List.of(
+                new Review(0, 2, "Super Smash Bros. Ultimate", "Pippo", "2021-03-03", "This game is awesome!", 9),
+                new Review(1, 2, "Super Smash Bros. Ultimate", "Pluto", "2021-03-03", "This game is awesome!", 6)
+            )
+        ));
+
+        games.add(new Game(
+            "The Legend of Zelda: Skyward Sword",
+            "2021-03-03",
+            Map.of(
+                "publishers", publishers,
+                "developers", developers,
+                "genres", genres,
+                "description", "Super Smash Bros. Ultimate is a 2018 crossover fighting game developed by Bandai Namco Studios and Sora Ltd. and published by Nintendo for the Nintendo Switch. It is the fifth installment in the Super Smash Bros. series, succeeding Super Smash Bros. for Nintendo 3DS and Wii U. The game follows the series' traditional style of gameplay: controlling one of the various characters, players must use differing attacks to weaken their opponents and knock them out of an arena."
+            ),
+            null
+        ));
+
         return games;
     }
 }
