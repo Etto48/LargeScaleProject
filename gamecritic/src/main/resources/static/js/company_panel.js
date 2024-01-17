@@ -135,26 +135,51 @@ function loadGameInfo() {
             name: game_name
         },
         success: function (data) {
-            document.getElementById("game-description-edit").value = data.description;
-            document.getElementById("game-img-edit").value = data.img;
+            if (data.customAttributes.description) {
+                document.getElementById("game-description-edit").value = data.customAttributes.description;
+            } 
+            else
+            {
+                document.getElementById("game-description-edit").value = "";
+            }
+            if (data.customAttributes.img)
+            {
+                document.getElementById("game-img-edit").value = data.customAttributes.img;
+            }
+            else
+            {
+                document.getElementById("game-img-edit").value = "";
+            }
             resetVectorInput("game-genres-edit");
-            data.genres.forEach(function (genre) {
-                addVectorEntryWithId("game-genres-edit", genre);
-            });
+            if(data.customAttributes.genres)
+            {
+                data.customAttributes.genres.forEach(function (genre) {
+                    addVectorEntryWithId("game-genres-edit", genre);
+                });
+            }
             resetVectorInput("game-platforms-edit");
-            data.platforms.forEach(function (platform) {
-                addVectorEntryWithId("game-platforms-edit", platform);
-            });
+            if(data.customAttributes.platforms)
+            {
+                data.customAttributes.platforms.forEach(function (platform) {
+                    addVectorEntryWithId("game-platforms-edit", platform);
+                });
+            }
             resetVectorInput("game-developers-edit");
-            data.developers.forEach(function (developer) {
-                addVectorEntryWithId("game-developers-edit", developer);
-            });
+            if(data.customAttributes.developers)
+            {
+                data.customAttributes.developers.forEach(function (developer) {
+                    addVectorEntryWithId("game-developers-edit", developer);
+                });
+            }
             resetVectorInput("game-publishers-edit");
-            data.publishers.forEach(function (publisher) {
-                addVectorEntryWithId("game-publishers-edit", publisher);
-            });
+            if(data.customAttributes.publishers)
+            {
+                data.customAttributes.publishers.forEach(function (publisher) {
+                    addVectorEntryWithId("game-publishers-edit", publisher);
+                });
+            }
             document.getElementById("game-release-date-edit").type = "date";
-            document.getElementById("game-release-date-edit").value = data.release;
+            document.getElementById("game-release-date-edit").value = data.released;
         },
         error: function (xhr, status, error) {
             console.log("Error loading game info: " + xhr.status + " " + xhr.statusText);

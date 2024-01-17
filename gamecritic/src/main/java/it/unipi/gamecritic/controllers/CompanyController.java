@@ -1,21 +1,35 @@
 package it.unipi.gamecritic.controllers;
 
-import java.util.Vector;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
+import it.unipi.gamecritic.controllers.api.GameAPI;
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.user.Company;
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.GameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CompanyController {
+    @SuppressWarnings("unused")
+    private final GameRepository gameRepository;
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    @Autowired
+    public CompanyController(GameRepository gameRepository) {
+        this.gameRepository = gameRepository;
+    }
+
     @RequestMapping("/company_panel")
     public String company(
         Model model,
@@ -32,10 +46,7 @@ public class CompanyController {
                 model.addAttribute("company", (Company)user);
                 model.addAttribute("user", user);
                 model.addAttribute("request", request);
-                Vector<Game> games = new Vector<>();
-                //games.add(new Game(0,"The Legend of Zelda: Breath of the Wild", 9f, ""));
-                //games.add(new Game(1,"Super Mario Odyssey", 9f, ""));
-                //games.add(new Game(2,"Super Smash Bros. Ultimate", 9f, ""));
+                List<Game> games = GameRepository.getMockupList();
                 model.addAttribute("games", games);
                 return "company_panel";
             } else {
