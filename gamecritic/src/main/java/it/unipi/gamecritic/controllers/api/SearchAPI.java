@@ -3,6 +3,9 @@ package it.unipi.gamecritic.controllers.api;
 import java.util.List;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,17 +17,24 @@ import com.google.gson.GsonBuilder;
 
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.GameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class SearchAPI {
-    
+    @SuppressWarnings("unused")
+    private final GameRepository gameRepository;
+    @SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     public class SearchResponse {
         public List<String> users;
         public List<String> games;
     }
-
+    @Autowired
+	public SearchAPI(GameRepository gameRepository) {
+		this.gameRepository = gameRepository;
+	}
     @RequestMapping(value = "/api/search", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String search(
@@ -35,7 +45,7 @@ public class SearchAPI {
 
         // TODO: search for users and games in the database
         List<User> users = new Vector<>();
-        List<Game> games = new Vector<>();
+        List<Game> games = GameRepository.getMockupList();
 
         users.add(new User(
             "Pippo",
@@ -55,28 +65,6 @@ public class SearchAPI {
             "",
             new Vector<>()
         ));
-        /*
-        games.add(new Game(
-            0,
-            "The Legend of Zelda: Breath of the Wild",
-            9.5f,
-            "The Legend of Zelda: Breath of the Wild is a 2017 action-adventure game developed and published by Nintendo for the Nintendo Switch and Wii U consoles. Breath of the Wild is part of the Legend of Zelda franchise and is set at the end of the series' timeline; the player controls Link, who awakens from a hundred-year slumber to defeat Calamity Ganon before it can destroy the kingdom of Hyrule."
-        ));
-
-        games.add(new Game(
-            1,
-            "The Witcher 3: Wild Hunt",
-            9.5f,
-            "The Witcher 3: Wild Hunt is a 2015 action role-playing game developed and published by Polish developer CD Projekt Red and is based on The Witcher series of fantasy novels written by Andrzej Sapkowski. It is the sequel to the 2011 game The Witcher 2: Assassins of Kings and the third main installment in the The Witcher's video game series, played in an open world with a third-person perspective."
-        ));
-
-        games.add(new Game(
-            2,
-            "The Last of Us Part II",
-            9.5f,
-            "The Last of Us Part II is a 2020 action-adventure game developed by Naughty Dog and published by Sony Interactive Entertainment for the PlayStation 4. Set five years after The Last of Us (2013), the game focuses on two playable characters in a post-apocalyptic United States whose lives intertwine: Ellie, who sets out for revenge after suffering a tragedy, and Abby, a soldier who becomes involved in a conflict with a cult."
-        ));
-        */
         // filter results
         for (int i = users.size(); i > 0; i--) {
             if (!users.get(i - 1).username.toLowerCase().contains(query.toLowerCase())) {
