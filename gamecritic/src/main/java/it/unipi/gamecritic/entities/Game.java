@@ -2,7 +2,12 @@ package it.unipi.gamecritic.entities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
+
+import it.unipi.gamecritic.controllers.api.GameAPI;
+
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -13,6 +18,8 @@ import java.util.Map;
 
 @Document(collection = "videogames")
 public class Game {
+    @SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @Id
     public ObjectId id;
     @Field("Name")
@@ -40,7 +47,7 @@ public class Game {
             customAttributes = map;
         }
         catch (Exception e){
-            System.out.println("Errore creazione game object");
+            logger.error("Error while setting custom attributes: " + e.getMessage());
         }
     }
 
