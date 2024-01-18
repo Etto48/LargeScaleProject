@@ -17,7 +17,7 @@ function closeNewReview() {
 
 function appendComment(parent, user, quote, id) {
     var template = Handlebars.compile(document.getElementById("comment-template").innerHTML);
-    var html = template({comment: {author: user, quote, id}, url: "/user/" + encodeURIComponent(user), img: "/user-image/" + encodeURIComponent(user) + ".png"});
+    var html = template({comment: {author: user, quote, id}, url: "/user/" + encodeURIComponent(user), img: "/user/" + encodeURIComponent(user) + "/image.png"});
     if (parent == null) {
         document.getElementById("main").innerHTML += html;
     } else {

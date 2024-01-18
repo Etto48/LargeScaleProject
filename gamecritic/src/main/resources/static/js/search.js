@@ -67,7 +67,7 @@ function handleSearchResults(data) {
         var new_user = {};
         new_user.username = user;
         new_user.url = "/user/" + encodeURIComponent(user);
-        new_user.img = "/user-image/" + encodeURIComponent(user) + ".png";
+        new_user.img = "/user/" + encodeURIComponent(user) + "/image.png";
         new_data.users.push(new_user);
     });
     var html = template(new_data);

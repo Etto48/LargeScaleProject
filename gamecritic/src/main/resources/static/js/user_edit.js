@@ -14,7 +14,7 @@ function hideUserEditForm() {
 
 function prepareUserEditForm(username) {
     var image_input = $("#user-edit-image-label");
-    var image_url = "/user-image/" + encodeURIComponent(username) + ".png";
+    var image_url = "/user/" + encodeURIComponent(username) + "/image.png";
     var loader = document.getElementById("user-edit-image-loading");
     image_input.css("background-image", "url('" + image_url + "')");
 

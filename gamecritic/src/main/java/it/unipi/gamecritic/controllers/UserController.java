@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,8 +19,13 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
-    @RequestMapping("/user/{username}")
-    public String user(@PathVariable(value="username") String username, Model model, HttpServletRequest request, HttpSession session) {
+    @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
+    public String user(
+        @PathVariable(value="username") String username, 
+        Model model, 
+        HttpServletRequest request, 
+        HttpSession session) 
+    {
         model.addAttribute("request", request);
         model.addAttribute("user", session.getAttribute("user"));
 
@@ -112,8 +118,13 @@ public class UserController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
 
-    @RequestMapping("/user/{username}/reviews")
-    public String user_reviews(@PathVariable(value="username") String username, Model model, HttpServletRequest request, HttpSession session) {
+    @RequestMapping(value = "/user/{username}/reviews", method = RequestMethod.GET)
+    public String user_reviews(
+        @PathVariable(value="username") String username, 
+        Model model, 
+        HttpServletRequest request, 
+        HttpSession session) 
+    {
         model.addAttribute("request", request);
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("viewed_user_username", username);
@@ -275,7 +286,7 @@ public class UserController {
         return "user_reviews";
     }
 
-    @RequestMapping(value = "/user-image/{username}.png", produces = MediaType.IMAGE_PNG_VALUE)
+    @RequestMapping(value = "/user/{username}/image.png", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
     public byte[] user_image(@PathVariable(value="username") String username) {
         // TODO: get user image from database
@@ -293,5 +304,53 @@ public class UserController {
         };
         Integer index = Math.floorMod(username.hashCode(), example.size());
         return java.util.Base64.getDecoder().decode(example.get(index));
+    }
+
+    @RequestMapping(value = "/user/{username}/followers", method = RequestMethod.GET)
+    public String user_followers(
+        @PathVariable(value = "username") String username, 
+        Model model,
+        HttpServletRequest request,
+        HttpSession session) 
+    {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("user", user);
+        model.addAttribute("request", request);
+        model.addAttribute("viewed_user_username", username);
+
+        // TODO: get followers from database
+        Vector<User> followers = new Vector<User>();
+        followers.add(new User("Pippo", null, null, null));
+        followers.add(new User("Pluto", null, null, null));
+        followers.add(new User("Paperino", null, null, null));
+
+        model.addAttribute("follows", followers);
+        model.addAttribute("mode", "followers");
+
+        return "user_follow_list";
+    }
+
+    @RequestMapping(value = "/user/{username}/followed", method = RequestMethod.GET)
+    public String user_followed(
+        @PathVariable(value = "username") String username, 
+        Model model,
+        HttpServletRequest request,
+        HttpSession session) 
+    {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("user", user);
+        model.addAttribute("request", request);
+        model.addAttribute("viewed_user_username", username);
+
+        // TODO: get followed from database
+        Vector<User> followed = new Vector<User>();
+        followed.add(new User("Pippo", null, null, null));
+        followed.add(new User("Pluto", null, null, null));
+        followed.add(new User("Paperino", null, null, null));
+
+        model.addAttribute("follows", followed);
+        model.addAttribute("mode", "followed");
+
+        return "user_follow_list";
     }
 }

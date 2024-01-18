@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark">
+  	<head>
+		<meta th:replace="~{fragments/general.html :: head}"/>
+		<title th:if="${mode == 'followers'}" th:text="'GameCritic - ' + ${viewed_user_username} + ' - Followers'"></title>
+        <title th:if="${mode == 'followed'}" th:text="'GameCritic - ' + ${viewed_user_username} + ' - Followed'"></title>
+		<link rel="stylesheet" href="/css/user_follow_list.css">
+        <script src="/js/follow.js"></script>
+	</head>
+	<body class="d-flex flex-column h-100">
+        <header th:replace="~{fragments/general.html :: header}"></header>
+        <nav class="d-flex flex-column">
+            <h1 th:if="${mode == 'followers'}" class="mx-auto" th:text="${viewed_user_username}+'\'s followers'"></h1>
+            <h1 th:if="${mode == 'followed'}" class="mx-auto" th:text="'Followed by '+${viewed_user_username}"></h1>
+            <hr class="mt-1"/>
+        </nav>
+        <main id="main" class="container d-flex flex-column gap-3">
+            <div th:each="follow : ${follows}" class="card shadow">
+                <div class="d-flex flex-row card-body gap-2">
+                    <img class="rounded-circle me-2 my-auto" th:src="'/user/' + ${#uris.escapePathSegment(follow.username)} + '/image.png'" alt="User Image" width="40" height="40">
+                    <a class="fs-3 fw-bold my-auto text-light" th:href="'/user/' + ${#uris.escapePathSegment(follow.username)}" th:text="${follow.username}"></a>
+                    <button th:replace="~{fragments/follow.html :: user(${follow.username})}"></button>
+                </div>
+            </div>
+        </main>
+        <footer th:replace="~{fragments/general.html :: footer}"></footer>
+    </body>
+</html>

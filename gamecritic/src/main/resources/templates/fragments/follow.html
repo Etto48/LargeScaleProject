@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <body>
-        <button th:fragment="user" th:if="${user != null && user.username != viewed_user.username}" class="btn btn-secondary" type="button" onclick="">
-            <i class="bi bi-person-fill-add me-2"></i>Follow
+        <button th:fragment="user(target_username)" th:if="${user != null && user.username != target_username}" class="btn btn-secondary follow-button" type="button" th:id="'follow-button-'+${target_username}">
+            <i class="bi bi-person-fill-add me-2"></i><span class="is-following-text">Follow</span>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                prepareFollowButton(/*[[${target_username}]]*/ null);
+                /*]]>*/
+            </script>
         </button>
     </body>
 </html>

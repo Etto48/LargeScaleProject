@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.google.gson.Gson;
+
 import it.unipi.gamecritic.entities.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -34,6 +36,28 @@ public class UserAPI {
             // TODO: follow user
             logger.info("Follow user \"" + username + "\" ("+follow+") by " + user.username);
             return "{}";
+        }
+        else
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in to perform this action");
+        }
+    }
+
+    @RequestMapping(value = "/api/user/follows", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public String user_follows(
+        @RequestParam(value = "username", required = true) String username,
+        HttpServletRequest request,
+        HttpSession session)
+    {
+        User user = (User) session.getAttribute("user");
+        if (user != null)
+        {
+            // TODO: check if user follows username
+            boolean follows = true;
+
+            Gson gson = new Gson();
+            return gson.toJson(follows);
         }
         else
         {
