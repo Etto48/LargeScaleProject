@@ -21,7 +21,7 @@
                         <a th:href="'/user/' + ${#uris.escapePathSegment(viewed_user.username)} + '/followers'" class="underline-on-hover fs-4 text-secondary"><small>Followers</small></a>
                         <a th:href="'/user/' + ${#uris.escapePathSegment(viewed_user.username)} + '/followed'" class="underline-on-hover fs-4 text-secondary"><small>Followed</small></a>
                     </div>
-                    <div class="d-flex flex-row mt-auto justify-content-end gap-2">
+                    <div class="d-flex flex-row mt-md-auto mt-4 justify-content-end gap-2">
                         <button th:replace="~{fragments/follow.html :: user(viewed_user.username)}"></button>
                         <button th:replace="~{fragments/edit.html :: user}"></button>
                         <button th:replace="~{fragments/delete.html :: user}"></button>
