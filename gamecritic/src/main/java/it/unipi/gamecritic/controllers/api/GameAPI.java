@@ -82,13 +82,12 @@ public class GameAPI {
         if (kind.equals("hottest"))
         {
             logger.info("page" + page.toString());
-            List<DBObject> l = gameRepository.findVideoGamesWithMostReviewsLastMonth(offset);
+            List<DBObject> l = gameRepository.findVideoGamesWithMostReviewsLastMonth(offset,"month");
             if (l.isEmpty()){
                 logger.info("vuota!");
             }
             List<Game> g = new ArrayList<>();
             for (DBObject o : l) {
-                logger.info("testing: "+o.toString());
                 Game ga = new Game(o);
                 g.add(ga);
             }

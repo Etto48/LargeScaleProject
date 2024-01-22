@@ -12,6 +12,6 @@ public interface CustomGameRepository {
 
     List<DBObject> findLatest(Integer offset);
     List<DBObject> findBest(Integer offset);
-    List<DBObject> findVideoGamesWithMostReviewsLastMonth(Integer offset);
+    List<DBObject> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
     //List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
 }

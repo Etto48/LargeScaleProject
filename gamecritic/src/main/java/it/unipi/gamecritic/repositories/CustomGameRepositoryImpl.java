@@ -65,26 +65,25 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         return mongoTemplate.find(query, DBObject.class, "videogames");
     }
     @Override
-    public List<DBObject> findVideoGamesWithMostReviewsLastMonth(Integer offset) {
+    public List<DBObject> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest) {
         LocalDate currentDate = LocalDate.now();
-
-        // Subtract 6 months from the current date
-        LocalDate sixMonthsAgo = currentDate.minusMonths(6);
-
-        // Format the date as a string in the desired format
+        LocalDate ago;
+        if (latest.equals("month")){
+            ago = currentDate.minusMonths(6);
+            // per ora metto 6 per testing
+        }
+        else {
+            ago = currentDate.minusMonths(6);
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDate = sixMonthsAgo.format(formatter);
-
-        // Print the result
-        System.out.println("Date of 6 months ago: " + formattedDate);
-
+        String formattedDate = ago.format(formatter);
         Aggregation a = Aggregation.newAggregation(Aggregation.stage("{\n" +
                 "    $unwind: \"$reviews\",\n" +
                 "  }"),
                 Aggregation.stage("{\n" +
                 "    $match: {\n" +
                 "      \"reviews.date\": {\n" +
-                "        $gte: \"2023-07-21\",\n" +
+                "        $gte: \""+formattedDate+"\",\n" +
                 "      },\n" +
                 "    },\n" +
                 "  }"),
@@ -132,9 +131,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "      10,\n" +
                         "  }")
         );
-        System.out.println("woinwoirgioreoin");
         List<DBObject> result = mongoTemplate.aggregate(a, "videogames", DBObject.class).getMappedResults();
-        System.out.println("after");
         return result;
 
     }
