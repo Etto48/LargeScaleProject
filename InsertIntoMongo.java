@@ -7,9 +7,11 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class InsertIntoMongo {
 
@@ -65,7 +67,7 @@ public class InsertIntoMongo {
         }
     }
 
-    private static void insertDynamicData(JsonNode jsonNode, MongoCollection<Document> collection) {
+    private static void insertDynamicData(JsonNode jsonNode, MongoCollection<Document> collection) throws ParseException {
         List<Document> documents = new ArrayList<>();
         int howManyReviews = 0;
 
@@ -88,10 +90,55 @@ public class InsertIntoMongo {
                             howManyReviews++;
                             nestedDocument.append("id",reviewIdCounter++);
                             nestedDocument.append("score", arrayNode.get("score").asDouble());
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            Date datt = dateFormat.parse(arrayNode.get("date").asText());
+                            nestedDocument.append("date", outputFormat.format(datt));
                         }
                         arrayValues.add(nestedDocument);
                     }
                     document.append(fieldName,arrayValues);
+                }
+                else if (fieldName.equals("Released")){
+
+
+                    SimpleDateFormat inputFormat1 = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+                    SimpleDateFormat inputFormat2 = new SimpleDateFormat("MMMM yyyy", Locale.US);
+                    SimpleDateFormat inputFormat3 = new SimpleDateFormat("yyyy", Locale.US);
+                    SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    String inputString = fieldValue.asText();
+                    int indexOfOn = inputString.indexOf("on");
+                    String dat = inputString.substring(0,indexOfOn);
+                    dat = dat.replaceAll("(?<=\\d)(st|nd|rd|th)", "");
+                    String plat = inputString.substring(indexOfOn+3,inputString.length());
+                    Document d = new Document();
+                    Date date = new Date();
+                    try {
+                        date = inputFormat1.parse(dat);
+                    }
+                    catch (Exception e){
+                        try {
+                            date = inputFormat2.parse(dat);
+                        }
+                        catch (Exception e1){
+                            try {
+                                date = inputFormat3.parse(dat);
+                            }
+                            catch (Exception e2){
+                                System.out.println("exception "+dat);
+                                date = null;
+                            }
+                        }
+                    }
+                    String standardizedDate;
+                    if (date != null){
+                        standardizedDate = outputFormat.format(date);
+                    }
+                    else standardizedDate = "Undated";
+                    d.append("Release Date", standardizedDate);
+                    d.append("Platform", plat);
+                    document.append(fieldName,d);
+
                 }
                 else if (fieldValue.isObject() || fieldValue.isTextual()) {
                     document.append(fieldName, fieldValue.asText());
@@ -156,5 +203,30 @@ public class InsertIntoMongo {
         }
 
         collection.insertMany(documents);
+    }
+
+    private static Date extractDate(String input, SimpleDateFormat dateFormat) throws ParseException {
+        // Define a regular expression pattern for date
+        Pattern datePattern = Pattern.compile("(\\w+\\s+\\d{1,2}(st|nd|rd|th)?,\\s*\\d{4})");
+        Matcher matcher = datePattern.matcher(input);
+
+        if (matcher.find()) {
+            String dateString = matcher.group(1).replaceAll("(st|nd|rd|th)", "");
+            return dateFormat.parse(dateString);
+        } else {
+            throw new ParseException("Date not found in the input string", 0);
+        }
+    }
+
+    private static String extractPlatform(String input) {
+        // Define a regular expression pattern for platform
+        Pattern platformPattern = Pattern.compile("on\\s+(.*)$");
+        Matcher matcher = platformPattern.matcher(input);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return "Platform information not found";
+        }
     }
 }
