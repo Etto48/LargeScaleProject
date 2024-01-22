@@ -1,6 +1,28 @@
 var current_page = 0;
 var kind = "hottest";
 
+function addSuggestions() {
+    $.ajax({
+        url: "/api/user/suggest",
+        type: "GET",
+        success: function (data) {
+            if(Object.keys(data).length == 0 || (data.users.length == 0 && data.games.length == 0)) {
+                return;
+            }
+            var template = Handlebars.compile(document.getElementById("suggestions-template").innerHTML);
+            data.users.forEach(function (user) {
+                user.url = "/user/" + encodeURIComponent(user.username);
+                user.img = "/user/" + encodeURIComponent(user.username) + "/image.png";
+            });
+            var html = template(data);
+            $(html).insertBefore("#dummy-loading-game");
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+
 function addGames(page) {
     $.ajax({
         url: "/api/top-games",
@@ -44,6 +66,7 @@ function addGames(page) {
                 html = template(template_data);
                 $(html).insertBefore("#dummy-loading-game");
             });
+            addSuggestions();
             window.scroll({top: tempScrollTop, behavior: "instant"});
         },
         error: function (error) {

@@ -21,6 +21,29 @@ a.card:hover::after
     background-color: rgba(255, 255, 255, 0.05);
 }
 
+a.card.user-suggestion img
+{
+    width: 100%;
+    aspect-ratio: 1/1;
+}
+
+div.user-suggestion-container
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+@media (min-width: 768px)
+{
+    div.user-suggestion-container
+    {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr;
+    }   
+}
+
+
 @keyframes loading
 {
     0%
@@ -43,6 +66,10 @@ a.card:hover::after
     background: linear-gradient(90deg, #212529 0px, #2c3034 25%, #212529 50%, #2c3034 75%, #212529 100%);
     background-size: 200% 100%;
     animation: loading 1s infinite linear;
+}
+
+a.card img {
+    object-fit: cover;
 }
 
 @media (min-width: 768px)

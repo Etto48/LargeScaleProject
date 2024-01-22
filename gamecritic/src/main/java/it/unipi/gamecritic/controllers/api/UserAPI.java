@@ -1,6 +1,7 @@
 package it.unipi.gamecritic.controllers.api;
 
 import java.security.MessageDigest;
+import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +120,44 @@ public class UserAPI {
         else
         {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in to perform this action");
+        }
+    }
+
+    public class SuggestionResponse
+    {
+        public Vector<User> users;
+        public Vector<String> games;
+        public SuggestionResponse(Vector<User> users, Vector<String> games)
+        {
+            this.users = users;
+            this.games = games;
+        }
+    }
+
+    @RequestMapping(value = "/api/user/suggest", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public String user_suggest(
+        HttpServletRequest request,
+        HttpSession session)
+    {
+        User user = (User) session.getAttribute("user");
+        if (user != null)
+        {
+            // TODO: get suggestions from db
+            Vector<User> suggestions = new Vector<User>();
+            suggestions.add(new User("Pippo", null, null, null));
+            suggestions.add(new User("Pluto", null, null, null));
+            suggestions.add(new User("Paperino", null, null, null));
+            suggestions.add(new User("Topolino", null, null, null));
+
+            SuggestionResponse response = new SuggestionResponse(suggestions, null);
+            Gson gson = new Gson();
+            return gson.toJson(response);
+        }
+        else
+        {
+            Gson gson = new Gson();
+            return gson.toJson(new SuggestionResponse(null, null));
         }
     }
 }
