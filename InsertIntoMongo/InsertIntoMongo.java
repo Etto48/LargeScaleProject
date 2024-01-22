@@ -81,6 +81,9 @@ public class InsertIntoMongo {
                 String fieldName = fieldNames.next();
 
                 JsonNode fieldValue = gameNode.get(fieldName);
+                if (fieldName.equals("Official Site")){
+                    continue;
+                }
                 if (fieldName.equals("reviews")) {
                     List<Object> arrayValues = new ArrayList<>();
 
