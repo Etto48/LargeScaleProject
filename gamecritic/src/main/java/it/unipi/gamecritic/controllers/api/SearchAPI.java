@@ -48,7 +48,7 @@ public class SearchAPI {
         List<Game> games = new ArrayList<>();
         for (DBObject o : l) {
             Game ga = new Game(o);
-            g.add(ga);
+            games.add(ga);
         }
         // TODO: search for users and games in the database
         List<User> users = new Vector<>();

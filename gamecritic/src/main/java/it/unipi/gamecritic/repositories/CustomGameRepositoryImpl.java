@@ -43,7 +43,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
 
     @Override
     public List<DBObject> search(String query){
-        Criteria criteria = Criteria.where("name").regex(query, "i");
+        Criteria criteria = Criteria.where("Name").regex(query, "i");
         Query q = new Query(criteria).limit(10);
 
         return mongoTemplate.find(q, DBObject.class, "videogames");
