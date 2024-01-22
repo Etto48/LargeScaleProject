@@ -1,8 +1,15 @@
 package it.unipi.gamecritic.controllers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
+import com.mongodb.DBObject;
+import it.unipi.gamecritic.controllers.api.GameAPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,16 +25,30 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class GameController {
+	private final GameRepository gameRepository;
+	private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
+	@Autowired
+	public GameController(GameRepository gameRepository) {
+		this.gameRepository = gameRepository;
+	}
     @RequestMapping(value = "/game/{name}")
     public String game(@PathVariable(value="name") String name, Model model, HttpServletRequest request, HttpSession session) {
 
 
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
+		List<String> excludedNames = Arrays.asList("Description", "reviews", "user_reviews","img","user_review","id","_id","Top3ReviewsByLikes","reviewCount","Released","Publishers","Developers","Critics");
+		model.addAttribute("excludedNames", excludedNames);
 
 		// TODO: get the game from the db
-        List<Game> games = GameRepository.getMockupList();
+		List<DBObject> dbo = gameRepository.findByDynamicAttribute("Name",name);
+		List<Game> games = new ArrayList<>();
+		for (DBObject o : dbo) {
+			Game ga = new Game(o);
+			games.add(ga);
+		}
+        //List<Game> games = GameRepository.getMockupList();
 	
 		boolean found = false;
 		for (Game game : games) {

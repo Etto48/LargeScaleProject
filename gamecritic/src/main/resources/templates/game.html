@@ -8,7 +8,7 @@
 	</head>
 	<body class="d-flex flex-column h-100">
 		<header th:replace="~{fragments/general.html :: header}"></header>
-		<div th:replace="~{fragments/score.html :: score_bg(${#maps.containsKey(game.customAttributes,'user_score')?game.customAttributes.user_score:null})}"></div>
+		<div th:replace="~{fragments/score.html :: score_bg(${#maps.containsKey(game.customAttributes,'user_review')?game.customAttributes.user_review:null})}"></div>
 		<main class="card container p-0 mt-5 shadow">
 			<div class="d-flex game-card">
 				<div class="bg-black rounded game-image-container overflow-hidden">
@@ -30,28 +30,28 @@
 								</div>
 							</div>
 						</div>
-						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'developers')}">
+						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'Developers')}">
 							<h2 class="fs-4 fw-bold my-auto row">Developers</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
-								<div class="d-flex flex-row" th:each="developer : ${game.customAttributes.developers}">
-									<div th:text="${developer}"></div>
-									<div class="me-2" th:unless="${developerStat.last}">,</div>
+								<div class="d-flex flex-row" th:each="Developer : ${game.customAttributes.Developers}">
+									<div th:text="${Developer}"></div>
+									<div class="me-2" th:unless="${DeveloperStat.last}">,</div>
 								</div>
 							</div>
 						</div>
-						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'publishers')}">
+						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'Publishers')}">
 							<h2 class="fs-4 fw-bold my-auto row">Publishers</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
-								<div class="d-flex flex-row" th:each="publisher : ${game.customAttributes.publishers}">
-									<div th:text="${publisher}"></div>
-									<div class="me-2" th:unless="${publisherStat.last}">,</div>
+								<div class="d-flex flex-row" th:each="Publisher : ${game.customAttributes.Publishers}">
+									<div th:text="${Publisher}"></div>
+									<div class="me-2" th:unless="${PublisherStat.last}">,</div>
 								</div>
 							</div>
 						</div>
 						<div class="d-flex flex-row row mt-auto mb-3">
 							<h2 class="fs-3 fw-bold my-auto col">User Score</h2>
 							<div class="col d-flex justify-content-end">
-								<div th:replace="~{fragments/score.html :: score_big(${#maps.containsKey(game.customAttributes,'user_score')?game.customAttributes.user_score:null})}"></div>
+								<div th:replace="~{fragments/score.html :: score_big(${#maps.containsKey(game.customAttributes,'user_review')?game.customAttributes.user_review:null})}"></div>
 							</div>
 						</div>
 					</div>
@@ -66,7 +66,22 @@
 			</div>
 			<hr class="mx-3 mb-2 mt-0"/>
 			<div class="d-flex flex-column container">
-				<p th:text="${#maps.containsKey(game.customAttributes,'description')?game.customAttributes.description:null}"></p>
+				<p th:text="${#maps.containsKey(game.customAttributes,'Description')?game.customAttributes.Description:null}"></p>
+			</div>
+			<div class="d-flex flex-row row" th:if="${#maps.size(game.customAttributes) > 0}">
+				<h2 class="fs-4 fw-bold my-auto row">Other Info</h2>
+				<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
+					<div class="d-flex flex-row" th:each="entry : ${game.customAttributes}">
+						<!-- Check if the attribute name is not in the excludedNames list -->
+						<div th:unless="${#lists.contains(excludedNames, entry.key)}"
+							 style="margin-bottom: 2rem; margin-left: 2rem;">
+							<div class="fw-bold me-1" th:text="${entry.key}"></div>
+							<div th:each="ob : ${entry.value}">
+								<div th:text="${ob}"></div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="mx-4 mt-2 d-flex flex-row">
 				<h2 class="fs-3">Reviews</h2>
