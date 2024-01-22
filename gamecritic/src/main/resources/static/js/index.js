@@ -32,11 +32,14 @@ function addGames(page) {
             kind: kind
         },
         success: function (data) {
+            console.log(data)
             var tempScrollTop = $(window).scrollTop();
             var template = Handlebars.compile(document.getElementById("game-template").innerHTML);
             data.forEach(function (game) {
-                game.user_score = game.customAttributes.user_score;
-                game.description = game.customAttributes.description;
+
+                console.log("user_review: "+game.customAttributes.user_review)
+                game.user_score = game.customAttributes.user_review;
+                game.description = game.customAttributes.Description;
                 if (game.customAttributes.img)
                 {
                     game.img = game.customAttributes.img;
@@ -45,7 +48,7 @@ function addGames(page) {
                 {
                     game.img = "/img/missing_game_image.png";
                 }
-                if(game.customAttributes.user_score) 
+                if(game.customAttributes.user_review)
                 {
                     game.user_score = game.user_score.toFixed(1);
                 }
@@ -55,8 +58,8 @@ function addGames(page) {
                 }
                 var href = "/game/" + encodeURIComponent(game.name);
                 var max_description_length = 500;
-                if (game.description.length > max_description_length) {
-                    game.description = game.description.substring(0, max_description_length) + "...";
+                if (game.customAttributes.Description.length > max_description_length) {
+                    game.description = game.customAttributes.Description.substring(0, max_description_length) + "...";
                 }
                 var score_good = game.user_score > 6;
                 var score_mid = game.user_score > 3 && game.user_score <= 6;
@@ -95,6 +98,7 @@ function setKind(new_kind) {
 document.addEventListener("DOMContentLoaded", function (event) {
     function checkAndAddGames() {
         if (canSee("dummy-loading-game")) {
+            console.log("helloooo!");
             addGames(current_page++);
         }
     }

@@ -1,7 +1,14 @@
 package it.unipi.gamecritic.controllers.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBObject;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,23 +73,50 @@ public class GameAPI {
         @RequestParam(value = "page", required = true) Integer page,
         @RequestParam(value = "kind", required = true) String kind,
         HttpServletRequest request,
-        HttpSession session) 
+        HttpSession session)
     {
         
-        //Integer num_results = 10;
-        //Integer offset = page * num_results;
-
+        Integer num_results = 10;
+        Integer offset = page * num_results;
+        logger.info("GAMEAPI request");
         if (kind.equals("hottest"))
         {
-
+            logger.info("page" + page.toString());
+            List<DBObject> l = gameRepository.findVideoGamesWithMostReviewsLastMonth(offset,"month");
+            if (l.isEmpty()){
+                logger.info("vuota!");
+            }
+            List<Game> g = new ArrayList<>();
+            for (DBObject o : l) {
+                Game ga = new Game(o);
+                g.add(ga);
+            }
+            Gson gson = new Gson();
+            return gson.toJson(g);
         }
         else if (kind.equals("newest"))
         {
-
+            logger.info("page" + page.toString());
+            List<DBObject> l = gameRepository.findLatest(offset);
+            List<Game> g = new ArrayList<>();
+            for (DBObject o : l) {
+                Game ga = new Game(o);
+                g.add(ga);
+            }
+            Gson gson = new Gson();
+            return gson.toJson(g);
         }
         else if (kind.equals("best"))
         {
-
+            logger.info("page" + page.toString());
+            List<DBObject> l = gameRepository.findBest(offset);
+            List<Game> g = new ArrayList<>();
+            for (DBObject o : l) {
+                Game ga = new Game(o);
+                g.add(ga);
+            }
+            Gson gson = new Gson();
+            return gson.toJson(g);
         }
         
         // TODO: get the top games from the database

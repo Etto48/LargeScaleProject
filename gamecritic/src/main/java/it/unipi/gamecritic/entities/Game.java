@@ -63,6 +63,20 @@ public class Game {
         this.customAttributes = tmp_additionalAttributes;
     }
 
+    public Game (DBObject db){
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = new ObjectMapper().readValue(db.toString(), HashMap.class);
+            customAttributes = map;
+        } catch (Exception e) {
+            logger.error("Error while setting custom attributes: " + e.getMessage());
+        }
+        this.name = customAttributes.get("Name").toString();
+        logger.info("new name: "+this.name);
+        this.released = ((HashMap<String,Object>) customAttributes.get("Released")).get("Release Date").toString();
+        logger.info("new released: "+this.released);
+    }
+
     /*
     private static Map<String, Object> setCustomAttributes(DBObject dbObject) {
         Map<String, Object> hashMap = new HashMap<>();
