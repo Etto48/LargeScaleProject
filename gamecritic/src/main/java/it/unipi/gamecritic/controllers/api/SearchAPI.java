@@ -1,8 +1,10 @@
 package it.unipi.gamecritic.controllers.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +44,15 @@ public class SearchAPI {
         HttpServletRequest request, 
         HttpSession session) {
 
-
+        List<DBObject> l = gameRepository.search(query);
+        List<Game> games = new ArrayList<>();
+        for (DBObject o : l) {
+            Game ga = new Game(o);
+            g.add(ga);
+        }
         // TODO: search for users and games in the database
         List<User> users = new Vector<>();
-        List<Game> games = GameRepository.getMockupList();
+        //List<Game> games = GameRepository.getMockupList();
 
         users.add(new User(
             "Pippo",
