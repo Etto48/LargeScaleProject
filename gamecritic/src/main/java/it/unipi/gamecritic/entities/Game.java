@@ -18,7 +18,6 @@ import java.util.Map;
 
 @Document(collection = "videogames")
 public class Game {
-    @SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @Id
     public ObjectId id;
