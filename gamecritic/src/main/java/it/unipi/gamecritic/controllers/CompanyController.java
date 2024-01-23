@@ -75,8 +75,7 @@ public class CompanyController {
         {
             avg_top_score = null;
         }
-        logger.info("iearlbegbpiea: " + avg_top_score.getClass());
-        logger.info("topscoreavg: "+avg_top_score);
+
         model.addAttribute("company", company_object);
         model.addAttribute("avg_top_score", 8.9);
         return "company";

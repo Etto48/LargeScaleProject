@@ -40,13 +40,13 @@ public class CustomCompanyRepositoryImpl implements CustomCompanyRepository{
     @Override
     public void updateTop3Games(){
         System.out.println("pre bulkops");
-        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, Company.class);
+        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, Company.class, "companies");
         System.out.println("post bulkops");
         for (Company company : mongoTemplate.findAll(Company.class, "companies")){
             System.out.println("inside findall cycle");
             Query query = new Query();
             Criteria criteria = new Criteria().orOperator(
-                    Criteria.where("Producers").is(company.name),
+                    Criteria.where("Publishers").is(company.name),
                     Criteria.where("Developers").is(company.name)
             );
             query.addCriteria(criteria);
@@ -75,13 +75,8 @@ public class CustomCompanyRepositoryImpl implements CustomCompanyRepository{
             Update update = new Update().set("Top3Games", games);
             System.out.println("company id: "+company._id);
             System.out.println("list: "+games.toString());
-            //Query q = Query.query(Criteria.where("_id").is(company._id));
-            //Company cg = mongoTemplate.find(q,Company.class,"companies")
-            mongoTemplate.updateFirst(Query.query(Criteria.where("_id").is(company._id)),update, Company.class, "companies");
-            break;
-            //bulkOps.updateOne(Query.query(Criteria.where("_id").is(company._id)), update);
-            //break;
+            bulkOps.updateOne(Query.query(Criteria.where("_id").is(company._id)), update);
         }
-        //bulkOps.execute();
+        bulkOps.execute();
     }
 }

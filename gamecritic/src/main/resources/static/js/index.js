@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     function checkAndAddGames() {
         if (canSee("dummy-loading-game")) {
             console.log("helloooo!");
-            //addGames(current_page++);
+            addGames(current_page++);
         }
     }
     addGames(current_page++);

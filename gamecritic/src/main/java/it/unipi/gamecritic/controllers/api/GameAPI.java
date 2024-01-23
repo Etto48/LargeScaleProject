@@ -105,7 +105,7 @@ public class GameAPI {
         }
         else if (kind.equals("best"))
         {
-            companyRepository.updateTop3Games();
+            //companyRepository.updateTop3Games();
             logger.info("page" + page.toString());
             List<DBObject> l = gameRepository.findBest(offset);
             List<Game> g = new ArrayList<>();
