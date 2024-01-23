@@ -11,7 +11,7 @@
 		<div th:replace="~{fragments/score.html :: score_bg(${#maps.containsKey(game.customAttributes,'user_review')?game.customAttributes.user_review:null})}"></div>
 		<main class="card container p-0 mt-5 shadow">
 			<div class="d-flex game-card">
-				<div class="bg-black rounded game-image-container overflow-hidden">
+				<div class="bg-black rounded game-image-container overflow-hidden align-self-stretch">
 					<img th:src="${#maps.containsKey(game.customAttributes,'img')?game.customAttributes.img:'/img/missing_game_image.png'}" class="mx-auto d-block h-100" alt="Game Image">
 				</div>
 				<div class="d-flex flex-column game-info-container">
@@ -21,30 +21,30 @@
 							<h2 class="fs-4 fw-bold my-auto row">Release</h2>
 							<span class="mx-auto my-auto row" th:text="${game.released}"></span>
 						</div>
-						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'genres')}">
+						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'Genre')}">
 							<h2 class="fs-4 fw-bold my-auto row">Genres</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
-								<div class="d-flex flex-row" th:each="genre : ${game.customAttributes.genres}">
-									<div th:text="${genre}"></div>
-									<div class="me-2" th:unless="${genreStat.last}">,</div>
+								<div class="d-inline" th:each="genre : ${game.customAttributes.Genre}">
+									<div class="d-inline" th:text="${genre}"></div>
+									<div class="d-inline me-2" th:unless="${genreStat.last}">,</div>
 								</div>
 							</div>
 						</div>
 						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'Developers')}">
 							<h2 class="fs-4 fw-bold my-auto row">Developers</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
-								<div class="d-flex flex-row" th:each="Developer : ${game.customAttributes.Developers}">
-									<a class="text-light" th:text="${Developer}" th:href="'/company/'+${#uris.escapePathSegment(Developer)}"></a>
-									<div class="me-2" th:unless="${DeveloperStat.last}">,</div>
+								<div class="d-inline" th:each="Developer : ${game.customAttributes.Developers}">
+									<a class="text-light d-inline" th:text="${Developer}" th:href="'/company/'+${#uris.escapePathSegment(Developer)}"></a>
+									<div class="me-2 d-inline" th:unless="${DeveloperStat.last}">,</div>
 								</div>
 							</div>
 						</div>
 						<div class="d-flex flex-row row" th:if="${#maps.containsKey(game.customAttributes,'Publishers')}">
 							<h2 class="fs-4 fw-bold my-auto row">Publishers</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
-								<div class="d-flex flex-row" th:each="Publisher : ${game.customAttributes.Publishers}">
-									<a class="text-light" th:text="${Publisher}" th:href="'/company/'+${#uris.escapePathSegment(Publisher)}"></a>
-									<div class="me-2" th:unless="${PublisherStat.last}">,</div>
+								<div class="d-inline" th:each="Publisher : ${game.customAttributes.Publishers}">
+									<a class="text-light d-inline" th:text="${Publisher}" th:href="'/company/'+${#uris.escapePathSegment(Publisher)}"></a>
+									<div class="me-2 d-inline" th:unless="${PublisherStat.last}">,</div>
 								</div>
 							</div>
 						</div>
