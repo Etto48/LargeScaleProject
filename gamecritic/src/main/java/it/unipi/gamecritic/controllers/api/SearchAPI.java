@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Vector;
 
 import com.mongodb.DBObject;
-import it.unipi.gamecritic.entities.user.Company;
+import it.unipi.gamecritic.entities.Company;
 import it.unipi.gamecritic.repositories.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +54,7 @@ public class SearchAPI {
             Game ga = new Game(o);
             games.add(ga);
         }
-        List<DBObject> c = companyRepository.search(query);
-        List<Company> companies = new ArrayList<>();
-        for (DBObject o : c) {
-            Company com = new Company(o);
-            companies.add(com);
-        }
+        List<Company> companies = companyRepository.search(query);
         // TODO: search for users and games in the database
         List<User> users = new Vector<>();
         //List<Game> games = GameRepository.getMockupList();
