@@ -24,7 +24,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
             throw new IllegalArgumentException("Query cannot be null");
         }
         Criteria criteria = Criteria.where("Name").regex(query, "i");
-        Query q = new Query(criteria).limit(10);
+        Query q = new Query(criteria).limit(10).with(Sort.by(Sort.Order.desc("reviewCount")));
 
         return mongoTemplate.find(q, DBObject.class, "videogames");
     }
