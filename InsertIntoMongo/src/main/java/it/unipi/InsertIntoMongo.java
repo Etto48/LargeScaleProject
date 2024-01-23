@@ -1,5 +1,3 @@
-package it.unipi;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
@@ -9,7 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import java.io.File;
-import java.io.IOException;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -18,37 +16,17 @@ import java.util.regex.Pattern;
 
 public class InsertIntoMongo {
 
-    private static int gameIdCounter = 1;
-    private static int reviewIdCounter = 1;
-    private static int commentIdCounter = 1;
+    private static BigInteger gameIdCounter = new BigInteger("1");
+    private static BigInteger reviewIdCounter = new BigInteger("1");
+    private static BigInteger commentIdCounter = new BigInteger("1");
 
-    private static String gamesPath = "./games/commented_games.json";
-    private static String companiesPath = "./companies/combined_companies.json";
-    private static String configPath = "./InsertIntoMongo/config.json";
+    private static BigInteger companyIdCounter = new BigInteger("1");
+
+    private static String gamesPath ="C:/Users/filip/Downloads/commented_games.json";
+    private static String companiesPath = "C:\\Users\\filip\\Documents\\Large scale databases\\mongodb_exercise\\htmlRetrieve\\venv\\Scripts\\combined\\combined_companies.json";
+
 
     public static void main(String[] args) {
-
-        
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            // Load JSON config file
-            JsonNode config = objectMapper.readTree(new File(configPath));
-            JsonNode games = config.get("gamesPath");
-            if (games != null)
-            {
-                gamesPath = games.asText();
-            }
-            JsonNode companies = config.get("companiesPath");
-            if (companies != null)
-            {
-                companiesPath = companies.asText();
-            }
-            System.out.println("Loaded config from file");
-        }
-        catch (IOException e)
-        {
-            System.out.println("Could not load config from file, using default values");
-        }
         try {
             // Connect to MongoDB (assuming it's running locally on the default port)
             MongoClientURI uri = new MongoClientURI("mongodb://localhost:27017");
@@ -56,6 +34,7 @@ public class InsertIntoMongo {
             MongoDatabase database = mongoClient.getDatabase("GameCritic");
 
             // Load JSON data from a file
+            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(new File(gamesPath));
 
             // Insert data into the "videogames" collection
@@ -80,6 +59,8 @@ public class InsertIntoMongo {
                 JsonNode companyNode = companiesIterator.next();
                 Document companyDocument = Document.parse(companyNode.toString());
                 companyDocument.append("Top3Games",new ArrayList<>());
+                companyDocument.append("_id", companyIdCounter.toString());
+                companyIdCounter = companyIdCounter.add(new BigInteger("1"));
                 collection.insertOne(companyDocument);
             }
 
@@ -97,8 +78,9 @@ public class InsertIntoMongo {
 
         for (JsonNode gameNode : jsonNode) {
             howManyReviews = 0;
-            Document document = new Document("id", gameIdCounter++);
-
+            System.out.println(gameIdCounter.toString());
+            Document document = new Document("_id", gameIdCounter.toString());
+            gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             // Iterate through the dynamic attributes before "reviews"
             Iterator<String> fieldNames = gameNode.fieldNames();
             while (fieldNames.hasNext()) {
@@ -115,7 +97,8 @@ public class InsertIntoMongo {
                         Document nestedDocument = new Document();
                         if (arrayNode.isObject()) {
                             howManyReviews++;
-                            nestedDocument.append("id",reviewIdCounter++);
+                            nestedDocument.append("reviewId",reviewIdCounter.toString());
+                            reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));
                             nestedDocument.append("score", arrayNode.get("score").asDouble());
                             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                             SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -190,18 +173,20 @@ public class InsertIntoMongo {
 
     private static void insertReviews(JsonNode jsonNode, MongoCollection<Document> reviewsCollection, MongoCollection<Document> videoGamesCollection) {
         List<Document> documents = new ArrayList<>();
-        gameIdCounter = 1;
-        reviewIdCounter = 1;
+        gameIdCounter = new BigInteger("1");
+        reviewIdCounter = new BigInteger("1");
         for (JsonNode gameNode : jsonNode) {
-            int gameId = gameIdCounter++; // Get the id of the game being reviewed
+            String gameId = gameIdCounter.toString(); // Get the id of the game being reviewed
+            gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             for (JsonNode reviewNode : gameNode.get("reviews")) {
-                Document document = new Document("id", reviewIdCounter++)
+                Document document = new Document("_id", reviewIdCounter.toString())
                         .append("gameId", gameId)
                         .append("score", reviewNode.get("score").asText())
                         .append("quote", reviewNode.get("quote").asText())
                         .append("author", reviewNode.get("author").asText())
                         .append("date", reviewNode.get("date").asText())
                         .append("source", reviewNode.get("source").asText());
+                reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));
 
                 documents.add(document);
             }
@@ -212,17 +197,19 @@ public class InsertIntoMongo {
 
     private static void insertComments(JsonNode jsonNode, MongoCollection<Document> collection) {
         List<Document> documents = new ArrayList<>();
-        reviewIdCounter = 1;
+        reviewIdCounter = new BigInteger("1");
         for (JsonNode gameNode : jsonNode) {
             for (JsonNode reviewNode : gameNode.get("reviews")) {
-                int reviewId = reviewIdCounter++; // Get the id of the review being commented
+                String reviewId = reviewIdCounter.toString(); // Get the id of the review being commented
+                reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));
                 for (JsonNode commentNode : reviewNode.get("comments")) {
-                    Document document = new Document("id", commentIdCounter++)
+                    Document document = new Document("_id", commentIdCounter.toString())
                             .append("reviewId", reviewId)
                             .append("author", commentNode.get("author").asText())
                             .append("quote", commentNode.get("quote").asText())
                             .append("date", commentNode.get("date").asText())
                             .append("responses", new ArrayList<>());
+                    commentIdCounter = commentIdCounter.add(new BigInteger("1"));
 
                     documents.add(document);
                 }
@@ -232,7 +219,6 @@ public class InsertIntoMongo {
         collection.insertMany(documents);
     }
 
-    @SuppressWarnings("unused")
     private static Date extractDate(String input, SimpleDateFormat dateFormat) throws ParseException {
         // Define a regular expression pattern for date
         Pattern datePattern = Pattern.compile("(\\w+\\s+\\d{1,2}(st|nd|rd|th)?,\\s*\\d{4})");
@@ -246,7 +232,6 @@ public class InsertIntoMongo {
         }
     }
 
-    @SuppressWarnings("unused")
     private static String extractPlatform(String input) {
         // Define a regular expression pattern for platform
         Pattern platformPattern = Pattern.compile("on\\s+(.*)$");
