@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,7 +39,7 @@ public class CompanyController {
 
     @RequestMapping(value = "/company/{company}", method = RequestMethod.GET)
     public String company(
-        @PathParam("company") String company,
+        @PathVariable(value="company") String company,
         Model model,
         HttpServletRequest request,
         HttpSession session)
@@ -47,6 +48,7 @@ public class CompanyController {
         model.addAttribute("user", user);
         model.addAttribute("request", request);
         // TODO: find company in db
+        logger.info("company: "+company);
         List<Company> comp = companyRepository.findByDynamicAttribute("Name",company);
         logger.info("size of comp: "+comp.size());
         model.addAttribute("company", comp.get(0));
