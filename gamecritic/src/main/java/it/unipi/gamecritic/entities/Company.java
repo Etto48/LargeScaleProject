@@ -1,8 +1,11 @@
 package it.unipi.gamecritic.entities;
 
+import org.bson.Document;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 public class Company {
@@ -15,9 +18,9 @@ public class Company {
     @Field("imglink")
     public String img;
     @Field("Top3Games")
-    public Vector<Game> top_games;
+    public List<Document> top_games;
 
-    public Company(String name, String overview, String img, Vector<Game> top_games) {
+    public Company(String name, String overview, String img, List<Document> top_games) {
         this.name = name;
         this.overview = overview;
         this.img = img;
