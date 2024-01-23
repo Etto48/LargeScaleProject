@@ -34,7 +34,7 @@
 							<h2 class="fs-4 fw-bold my-auto row">Developers</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
 								<div class="d-flex flex-row" th:each="Developer : ${game.customAttributes.Developers}">
-									<div th:text="${Developer}"></div>
+									<a class="text-light" th:text="${Developer}" th:href="'/company/'+${#uris.escapePathSegment(Developer)}"></a>
 									<div class="me-2" th:unless="${DeveloperStat.last}">,</div>
 								</div>
 							</div>
@@ -43,7 +43,7 @@
 							<h2 class="fs-4 fw-bold my-auto row">Publishers</h2>
 							<div class="d-flex flex-wrap ms-0 ps-0 me-auto my-auto">
 								<div class="d-flex flex-row" th:each="Publisher : ${game.customAttributes.Publishers}">
-									<div th:text="${Publisher}"></div>
+									<a class="text-light" th:text="${Publisher}" th:href="'/company/'+${#uris.escapePathSegment(Publisher)}"></a>
 									<div class="me-2" th:unless="${PublisherStat.last}">,</div>
 								</div>
 							</div>
