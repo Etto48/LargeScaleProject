@@ -24,7 +24,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
             throw new IllegalArgumentException("Query cannot be null");
         }
         Criteria criteria = Criteria.where("Name").regex(query, "i");
-        Query q = new Query(criteria).limit(10);
+        Query q = new Query(criteria).limit(10).with(Sort.by(Sort.Order.desc("reviewCount")));
 
         return mongoTemplate.find(q, DBObject.class, "videogames");
     }
@@ -33,6 +33,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         if(attributeName == null || attributeValue == null) {
             return null;
         }
+        System.out.println("in game findDynamic");
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));
 
         return mongoTemplate.find(query, DBObject.class, "videogames");

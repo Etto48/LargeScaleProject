@@ -3,12 +3,14 @@ package it.unipi.gamecritic.controllers;
 import java.util.List;
 import java.util.Vector;
 
+import it.unipi.gamecritic.repositories.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,16 +29,18 @@ import jakarta.websocket.server.PathParam;
 public class CompanyController {
     @SuppressWarnings("unused")
     private final GameRepository gameRepository;
+    private final CompanyRepository companyRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @Autowired
-    public CompanyController(GameRepository gameRepository) {
+    public CompanyController(GameRepository gameRepository, CompanyRepository companyRepository) {
         this.gameRepository = gameRepository;
+        this.companyRepository = companyRepository;
     }
 
     @RequestMapping(value = "/company/{company}", method = RequestMethod.GET)
     public String company(
-        @PathParam("company") String company,
+        @PathVariable(value = "company") String company,
         Model model,
         HttpServletRequest request,
         HttpSession session)
@@ -44,7 +48,8 @@ public class CompanyController {
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
         model.addAttribute("request", request);
-        // TODO: find company in db   
+        // TODO: find company in db
+        List<Company> comp = companyRepository.findByDynamicAttribute("Name", company);
         List<Game> games = GameRepository.getMockupList();
         Float avg_top_score = 0.0f;
         Integer games_with_score = 0;
@@ -68,7 +73,7 @@ public class CompanyController {
         }
         Company company_object = new Company("Nintendo Co., Ltd.", "Nintendo, founded originally by Fusajiro Yamauchi in Kyoto, Japan as Nintendo Koppai, has been around since 1889. The company originally sold high-quality Japanese playing cards (hanafuda) and later dabbled in toys and early electronic games. In the 1980's, Nintendo president Hiroshi Yamauchi wanted to change its direction. After seeking advice from his toy designers, they decided to turn towards developing arcade games. After the success of Donkey Kong in 1981, they decided to stay in the market. After its continuing success, they wanted to develop their own console, one that looked nice, and one that could be bought by the Japanese consumer for $99 US. This eventually went to $199, but it still sold very well. Nintendo went on to splitting its research and development into 4 distinct divisions, each of them were responsible for certain aspects of Nintendo's console. Nintendo is best known for creating Mario, Donkey Kong, Zelda, Metroid, and Pokémon series of games, all of them are million sellers. Nintendo is also known for engineering the Nintendo Entertainment System/Famicom, Super Nintendo/Super Famicom, Nintendo 64, Nintendo GameCube, Nintendo Wii, Nintendo Wii U, Game Boy, Game Boy Color, Game Boy Advance, Nintendo DS, Nintendo 3DS, Pokémon mini, and Virtual Boy.",
         "https://cdn.mobygames.com/08886c88-bc74-11ed-bde2-02420a000179.webp", top_games);
-        model.addAttribute("company", company_object);
+        model.addAttribute("company", comp.get(0));
         model.addAttribute("avg_top_score", avg_top_score);
         return "company";
     }

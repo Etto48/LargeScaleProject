@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Vector;
 
 import com.mongodb.DBObject;
+import it.unipi.gamecritic.entities.Company;
+import it.unipi.gamecritic.repositories.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import jakarta.servlet.http.HttpSession;
 public class SearchAPI {
     @SuppressWarnings("unused")
     private final GameRepository gameRepository;
+    private final CompanyRepository companyRepository;
     @SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     public class SearchResponse {
@@ -34,8 +37,9 @@ public class SearchAPI {
         public List<String> games;
     }
     @Autowired
-	public SearchAPI(GameRepository gameRepository) {
+	public SearchAPI(GameRepository gameRepository, CompanyRepository companyRepository) {
 		this.gameRepository = gameRepository;
+        this.companyRepository = companyRepository;
 	}
     @RequestMapping(value = "/api/search", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -50,6 +54,7 @@ public class SearchAPI {
             Game ga = new Game(o);
             games.add(ga);
         }
+        List<Company> companies = companyRepository.search(query);
         // TODO: search for users and games in the database
         List<User> users = new Vector<>();
         //List<Game> games = GameRepository.getMockupList();
