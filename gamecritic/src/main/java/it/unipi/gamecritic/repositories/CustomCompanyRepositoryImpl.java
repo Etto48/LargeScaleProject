@@ -17,13 +17,13 @@ public class CustomCompanyRepositoryImpl implements CustomCompanyRepository{
         this.mongoTemplate = mongoTemplate;
     }
     @Override
-    public List<DBObject> findByDynamicAttribute(String attributeName, String attributeValue) {
+    public List<Company> findByDynamicAttribute(String attributeName, String attributeValue) {
         if (attributeName == null || attributeValue == null) {
             return null;
         }
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));
-
-        return mongoTemplate.find(query, DBObject.class, "companies");
+        List<DBObject> l = mongoTemplate.find(query, DBObject.class, "companies");
+        return mongoTemplate.find(query, Company.class, "companies");
     }
     @Override
     public List<Company> search(String query){

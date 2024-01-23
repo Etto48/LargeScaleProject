@@ -2,6 +2,8 @@ package it.unipi.gamecritic.controllers;
 
 import java.util.List;
 
+import it.unipi.gamecritic.entities.Company;
+import it.unipi.gamecritic.repositories.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,13 @@ import jakarta.websocket.server.PathParam;
 public class CompanyController {
     @SuppressWarnings("unused")
     private final GameRepository gameRepository;
+    private final CompanyRepository companyRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @Autowired
-    public CompanyController(GameRepository gameRepository) {
+    public CompanyController(GameRepository gameRepository, CompanyRepository companyRepository) {
         this.gameRepository = gameRepository;
+        this.companyRepository = companyRepository;
     }
 
     @RequestMapping(value = "/company/{company}", method = RequestMethod.GET)
@@ -42,8 +46,10 @@ public class CompanyController {
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
         model.addAttribute("request", request);
-        // TODO: find company in db   
-        model.addAttribute("company", null);
+        // TODO: find company in db
+        List<Company> comp = companyRepository.findByDynamicAttribute("Name",company);
+        logger.info("size of comp: "+comp.size());
+        model.addAttribute("company", comp.get(0));
         return "company";
     }
 
