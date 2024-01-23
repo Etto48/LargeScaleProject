@@ -45,5 +45,16 @@
                 }
             </script>
         </button>
+        <button id="delete-game-button" th:fragment="company" th:if="${user != null && user.getAccountType() == 'Admin'}" class="btn btn-danger" type="button">
+            <i class="bi bi-trash-fill me-2"></i>Delete
+            <script th:inline="javascript">
+                document.getElementById('delete-company-button').onclick = function()
+                {
+                    /*<![CDATA[*/
+                    deleteCompany(/*[[${company.name}]]*/ null);
+                    /*]]>*/
+                }
+            </script>
+        </button>
         </body>
 </html>
