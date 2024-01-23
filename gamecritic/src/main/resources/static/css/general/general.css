@@ -1,6 +1,11 @@
 @import url("/css/general/interfaces/vector_input.css");
 @import url("/css/general/interfaces/stats.css");
 
+@font-face {
+    font-family: "Xolonium";
+    src: url('https://fonts.cdnfonts.com/s/27045/Xolonium-Regular.woff') format('woff');
+}
+
 .score-bg {
     height: 38vh;
 }

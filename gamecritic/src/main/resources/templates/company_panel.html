@@ -36,6 +36,11 @@
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-platforms-edit','Add a platform')}"></div>
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-genres-edit','Add a genre')}"></div>
 				<input id="game-release-date-edit" type="text" class="form-control" placeholder="Game Release Date" onfocus="(this.type='date')" onblur="if(this.value==''){this.type='text'}"/>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-narrative-edit','Add a narrative type')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-gameplay-edit','Add a gameplay type')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-perspective-edit','Add a perspective')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-setting-edit','Add a setting')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-input-devices-edit','Add a supported input device')}"></div>
 				<input type="submit" class="btn btn-primary" value="Edit"/>
 			</form>
 			<form id="publish-form" class="w-100 flex-column gap-2 mw-600px">
@@ -47,6 +52,11 @@
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-platforms-publish','Add a platform')}"></div>
 				<div th:replace="~{fragments/interfaces.html :: vector_input('game-genres-publish','Add a genre')}"></div>
 				<input id="game-release-date-publish" type="text" class="form-control" placeholder="Game Release Date" onfocus="(this.type='date')" onblur="if(this.value==''){this.type='text'}"/>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-narrative-publish','Add a narrative type')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-gameplay-publish','Add a gameplay type')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-perspective-publish','Add a perspective')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-setting-publish','Add a setting')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-input-devices-publish','Add a supported input device')}"></div>
 				<input type="submit" class="btn btn-primary" value="Publish"/>
 			</form>
 			<form id="delete-form" class="w-100 flex-column gap-2 mw-600px">

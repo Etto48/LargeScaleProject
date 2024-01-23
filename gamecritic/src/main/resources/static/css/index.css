@@ -82,4 +82,9 @@ a.card img {
     a.card img {
         width: 200px;
     }
+
+    a.card .card-body
+    {
+        width: calc(100% - 200px);
+    }
 }

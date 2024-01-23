@@ -8,6 +8,12 @@
     width="61.44pt"
     height="61.44pt"
     viewBox="0 0 61.44 61.44">
+<style type="text/css">
+  @font-face {
+    font-family: "Xolonium";
+    src: url('https://fonts.cdnfonts.com/s/27045/Xolonium-Regular.woff') format('woff');
+  }
+</style>
 <defs/>
 <rect id="shape0" transform="translate(12, 12)" fill="url(#gradient0)" fill-rule="evenodd" stroke="url(#gradient0)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" width="37.44" height="37.44"/>
 <defs>

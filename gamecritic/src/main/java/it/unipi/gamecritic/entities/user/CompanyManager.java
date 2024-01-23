@@ -1,6 +1,6 @@
 package it.unipi.gamecritic.entities.user;
 
-public class Company extends User {
+public class CompanyManager extends User {
     @Override 
     public String getAccountType() {
         return "Company";

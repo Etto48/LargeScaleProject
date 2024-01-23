@@ -65,6 +65,11 @@ function publishGame() {
         developers: getVectorEntries("game-developers-publish"),
         publishers: getVectorEntries("game-publishers-publish"),
         release_date: document.getElementById("game-release-date-publish").value,
+        narrative: getVectorEntries("game-narrative-publish"),
+        gameplay: getVectorEntries("game-gameplay-publish"),
+        perspective: getVectorEntries("game-perspective-publish"),
+        setting: getVectorEntries("game-setting-publish"),
+        input_devices: getVectorEntries("game-input-devices-publish"),
     }
 
     $.ajax({
@@ -115,11 +120,21 @@ function resetForms() {
     resetVectorInput("game-platforms-edit");
     resetVectorInput("game-developers-edit");
     resetVectorInput("game-publishers-edit");
+    resetVectorInput("game-narrative-edit");
+    resetVectorInput("game-gameplay-edit");
+    resetVectorInput("game-perspective-edit");
+    resetVectorInput("game-setting-edit");
+    resetVectorInput("game-input-devices-edit");
     document.getElementById("publish-form").reset();
     resetVectorInput("game-genres-publish");
     resetVectorInput("game-platforms-publish");
     resetVectorInput("game-developers-publish");
     resetVectorInput("game-publishers-publish");
+    resetVectorInput("game-narrative-publish");
+    resetVectorInput("game-gameplay-publish");
+    resetVectorInput("game-perspective-publish");
+    resetVectorInput("game-setting-publish");
+    resetVectorInput("game-input-devices-publish");
     document.getElementById("delete-form").reset();
 }
 
@@ -135,8 +150,8 @@ function loadGameInfo() {
             name: game_name
         },
         success: function (data) {
-            if (data.customAttributes.description) {
-                document.getElementById("game-description-edit").value = data.customAttributes.description;
+            if (data.customAttributes.Description) {
+                document.getElementById("game-description-edit").value = data.customAttributes.Description;
             } 
             else
             {
@@ -151,35 +166,70 @@ function loadGameInfo() {
                 document.getElementById("game-img-edit").value = "";
             }
             resetVectorInput("game-genres-edit");
-            if(data.customAttributes.genres)
+            if(data.customAttributes.Genres)
             {
-                data.customAttributes.genres.forEach(function (genre) {
+                data.customAttributes.Genres.forEach(function (genre) {
                     addVectorEntryWithId("game-genres-edit", genre);
                 });
             }
             resetVectorInput("game-platforms-edit");
-            if(data.customAttributes.platforms)
+            if(data.customAttributes.Platforms)
             {
-                data.customAttributes.platforms.forEach(function (platform) {
+                data.customAttributes.Platforms.forEach(function (platform) {
                     addVectorEntryWithId("game-platforms-edit", platform);
                 });
             }
             resetVectorInput("game-developers-edit");
-            if(data.customAttributes.developers)
+            if(data.customAttributes.Developers)
             {
-                data.customAttributes.developers.forEach(function (developer) {
+                data.customAttributes.Developers.forEach(function (developer) {
                     addVectorEntryWithId("game-developers-edit", developer);
                 });
             }
             resetVectorInput("game-publishers-edit");
-            if(data.customAttributes.publishers)
+            if(data.customAttributes.Publishers)
             {
-                data.customAttributes.publishers.forEach(function (publisher) {
+                data.customAttributes.Publishers.forEach(function (publisher) {
                     addVectorEntryWithId("game-publishers-edit", publisher);
                 });
             }
             document.getElementById("game-release-date-edit").type = "date";
             document.getElementById("game-release-date-edit").value = data.released;
+            resetVectorInput("game-narrative-edit");
+            if(data.customAttributes.Narrative)
+            {
+                data.customAttributes.narrative.forEach(function (narrative) {
+                    addVectorEntryWithId("game-narrative-edit", narrative);
+                });
+            }
+            resetVectorInput("game-gameplay-edit");
+            if(data.customAttributes.Gameplay)
+            {
+                data.customAttributes.Gameplay.forEach(function (gameplay) {
+                    addVectorEntryWithId("game-gameplay-edit", gameplay);
+                });
+            }
+            resetVectorInput("game-perspective-edit");
+            if(data.customAttributes.Perspective)
+            {
+                data.customAttributes.perspective.forEach(function (perspective) {
+                    addVectorEntryWithId("game-perspective-edit", perspective);
+                });
+            }
+            resetVectorInput("game-setting-edit");
+            if(data.customAttributes.Setting)
+            {
+                data.customAttributes.Setting.forEach(function (setting) {
+                    addVectorEntryWithId("game-setting-edit", setting);
+                });
+            }
+            resetVectorInput("game-input-devices-edit");
+            if(data.customAttributes["Input Devices Supported"])
+            {
+                data.customAttributes["Input Devices Supported"].forEach(function (input_device) {
+                    addVectorEntryWithId("game-input-devices-edit", input_device);
+                });
+            }
         },
         error: function (xhr, status, error) {
             console.log("Error loading game info: " + xhr.status + " " + xhr.statusText);

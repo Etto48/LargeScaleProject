@@ -28,12 +28,12 @@ public interface GameRepository extends MongoRepository<Game, String>, CustomGam
             "The Legend of Zelda: Breath of the Wild", 
             "2021-03-03",
             Map.of(
-                "publishers", publishers,
-                "developers", developers,
-                "genres", genres,
-                "platforms", platforms,
+                "Publishers", publishers,
+                "Developers", developers,
+                "Genres", genres,
+                "Platforms", platforms,
                 "user_score", 9f,
-                "description", "The Legend of Zelda: Breath of the Wild is an action-adventure game developed and published by Nintendo, released for the Nintendo Switch and Wii U consoles on March 3, 2017. Breath of the Wild is set at the end of the Zelda timeline; the player controls Link, who awakens from a hundred-year slumber to defeat Calamity Ganon before it can destroy the kingdom of Hyrule.",
+                "Description", "The Legend of Zelda: Breath of the Wild is an action-adventure game developed and published by Nintendo, released for the Nintendo Switch and Wii U consoles on March 3, 2017. Breath of the Wild is set at the end of the Zelda timeline; the player controls Link, who awakens from a hundred-year slumber to defeat Calamity Ganon before it can destroy the kingdom of Hyrule.",
                 "img", "https://upload.wikimedia.org/wikipedia/en/c/c6/The_Legend_of_Zelda_Breath_of_the_Wild.jpg"
             ),
             List.of(
@@ -46,12 +46,12 @@ public interface GameRepository extends MongoRepository<Game, String>, CustomGam
             "Super Mario Odyssey", 
             "2021-03-03",
             Map.of(
-                "publishers", publishers,
-                "developers", developers,
-                "genres", genres,
-                "platforms", platforms,
+                "Publishers", publishers,
+                "Developers", developers,
+                "Genres", genres,
+                "Platforms", platforms,
                 "user_score", 5.2f,
-                "description", "Super Mario Odyssey is a 2017 platform game developed and published by Nintendo for the Nintendo Switch. An entry in the Super Mario series, it follows Mario and Cappy, a sentient hat that allows Mario to control other characters and objects, as they journey across various worlds to save Princess Peach from his nemesis Bowser, who plans to forcibly marry her.",
+                "Description", "Super Mario Odyssey is a 2017 platform game developed and published by Nintendo for the Nintendo Switch. An entry in the Super Mario series, it follows Mario and Cappy, a sentient hat that allows Mario to control other characters and objects, as they journey across various worlds to save Princess Peach from his nemesis Bowser, who plans to forcibly marry her.",
                 "img", "https://upload.wikimedia.org/wikipedia/it/thumb/8/8d/Super_Mario_Odyssey.jpg/555px-Super_Mario_Odyssey.jpg?20171117094306"
             ),
             List.of(
@@ -64,12 +64,12 @@ public interface GameRepository extends MongoRepository<Game, String>, CustomGam
             "Super Smash Bros. Ultimate", 
             "2021-03-03",
             Map.of(
-                "publishers", publishers,
-                "developers", developers,
-                "genres", genres,
-                "platforms", platforms,
+                "Publishers", publishers,
+                "Developers", developers,
+                "Genres", genres,
+                "Platforms", platforms,
                 "user_score", 1.9f,
-                "description", "Super Smash Bros. Ultimate is a 2018 crossover fighting game developed by Bandai Namco Studios and Sora Ltd. and published by Nintendo for the Nintendo Switch. It is the fifth installment in the Super Smash Bros. series, succeeding Super Smash Bros. for Nintendo 3DS and Wii U. The game follows the series' traditional style of gameplay: controlling one of the various characters, players must use differing attacks to weaken their opponents and knock them out of an arena.",
+                "Description", "Super Smash Bros. Ultimate is a 2018 crossover fighting game developed by Bandai Namco Studios and Sora Ltd. and published by Nintendo for the Nintendo Switch. It is the fifth installment in the Super Smash Bros. series, succeeding Super Smash Bros. for Nintendo 3DS and Wii U. The game follows the series' traditional style of gameplay: controlling one of the various characters, players must use differing attacks to weaken their opponents and knock them out of an arena.",
                 "img", "https://upload.wikimedia.org/wikipedia/en/5/50/Super_Smash_Bros._Ultimate.jpg"
             ),
             List.of(
@@ -84,11 +84,11 @@ public interface GameRepository extends MongoRepository<Game, String>, CustomGam
             "The Legend of Zelda: Twilight Princess",
             "2021-03-03",
             Map.of(
-                "publishers", publishers,
-                "genres", genres,
-                "platforms", platforms,
+                "Publishers", publishers,
+                "Genres", genres,
+                "Platforms", platforms,
                 "user_score", 1.9f,
-                "description", "Super Smash Bros. Ultimate is a 2018 crossover fighting game developed by Bandai Namco Studios and Sora Ltd. and published by Nintendo for the Nintendo Switch. It is the fifth installment in the Super Smash Bros. series, succeeding Super Smash Bros. for Nintendo 3DS and Wii U. The game follows the series' traditional style of gameplay: controlling one of the various characters, players must use differing attacks to weaken their opponents and knock them out of an arena.",
+                "Description", "Super Smash Bros. Ultimate is a 2018 crossover fighting game developed by Bandai Namco Studios and Sora Ltd. and published by Nintendo for the Nintendo Switch. It is the fifth installment in the Super Smash Bros. series, succeeding Super Smash Bros. for Nintendo 3DS and Wii U. The game follows the series' traditional style of gameplay: controlling one of the various characters, players must use differing attacks to weaken their opponents and knock them out of an arena.",
                 "img", "https://upload.wikimedia.org/wikipedia/en/0/0e/The_Legend_of_Zelda_Twilight_Princess_Game_Cover.jpg"
             ),
             List.of(
@@ -101,10 +101,10 @@ public interface GameRepository extends MongoRepository<Game, String>, CustomGam
             "The Legend of Zelda: Skyward Sword",
             "2021-03-03",
             Map.of(
-                "publishers", publishers,
-                "developers", developers,
-                "genres", genres,
-                "description", "Super Smash Bros. Ultimate is a 2018 crossover fighting game developed by Bandai Namco Studios and Sora Ltd. and published by Nintendo for the Nintendo Switch. It is the fifth installment in the Super Smash Bros. series, succeeding Super Smash Bros. for Nintendo 3DS and Wii U. The game follows the series' traditional style of gameplay: controlling one of the various characters, players must use differing attacks to weaken their opponents and knock them out of an arena."
+                "Publishers", publishers,
+                "Developers", developers,
+                "Genres", genres,
+                "Description", "Super Smash Bros. Ultimate is a 2018 crossover fighting game developed by Bandai Namco Studios and Sora Ltd. and published by Nintendo for the Nintendo Switch. It is the fifth installment in the Super Smash Bros. series, succeeding Super Smash Bros. for Nintendo 3DS and Wii U. The game follows the series' traditional style of gameplay: controlling one of the various characters, players must use differing attacks to weaken their opponents and knock them out of an arena."
             ),
             null
         ));

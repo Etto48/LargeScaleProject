@@ -20,6 +20,9 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
 
     @Override
     public List<DBObject> search(String query){
+        if(query == null) {
+            throw new IllegalArgumentException("Query cannot be null");
+        }
         Criteria criteria = Criteria.where("Name").regex(query, "i");
         Query q = new Query(criteria).limit(10);
 

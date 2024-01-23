@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import it.unipi.gamecritic.entities.user.Admin;
-import it.unipi.gamecritic.entities.user.Company;
+import it.unipi.gamecritic.entities.user.CompanyManager;
 import it.unipi.gamecritic.entities.user.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ public class AccountAPI {
         User user = null;
         if(username.equals("company"))
         {
-            user = new Company();
+            user = new CompanyManager();
         }
         else if (username.equals("admin"))
         {

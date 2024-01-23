@@ -61,7 +61,7 @@ function addGames(page) {
                     game.user_score = "-";
                 }
                 var href = "/game/" + encodeURIComponent(game.name);
-                var max_description_length = 500;
+                var max_description_length = 400;
                 if (game.customAttributes.Description.length > max_description_length) {
                     game.description = game.customAttributes.Description.substring(0, max_description_length) + "...";
                 }
