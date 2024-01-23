@@ -54,6 +54,7 @@ public class InsertIntoMongo {
             MongoClientURI uri = new MongoClientURI("mongodb://localhost:27017");
             MongoClient mongoClient = new MongoClient(uri);
             MongoDatabase database = mongoClient.getDatabase("GameCritic");
+            database.drop();
 
             // Load JSON data from a file
             JsonNode jsonNode = objectMapper.readTree(new File(gamesPath));
