@@ -66,10 +66,20 @@
                             </a>
                         {{/each}}
                     {{/if}}
+                    {{#if companies}}
+                        <div class="search-header">Companies</div><hr class="mx-0 mt-0 mb-1"/>
+                        {{#each companies}}
+                            <a class="company-result search-result" href="{{url}}">
+                                {{name}}
+                            </a>
+                        {{/each}}
+                    {{/if}}
                     {{#unless games}}
-                        {{#unless users}}
-                            <div class="search-header">No Results</div>
-                        {{/unless}}
+                    {{#unless users}}
+                    {{#unless companies}}
+                        <div class="search-header">No Results</div>
+                    {{/unless}}
+                    {{/unless}}
                     {{/unless}}
                 </script>
                 <script>prepareSearch();</script> 

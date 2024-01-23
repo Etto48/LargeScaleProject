@@ -5,6 +5,17 @@
     object-fit: cover;
 }
 
+.company-image-container
+{
+    height: 400px;
+}
+
+.company-image-container img
+{
+    width: 100%;
+    object-fit: contain;
+}
+
 @media (max-width: 767px)
 {
     .top-games img

@@ -55,7 +55,8 @@ function handleSearchResults(data) {
     var template = Handlebars.compile(document.getElementById("search-result-template").innerHTML);
     new_data = {
         games: [],
-        users: []
+        users: [],
+        companies: []
     }
     data.games.forEach(function (game) {
         var new_game = {};
@@ -69,6 +70,12 @@ function handleSearchResults(data) {
         new_user.url = "/user/" + encodeURIComponent(user);
         new_user.img = "/user/" + encodeURIComponent(user) + "/image.png";
         new_data.users.push(new_user);
+    });
+    data.companies.forEach(function (company) {
+        var new_company = {};
+        new_company.name = company;
+        new_company.url = "/company/" + encodeURIComponent(company);
+        new_data.companies.push(new_company);
     });
     var html = template(new_data);
 

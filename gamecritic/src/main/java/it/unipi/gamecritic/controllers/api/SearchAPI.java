@@ -35,6 +35,7 @@ public class SearchAPI {
     public class SearchResponse {
         public List<String> users;
         public List<String> games;
+        public List<String> companies;
     }
     @Autowired
 	public SearchAPI(GameRepository gameRepository, CompanyRepository companyRepository) {
@@ -55,7 +56,7 @@ public class SearchAPI {
             games.add(ga);
         }
         List<Company> companies = companyRepository.search(query);
-        // TODO: search for users and games in the database
+        // TODO: search for users in the database
         List<User> users = new Vector<>();
         //List<Game> games = GameRepository.getMockupList();
 
@@ -92,11 +93,15 @@ public class SearchAPI {
         SearchResponse result = new SearchResponse();
         result.users = new Vector<>();
         result.games = new Vector<>();
+        result.companies = new Vector<>();
         for (User user : users) {
             result.users.add(user.username);
         }
         for (Game game : games) {
             result.games.add(game.name);
+        }
+        for (Company company : companies) {
+            result.companies.add(company.name);
         }
 
         //convert to json
