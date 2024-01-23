@@ -3,8 +3,11 @@
 .idea/
 error/
 games/
+companies/
 images/image_cache/
 tmp/
 users/
+InsertIntoMongo/target/
+InsertIntoMongo/config.json
 error.txt
 scraping and data conversion/error.log

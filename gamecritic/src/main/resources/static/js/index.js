@@ -51,6 +51,10 @@ function addGames(page) {
                 if(game.customAttributes.user_review)
                 {
                     game.user_score = game.user_score.toFixed(1);
+                    if(game.user_score == 10.0)
+                    {
+                        game.user_score = 10;
+                    }
                 }
                 else 
                 {

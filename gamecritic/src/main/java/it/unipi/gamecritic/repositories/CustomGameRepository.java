@@ -1,7 +1,6 @@
 package it.unipi.gamecritic.repositories;
 
 import com.mongodb.DBObject;
-import org.springframework.data.mongodb.repository.Aggregation;
 
 import java.util.List;
 

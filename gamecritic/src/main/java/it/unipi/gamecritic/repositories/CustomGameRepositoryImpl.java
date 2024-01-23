@@ -1,38 +1,15 @@
 package it.unipi.gamecritic.repositories;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.stereotype.Repository;
-
-import static com.mongodb.client.model.Accumulators.mergeObjects;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
-import static org.springframework.data.mongodb.core.aggregation.ArrayOperators.In.arrayOf;
-import static org.springframework.data.mongodb.core.aggregation.BooleanOperators.And.and;
-
-
-import java.util.Arrays;
 import java.util.List;
-import com.mongodb.DBObject;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
 
 public class CustomGameRepositoryImpl implements CustomGameRepository {
     private final MongoTemplate mongoTemplate;

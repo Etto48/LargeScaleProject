@@ -73,7 +73,10 @@ public class Game {
         }
         this.name = customAttributes.get("Name").toString();
         logger.info("new name: "+this.name);
-        this.released = ((HashMap<String,Object>) customAttributes.get("Released")).get("Release Date").toString();
+        
+        @SuppressWarnings("unchecked")
+        HashMap<String,Object> released = (HashMap<String,Object>) customAttributes.get("Released");
+        this.released = released.get("Release Date").toString();
         logger.info("new released: "+this.released);
     }
 

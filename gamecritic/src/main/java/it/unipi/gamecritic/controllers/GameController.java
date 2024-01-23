@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Vector;
 
 import com.mongodb.DBObject;
-import it.unipi.gamecritic.controllers.api.GameAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class GameController {
 	private final GameRepository gameRepository;
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
 	@Autowired
