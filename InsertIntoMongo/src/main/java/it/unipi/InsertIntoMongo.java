@@ -112,7 +112,7 @@ public class InsertIntoMongo {
 
         for (JsonNode gameNode : jsonNode) {
             howManyReviews = 0;
-            Document document = new Document("id", gameIdCounter.toString());
+            Document document = new Document("_id", gameIdCounter.toString());
             gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             // Iterate through the dynamic attributes before "reviews"
             Iterator<String> fieldNames = gameNode.fieldNames();
@@ -210,7 +210,7 @@ public class InsertIntoMongo {
             String gameId = gameIdCounter.toString(); // Get the id of the game being reviewed
             gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             for (JsonNode reviewNode : gameNode.get("reviews")) {
-                Document document = new Document("id", reviewIdCounter.toString())
+                Document document = new Document("_id", reviewIdCounter.toString())
                         .append("gameId", gameId)
                         .append("score", reviewNode.get("score").asText())
                         .append("quote", reviewNode.get("quote").asText())
@@ -233,7 +233,7 @@ public class InsertIntoMongo {
                 String reviewId = reviewIdCounter.toString(); // Get the id of the review being commented
                 reviewIdCounter = reviewIdCounter.add(new BigInteger("1")); // Get the id of the review being commented
                 for (JsonNode commentNode : reviewNode.get("comments")) {
-                    Document document = new Document("id", commentIdCounter.toString())
+                    Document document = new Document("_id", commentIdCounter.toString())
                             .append("reviewId", reviewId)
                             .append("author", commentNode.get("author").asText())
                             .append("quote", commentNode.get("quote").asText())
