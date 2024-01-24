@@ -32,7 +32,6 @@ function addGames(page) {
             kind: kind
         },
         success: function (data) {
-            console.log(data)
             var tempScrollTop = $(window).scrollTop();
             var template = Handlebars.compile(document.getElementById("game-template").innerHTML);
             data.forEach(function (game) {
@@ -100,7 +99,6 @@ function setKind(new_kind) {
 document.addEventListener("DOMContentLoaded", function (event) {
     function checkAndAddGames() {
         if (canSee("dummy-loading-game")) {
-            console.log("helloooo!");
             addGames(current_page++);
         }
     }
