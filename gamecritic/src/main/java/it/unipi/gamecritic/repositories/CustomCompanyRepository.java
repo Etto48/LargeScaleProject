@@ -1,6 +1,5 @@
 package it.unipi.gamecritic.repositories;
 
-import com.mongodb.DBObject;
 import it.unipi.gamecritic.entities.Company;
 
 import java.util.List;

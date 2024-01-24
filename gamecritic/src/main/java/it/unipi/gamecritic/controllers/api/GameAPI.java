@@ -3,6 +3,7 @@ package it.unipi.gamecritic.controllers.api;
 import java.util.ArrayList;
 import java.util.List;
 import com.mongodb.DBObject;
+import it.unipi.gamecritic.repositories.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,13 @@ import jakarta.servlet.http.HttpSession;
 public class GameAPI {
     @SuppressWarnings("unused")
     private final GameRepository gameRepository;
+    private final CompanyRepository companyRepository;
     @SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
 	@Autowired
-	public GameAPI(GameRepository gameRepository) {
+	public GameAPI(GameRepository gameRepository, CompanyRepository companyRepository) {
 		this.gameRepository = gameRepository;
+        this.companyRepository = companyRepository;
 	}
     @RequestMapping(value = "/api/game", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -72,13 +75,13 @@ public class GameAPI {
         
         Integer num_results = 10;
         Integer offset = page * num_results;
-        logger.info("GAMEAPI request");
+        logger.info("GameAPI request");
         if (kind.equals("hottest"))
         {
             logger.info("page" + page.toString());
             List<DBObject> l = gameRepository.findVideoGamesWithMostReviewsLastMonth(offset,"month");
             if (l.isEmpty()){
-                logger.info("vuota!");
+                logger.warn("No games found on \""+kind+"\" page "+page.toString());
             }
             List<Game> g = new ArrayList<>();
             for (DBObject o : l) {
@@ -92,6 +95,9 @@ public class GameAPI {
         {
             logger.info("page" + page.toString());
             List<DBObject> l = gameRepository.findLatest(offset);
+            if (l.isEmpty()){
+                logger.warn("No games found on \""+kind+"\" page "+page.toString());
+            }
             List<Game> g = new ArrayList<>();
             for (DBObject o : l) {
                 Game ga = new Game(o);
@@ -102,8 +108,12 @@ public class GameAPI {
         }
         else if (kind.equals("best"))
         {
+            //companyRepository.updateTop3Games();
             logger.info("page" + page.toString());
             List<DBObject> l = gameRepository.findBest(offset);
+            if (l.isEmpty()){
+                logger.warn("No games found on \""+kind+"\" page "+page.toString());
+            }
             List<Game> g = new ArrayList<>();
             for (DBObject o : l) {
                 Game ga = new Game(o);

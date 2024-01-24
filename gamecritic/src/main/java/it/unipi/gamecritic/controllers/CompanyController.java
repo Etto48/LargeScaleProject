@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import com.mongodb.DBObject;
 import it.unipi.gamecritic.repositories.CompanyRepository;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,11 +59,12 @@ public class CompanyController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company not found");
         }
         Company company_object = company_list.get(0);
+        logger.info("company's name: "+company_object.name);
         Float avg_top_score = 0.0f;
         Integer games_with_score = 0;
-        for (Game game : company_object.top_games)
+        for (Document game : company_object.top_games)
         {
-            Float score = (Float) game.customAttributes.get("user_score");
+            Float score = Float.valueOf(game.get("user_review").toString());
             if (score != null)
             {
                 avg_top_score += score;
@@ -77,8 +79,9 @@ public class CompanyController {
         {
             avg_top_score = null;
         }
+
         model.addAttribute("company", company_object);
-        model.addAttribute("avg_top_score", avg_top_score);
+        model.addAttribute("avg_top_score", 8.9);
         return "company";
     }
 
@@ -89,6 +92,7 @@ public class CompanyController {
         HttpServletRequest request,
         HttpSession session)
     {
+        logger.info("bosipnifsnopsnojpdfs");
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
         model.addAttribute("request", request);
@@ -121,7 +125,7 @@ public class CompanyController {
 		}
         Integer games_with_score = 0;
 		for (Game game : games) {
-            Float score = (Float) game.customAttributes.get("user_score");
+            Float score = Float.valueOf(game.customAttributes.get("user_review").toString());
             if(score != null)
             {
                 avg_score += score;
@@ -142,6 +146,7 @@ public class CompanyController {
             score_distribution = null;
             avg_score = null;
         }
+
         model.addAttribute("avg_score", avg_score);
         model.addAttribute("score_distribution", score_distribution);
         return "company_games";

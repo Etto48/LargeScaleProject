@@ -6,30 +6,39 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 
 public class InsertIntoMongo {
 
-    private static int gameIdCounter = 1;
-    private static int reviewIdCounter = 1;
-    private static int commentIdCounter = 1;
+    private static BigInteger gameIdCounter = new BigInteger("1");
+    private static BigInteger reviewIdCounter = new BigInteger("1");
+    private static BigInteger commentIdCounter = new BigInteger("1");
+
+    private static BigInteger companyIdCounter = new BigInteger("1");
 
     private static String gamesPath = "./games/commented_games.json";
     private static String companiesPath = "./companies/combined_companies.json";
     private static String usersPath = "./users/users.json";
     private static String configPath = "./InsertIntoMongo/config.json";
-
+    private static final Logger logger = LogManager.getLogger(InsertIntoMongo.class);
     public static void main(String[] args) {
-
         
+        ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("org.mongodb.driver").setLevel(Level.ERROR);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             // Load JSON config file
@@ -49,16 +58,18 @@ public class InsertIntoMongo {
             {
                 usersPath = users.asText();
             }
-            System.out.println("Loaded config from file");
+            logger.info("Loaded config from file");
         }
         catch (IOException e)
         {
-            System.out.println("Could not load config from file, using default values");
+            logger.warn("Could not load config from file, using default values");
         }
         try {
             // Connect to MongoDB (assuming it's running locally on the default port)
             MongoClientURI uri = new MongoClientURI("mongodb://localhost:27017");
+
             MongoClient mongoClient = new MongoClient(uri);
+            logger.info("Connected to MongoDB");
             MongoDatabase database = mongoClient.getDatabase("GameCritic");
             database.drop();
 
@@ -87,11 +98,14 @@ public class InsertIntoMongo {
                 JsonNode companyNode = companiesIterator.next();
                 Document companyDocument = Document.parse(companyNode.toString());
                 companyDocument.append("Top3Games",new ArrayList<>());
+                companyDocument.append("_id", companyIdCounter.toString());
+                companyIdCounter = companyIdCounter.add(new BigInteger("1"));
                 collection.insertOne(companyDocument);
             }
 
             // Close MongoDB connection
             mongoClient.close();
+            logger.info("Successfully inserted data into MongoDB");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,8 +118,8 @@ public class InsertIntoMongo {
 
         for (JsonNode gameNode : jsonNode) {
             howManyReviews = 0;
-            Document document = new Document("id", gameIdCounter++);
-
+            Document document = new Document("_id", gameIdCounter.toString());
+            gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             // Iterate through the dynamic attributes before "reviews"
             Iterator<String> fieldNames = gameNode.fieldNames();
             while (fieldNames.hasNext()) {
@@ -122,8 +136,8 @@ public class InsertIntoMongo {
                         Document nestedDocument = new Document();
                         if (arrayNode.isObject()) {
                             howManyReviews++;
-                            nestedDocument.append("id",reviewIdCounter++);
-                            nestedDocument.append("score", arrayNode.get("score").asDouble());
+                            nestedDocument.append("reviewId", reviewIdCounter.toString());
+                            reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));                            nestedDocument.append("score", arrayNode.get("score").asDouble());
                             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                             SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
                             Date datt = dateFormat.parse(arrayNode.get("date").asText());
@@ -135,10 +149,11 @@ public class InsertIntoMongo {
                 }
                 else if (fieldName.equals("Released")){
 
+                    Vector<SimpleDateFormat> dateFormats = new Vector<>();
+                    dateFormats.add(new SimpleDateFormat("MMMM d, yyyy", Locale.US));
+                    dateFormats.add(new SimpleDateFormat("MMMM yyyy", Locale.US));
+                    dateFormats.add(new SimpleDateFormat("yyyy", Locale.US));
 
-                    SimpleDateFormat inputFormat1 = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-                    SimpleDateFormat inputFormat2 = new SimpleDateFormat("MMMM yyyy", Locale.US);
-                    SimpleDateFormat inputFormat3 = new SimpleDateFormat("yyyy", Locale.US);
                     SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
                     String inputString = fieldValue.asText();
                     int indexOfOn = inputString.indexOf("on");
@@ -146,22 +161,20 @@ public class InsertIntoMongo {
                     dat = dat.replaceAll("(?<=\\d)(st|nd|rd|th)", "");
                     String plat = inputString.substring(indexOfOn+3,inputString.length());
                     Document d = new Document();
-                    Date date = new Date();
-                    try {
-                        date = inputFormat1.parse(dat);
-                    }
-                    catch (Exception e){
+                    Date date = null;
+                    for (SimpleDateFormat format : dateFormats) {
                         try {
-                            date = inputFormat2.parse(dat);
+                            date = format.parse(dat);
+                            break;
+                        } catch (ParseException e) {
+                            // Do nothing
                         }
-                        catch (Exception e1){
-                            try {
-                                date = inputFormat3.parse(dat);
-                            }
-                            catch (Exception e2){
-                                System.out.println("exception "+dat);
-                                date = null;
-                            }
+                    }
+                    if (date == null)
+                    {
+                        if (!dat.contains("Undated"))
+                        {
+                            logger.error("Unable to parse date: \"" + dat + "\"");
                         }
                     }
                     String standardizedDate;
@@ -197,19 +210,20 @@ public class InsertIntoMongo {
 
     private static void insertReviews(JsonNode jsonNode, MongoCollection<Document> reviewsCollection, MongoCollection<Document> videoGamesCollection) {
         List<Document> documents = new ArrayList<>();
-        gameIdCounter = 1;
-        reviewIdCounter = 1;
+        gameIdCounter = new BigInteger("1");
+        reviewIdCounter = new BigInteger("1");
         for (JsonNode gameNode : jsonNode) {
-            int gameId = gameIdCounter++; // Get the id of the game being reviewed
+            String gameId = gameIdCounter.toString(); // Get the id of the game being reviewed
+            gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             for (JsonNode reviewNode : gameNode.get("reviews")) {
-                Document document = new Document("id", reviewIdCounter++)
+                Document document = new Document("_id", reviewIdCounter.toString())
                         .append("gameId", gameId)
                         .append("score", reviewNode.get("score").asText())
                         .append("quote", reviewNode.get("quote").asText())
                         .append("author", reviewNode.get("author").asText())
                         .append("date", reviewNode.get("date").asText())
                         .append("source", reviewNode.get("source").asText());
-
+                reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));
                 documents.add(document);
             }
         }
@@ -219,18 +233,19 @@ public class InsertIntoMongo {
 
     private static void insertComments(JsonNode jsonNode, MongoCollection<Document> collection) {
         List<Document> documents = new ArrayList<>();
-        reviewIdCounter = 1;
+        reviewIdCounter = new BigInteger("1");
         for (JsonNode gameNode : jsonNode) {
             for (JsonNode reviewNode : gameNode.get("reviews")) {
-                int reviewId = reviewIdCounter++; // Get the id of the review being commented
+                String reviewId = reviewIdCounter.toString(); // Get the id of the review being commented
+                reviewIdCounter = reviewIdCounter.add(new BigInteger("1")); // Get the id of the review being commented
                 for (JsonNode commentNode : reviewNode.get("comments")) {
-                    Document document = new Document("id", commentIdCounter++)
+                    Document document = new Document("_id", commentIdCounter.toString())
                             .append("reviewId", reviewId)
                             .append("author", commentNode.get("author").asText())
                             .append("quote", commentNode.get("quote").asText())
                             .append("date", commentNode.get("date").asText())
                             .append("responses", new ArrayList<>());
-
+                    commentIdCounter = commentIdCounter.add(new BigInteger("1"));
                     documents.add(document);
                 }
             }

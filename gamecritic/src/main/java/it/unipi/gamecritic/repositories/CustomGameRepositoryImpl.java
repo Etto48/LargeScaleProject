@@ -50,7 +50,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
     @Override
     public List<DBObject> findBest(Integer offset) {
         Query query = new Query();
-        query.with(Sort.by(Sort.Order.desc("user_review"), Sort.Order.asc("Name"))).skip(offset).limit(10);
+        query.with(Sort.by(Sort.Order.desc("user_review"), Sort.Order.desc("reviewCount"))).skip(offset).limit(10);
         return mongoTemplate.find(query, DBObject.class, "videogames");
     }
     @Override
