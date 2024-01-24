@@ -1,10 +1,17 @@
 package it.unipi.gamecritic.repositories;
 
 import it.unipi.gamecritic.entities.Company;
+import it.unipi.gamecritic.entities.Game;
+import org.bson.Document;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -31,4 +38,5 @@ public class CustomCompanyRepositoryImpl implements CustomCompanyRepository{
         Query q = new Query(criteria).limit(10);
         return mongoTemplate.find(q, Company.class, "companies");
     }
+
 }
