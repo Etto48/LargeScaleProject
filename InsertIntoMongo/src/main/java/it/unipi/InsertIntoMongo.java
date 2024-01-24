@@ -6,7 +6,11 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 
 public class InsertIntoMongo {
 
@@ -25,10 +31,10 @@ public class InsertIntoMongo {
     private static String gamesPath = "./games/commented_games.json";
     private static String companiesPath = "./companies/combined_companies.json";
     private static String configPath = "./InsertIntoMongo/config.json";
-
+    private static final Logger logger = LogManager.getLogger(InsertIntoMongo.class);
     public static void main(String[] args) {
-
         
+        ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("org.mongodb.driver").setLevel(Level.ERROR);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             // Load JSON config file
@@ -43,16 +49,18 @@ public class InsertIntoMongo {
             {
                 companiesPath = companies.asText();
             }
-            System.out.println("Loaded config from file");
+            logger.info("Loaded config from file");
         }
         catch (IOException e)
         {
-            System.out.println("Could not load config from file, using default values");
+            logger.warn("Could not load config from file, using default values");
         }
         try {
             // Connect to MongoDB (assuming it's running locally on the default port)
             MongoClientURI uri = new MongoClientURI("mongodb://localhost:27017");
+
             MongoClient mongoClient = new MongoClient(uri);
+            logger.info("Connected to MongoDB");
             MongoDatabase database = mongoClient.getDatabase("GameCritic");
             database.drop();
 
@@ -86,6 +94,7 @@ public class InsertIntoMongo {
 
             // Close MongoDB connection
             mongoClient.close();
+            logger.info("Successfully inserted data into MongoDB");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,10 +138,11 @@ public class InsertIntoMongo {
                 }
                 else if (fieldName.equals("Released")){
 
+                    Vector<SimpleDateFormat> dateFormats = new Vector<>();
+                    dateFormats.add(new SimpleDateFormat("MMMM d, yyyy", Locale.US));
+                    dateFormats.add(new SimpleDateFormat("MMMM yyyy", Locale.US));
+                    dateFormats.add(new SimpleDateFormat("yyyy", Locale.US));
 
-                    SimpleDateFormat inputFormat1 = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
-                    SimpleDateFormat inputFormat2 = new SimpleDateFormat("MMMM yyyy", Locale.US);
-                    SimpleDateFormat inputFormat3 = new SimpleDateFormat("yyyy", Locale.US);
                     SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
                     String inputString = fieldValue.asText();
                     int indexOfOn = inputString.indexOf("on");
@@ -140,22 +150,20 @@ public class InsertIntoMongo {
                     dat = dat.replaceAll("(?<=\\d)(st|nd|rd|th)", "");
                     String plat = inputString.substring(indexOfOn+3,inputString.length());
                     Document d = new Document();
-                    Date date = new Date();
-                    try {
-                        date = inputFormat1.parse(dat);
-                    }
-                    catch (Exception e){
+                    Date date = null;
+                    for (SimpleDateFormat format : dateFormats) {
                         try {
-                            date = inputFormat2.parse(dat);
+                            date = format.parse(dat);
+                            break;
+                        } catch (ParseException e) {
+                            // Do nothing
                         }
-                        catch (Exception e1){
-                            try {
-                                date = inputFormat3.parse(dat);
-                            }
-                            catch (Exception e2){
-                                System.out.println("exception "+dat);
-                                date = null;
-                            }
+                    }
+                    if (date == null)
+                    {
+                        if (!dat.contains("Undated"))
+                        {
+                            logger.error("Unable to parse date: \"" + dat + "\"");
                         }
                     }
                     String standardizedDate;
