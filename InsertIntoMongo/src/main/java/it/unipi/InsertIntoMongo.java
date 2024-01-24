@@ -24,6 +24,7 @@ public class InsertIntoMongo {
 
     private static String gamesPath = "./games/commented_games.json";
     private static String companiesPath = "./companies/combined_companies.json";
+    private static String usersPath = "./users/users.json";
     private static String configPath = "./InsertIntoMongo/config.json";
 
     public static void main(String[] args) {
@@ -42,6 +43,11 @@ public class InsertIntoMongo {
             if (companies != null)
             {
                 companiesPath = companies.asText();
+            }
+            JsonNode users = config.get("usersPath");
+            if (users != null)
+            {
+                usersPath = users.asText();
             }
             System.out.println("Loaded config from file");
         }

@@ -1,12 +1,16 @@
 package it.unipi.gamecritic.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import com.mongodb.DBObject;
 import it.unipi.gamecritic.repositories.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -90,7 +94,21 @@ public class CompanyController {
         model.addAttribute("request", request);
 
         // TODO: find games in db
-        List<Game> games = GameRepository.getMockupList();
+        //List<Game> games = GameRepository.getMockupList();
+
+        /* List<DBObject> result = companyRepository.findCompaniesGames(company);
+        List<Game> games = new ArrayList<>();
+        if (result != null) {
+            for (DBObject o : result) {
+                Game ga = new Game(o);
+                games.add(ga);
+            }
+        }
+        else {
+
+         */
+            List<Game> games = GameRepository.getMockupList();
+        //}
         model.addAttribute("company_name", company);
         model.addAttribute("avg_score", null);
         model.addAttribute("score_distribution", null);

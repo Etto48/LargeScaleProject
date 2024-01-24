@@ -7,6 +7,7 @@ import java.util.Vector;
 import com.mongodb.DBObject;
 import it.unipi.gamecritic.entities.Company;
 import it.unipi.gamecritic.repositories.CompanyRepository;
+import it.unipi.gamecritic.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ public class SearchAPI {
     @SuppressWarnings("unused")
     private final GameRepository gameRepository;
     private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
     @SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     public class SearchResponse {
@@ -38,9 +40,10 @@ public class SearchAPI {
         public List<String> companies;
     }
     @Autowired
-	public SearchAPI(GameRepository gameRepository, CompanyRepository companyRepository) {
+	public SearchAPI(GameRepository gameRepository, CompanyRepository companyRepository, UserRepository userRepository) {
 		this.gameRepository = gameRepository;
         this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
 	}
     @RequestMapping(value = "/api/search", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -57,9 +60,10 @@ public class SearchAPI {
         }
         List<Company> companies = companyRepository.search(query);
         // TODO: search for users in the database
-        List<User> users = new Vector<>();
+        List<User> users = userRepository.search(query);
+        // List<User> users = new Vector<>();
         //List<Game> games = GameRepository.getMockupList();
-
+/*
         users.add(new User(
             "Pippo",
             "",
@@ -78,6 +82,8 @@ public class SearchAPI {
             "",
             new Vector<>()
         ));
+
+ */
         // filter results
         for (int i = users.size(); i > 0; i--) {
             if (!users.get(i - 1).username.toLowerCase().contains(query.toLowerCase())) {

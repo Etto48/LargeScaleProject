@@ -41,7 +41,7 @@ public class GameController {
 		List<String> excludedNames = Arrays.asList("Description", "reviews", "user_reviews","img","user_review","id","_id","Top3ReviewsByLikes","reviewCount","Released","Publishers","Developers","Critics");
 		model.addAttribute("excludedNames", excludedNames);
 
-		// TODO: get the game from the db
+		// get the game from the db
 		List<DBObject> dbo = gameRepository.findByDynamicAttribute("Name",name);
 		List<Game> games = new ArrayList<>();
 		for (DBObject o : dbo) {

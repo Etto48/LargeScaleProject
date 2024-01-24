@@ -38,6 +38,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
 
         return mongoTemplate.find(query, DBObject.class, "videogames");
     }
+
     @Override
     public List<DBObject> findLatest(Integer offset){
         Query query = new Query();
