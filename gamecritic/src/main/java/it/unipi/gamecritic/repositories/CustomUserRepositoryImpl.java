@@ -2,8 +2,6 @@
 
 package it.unipi.gamecritic.repositories;
 
-import com.mongodb.DBObject;
-import it.unipi.gamecritic.entities.Company;
 import it.unipi.gamecritic.entities.user.User;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,6 +15,9 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         this.mongoTemplate = mongoTemplate;
     }
     public void insertUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("The given user must not be null");
+        }
         mongoTemplate.insert(user, "users");
     }
 
@@ -37,15 +38,17 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     @Override
     public List<User> findByDynamicAttribute(String attributeName, String attributeValue) {
         if(attributeName == null || attributeValue == null) {
-            return null;
+            throw new IllegalArgumentException("The given attribute name or value must not be null");
         }
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));
-        List<DBObject> l = mongoTemplate.find(query, DBObject.class, "users");
         return mongoTemplate.find(query, User.class, "users");
     }
 
     @Override
     public List<User> search(String query){
+        if (query == null) {
+            throw new IllegalArgumentException("The given query must not be null");
+        }
         Criteria criteria = Criteria.where("username").regex(query, "i");
         Query q = new Query(criteria).limit(10);
         return mongoTemplate.find(q, User.class, "users");

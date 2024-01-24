@@ -24,10 +24,9 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class GameAPI {
-    @SuppressWarnings("unused")
     private final GameRepository gameRepository;
-    private final CompanyRepository companyRepository;
     @SuppressWarnings("unused")
+    private final CompanyRepository companyRepository;
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
 	@Autowired
 	public GameAPI(GameRepository gameRepository, CompanyRepository companyRepository) {

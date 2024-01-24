@@ -31,7 +31,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
     @Override
     public List<DBObject> findByDynamicAttribute(String attributeName, String attributeValue) {
         if(attributeName == null || attributeValue == null) {
-            return null;
+            throw new IllegalArgumentException("The given attribute name or value must not be null");
         }
         System.out.println("in game findDynamic");
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));

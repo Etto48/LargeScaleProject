@@ -2,13 +2,9 @@
 
 package it.unipi.gamecritic.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import com.mongodb.DBObject;
-import it.unipi.gamecritic.entities.Game;
-import it.unipi.gamecritic.repositories.GameRepository;
 import it.unipi.gamecritic.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

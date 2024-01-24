@@ -1,8 +1,8 @@
 package it.unipi.gamecritic.controllers.api;
 
-import it.unipi.gamecritic.repositories.CustomUserRepository;
-import it.unipi.gamecritic.repositories.GameRepository;
 import it.unipi.gamecritic.repositories.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +19,14 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AccountAPI {
+    @SuppressWarnings("unused")
+    private final UserRepository userRepository;
+    
+    @Autowired
+    public AccountAPI(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @RequestMapping(value = "/api/login", method = RequestMethod.POST)
     @ResponseBody
     public String processLogin(

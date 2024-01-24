@@ -1,16 +1,8 @@
 // UserRepository
 
 package it.unipi.gamecritic.repositories;
-import com.mongodb.DBObject;
-import it.unipi.gamecritic.entities.Game;
-import it.unipi.gamecritic.entities.Review;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import it.unipi.gamecritic.entities.user.User;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 //

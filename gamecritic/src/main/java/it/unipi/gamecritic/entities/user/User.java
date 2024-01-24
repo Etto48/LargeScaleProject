@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document("users")
 public class User {
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @Id
     public ObjectId id;
