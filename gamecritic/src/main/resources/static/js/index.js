@@ -36,8 +36,6 @@ function addGames(page) {
             var tempScrollTop = $(window).scrollTop();
             var template = Handlebars.compile(document.getElementById("game-template").innerHTML);
             data.forEach(function (game) {
-
-                console.log("user_review: "+game.customAttributes.user_review)
                 game.user_score = game.customAttributes.user_review;
                 game.description = game.customAttributes.Description;
                 if (game.customAttributes.img)

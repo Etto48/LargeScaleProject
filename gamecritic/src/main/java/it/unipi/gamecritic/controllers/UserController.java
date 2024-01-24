@@ -58,7 +58,14 @@ public class UserController {
                     for (Review review : user.top_reviews) {
                         avg_top_score += review.score;
                     }
-                    avg_top_score /= user.top_reviews.size();
+                    if (user.top_reviews.size() > 0)
+                    {
+                        avg_top_score /= user.top_reviews.size();
+                    }
+                    else
+                    {
+                        avg_top_score = null;
+                    }
                     model.addAttribute("avg_top_score", avg_top_score);
                 }
 
