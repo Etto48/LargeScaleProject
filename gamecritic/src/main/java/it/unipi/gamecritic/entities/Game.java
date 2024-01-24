@@ -71,12 +71,10 @@ public class Game {
             logger.error("Error while setting custom attributes: " + e.getMessage());
         }
         this.name = customAttributes.get("Name").toString();
-        logger.info("new name: "+this.name);
         
         @SuppressWarnings("unchecked")
         HashMap<String,Object> released = (HashMap<String,Object>) customAttributes.get("Released");
         this.released = released.get("Release Date").toString();
-        logger.info("new released: "+this.released);
     }
 
     /*

@@ -33,9 +33,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         if(attributeName == null || attributeValue == null) {
             throw new IllegalArgumentException("The given attribute name or value must not be null");
         }
-        System.out.println("in game findDynamic");
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));
-
         return mongoTemplate.find(query, DBObject.class, "videogames");
     }
 

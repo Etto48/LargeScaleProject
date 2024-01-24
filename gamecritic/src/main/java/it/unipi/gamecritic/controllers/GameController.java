@@ -38,7 +38,7 @@ public class GameController {
 
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
-		List<String> excludedNames = Arrays.asList("Description", "reviews", "user_reviews","img","user_review","id","_id","Top3ReviewsByLikes","reviewCount","Released","Publishers","Developers","Critics");
+		List<String> excludedNames = Arrays.asList("Name","Description", "reviews", "user_reviews","img","user_review","_id","Top3ReviewsByLikes","reviewCount","Released","Publishers","Developers","Critics");
 		model.addAttribute("excludedNames", excludedNames);
 
 		// get the game from the db

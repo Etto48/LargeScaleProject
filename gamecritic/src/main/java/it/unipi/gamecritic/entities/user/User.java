@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import it.unipi.gamecritic.controllers.api.GameAPI;
 import it.unipi.gamecritic.entities.Review;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
@@ -18,14 +17,14 @@ public class User {
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @Id
-    public ObjectId id;
+    public String id;
     @Field("username")
     public String username;
     @Field("password_hash")
     public String password_hash;
     @Field("email")
     public String email;
-    @Field("top_reviews")
+    @Field("Top3ReviewsByLikes")
     public Vector<Review> top_reviews;
 
     public User(String username, String password_hash, String email, Vector<Review> top_reviews) {

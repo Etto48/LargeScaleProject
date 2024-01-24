@@ -24,7 +24,6 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AccountAPI {
-    @SuppressWarnings("unused")
     private final UserRepository userRepository;
     
     @Autowired
