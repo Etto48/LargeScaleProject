@@ -1,0 +1,25 @@
+//CustomUserRepository
+
+package it.unipi.gamecritic.repositories;
+
+import com.mongodb.DBObject;
+import it.unipi.gamecritic.entities.user.User;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
+
+public interface CustomUserRepository {
+    //List<User> findByName(String Name);
+
+    List<User> findByDynamicAttribute(String attributeName, String attributeValue);
+    public void insertUserIfNotExists(User user);
+    // public List<User> findByUsername(String username);
+    List<User> search(String query);
+/*
+    List<DBObject> findLatest(Integer offset);
+    List<DBObject> findBest(Integer offset);
+    List<DBObject> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
+    //List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
+
+ */
+}

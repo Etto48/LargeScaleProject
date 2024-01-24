@@ -1,7 +1,18 @@
+//UserController
+
 package it.unipi.gamecritic.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import com.mongodb.DBObject;
+import it.unipi.gamecritic.entities.Game;
+import it.unipi.gamecritic.repositories.GameRepository;
+import it.unipi.gamecritic.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -19,90 +30,32 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
+    private final UserRepository userRepository;
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @Autowired
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
     public String user(
-        @PathVariable(value="username") String username, 
-        Model model, 
-        HttpServletRequest request, 
-        HttpSession session) 
+            @PathVariable(value="username") String username,
+            Model model,
+            HttpServletRequest request,
+            HttpSession session)
     {
+        User u = (User) session.getAttribute("user");
         model.addAttribute("request", request);
-        model.addAttribute("user", session.getAttribute("user"));
+        model.addAttribute("user", u);
 
-        // TODO: get user from database
-        Vector<User> users = new Vector<User>()
-        {
-            {
-                add(new User()
-                {
-                    {
-                        username = "Pippo";
-                        password_hash = "5f4dcc3b5aa765d61d8327deb882cf99";
-                        email = "pippo@gmail.com";
-                        top_reviews = new Vector<Review>()
-                        {
-                            {
-                                add(new Review()
-                                {
-                                    {
-                                        id = 0;
-                                        game_id = 5;
-                                        game = "Super Mario Bros";
-                                        date = "2021-01-01";
-                                        score = 10;
-                                        author = "Pippo";
-                                        quote = "This game is awesome!";
-                                    }
-                                });
-                                add(new Review()
-                                {
-                                    {
-                                        id = 1;
-                                        game_id = 6;
-                                        game = "Super Mario Bros 2";
-                                        date = "2021-01-01";
-                                        score = 9;
-                                        author = "Pippo";
-                                        quote = "This game is awesome!";
-                                    }
-                                });
-                                add(new Review()
-                                {
-                                    {
-                                        id = 2;
-                                        game_id = 7;
-                                        game = "Super Mario Bros 3";
-                                        date = "2021-01-01";
-                                        score = 8;
-                                        author = "Pippo";
-                                        quote = "This game is awesome!";
-                                    }
-                                });
-                            }
-                        };
-                    }
-                });
-                add(new User()
-                {
-                    {
-                        username = "Pluto";
-                        password_hash = "5f4dcc3b5aa765d61d8327deb882cf99";
-                        email = "pluto@gmail.com";
-                    }
-                });
-                add(new User()
-                {
-                    {
-                        username = "Paperino";
-                        password_hash = "5f4dcc3b5aa765d61d8327deb882cf99";
-                        email = "paperino@gmail.com";
-                    }
-                });
-            }
-        };
+        // get user from database
+        List<User> users = userRepository.findByDynamicAttribute("username", username);
         for (User user : users) {
             if (user.username.equals(username)) {
                 model.addAttribute("viewed_user", user);
+
                 Float avg_top_score = 0f;
                 if (user.top_reviews != null)
                 {
@@ -112,6 +65,8 @@ public class UserController {
                     avg_top_score /= user.top_reviews.size();
                     model.addAttribute("avg_top_score", avg_top_score);
                 }
+
+                model.addAttribute("user", user);
                 return "user";
             }
         }
@@ -120,10 +75,10 @@ public class UserController {
 
     @RequestMapping(value = "/user/{username}/reviews", method = RequestMethod.GET)
     public String user_reviews(
-        @PathVariable(value="username") String username, 
-        Model model, 
-        HttpServletRequest request, 
-        HttpSession session) 
+            @PathVariable(value="username") String username,
+            Model model,
+            HttpServletRequest request,
+            HttpSession session)
     {
         model.addAttribute("request", request);
         model.addAttribute("user", session.getAttribute("user"));
@@ -308,10 +263,10 @@ public class UserController {
 
     @RequestMapping(value = "/user/{username}/followers", method = RequestMethod.GET)
     public String user_followers(
-        @PathVariable(value = "username") String username, 
-        Model model,
-        HttpServletRequest request,
-        HttpSession session) 
+            @PathVariable(value = "username") String username,
+            Model model,
+            HttpServletRequest request,
+            HttpSession session)
     {
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
@@ -332,10 +287,10 @@ public class UserController {
 
     @RequestMapping(value = "/user/{username}/followed", method = RequestMethod.GET)
     public String user_followed(
-        @PathVariable(value = "username") String username, 
-        Model model,
-        HttpServletRequest request,
-        HttpSession session) 
+            @PathVariable(value = "username") String username,
+            Model model,
+            HttpServletRequest request,
+            HttpSession session)
     {
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);

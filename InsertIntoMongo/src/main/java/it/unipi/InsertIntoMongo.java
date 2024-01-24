@@ -33,6 +33,7 @@ public class InsertIntoMongo {
 
     private static String gamesPath = "./games/commented_games.json";
     private static String companiesPath = "./companies/combined_companies.json";
+    private static String usersPath = "./users/users.json";
     private static String configPath = "./InsertIntoMongo/config.json";
     private static final Logger logger = LogManager.getLogger(InsertIntoMongo.class);
     public static void main(String[] args) {
@@ -51,6 +52,11 @@ public class InsertIntoMongo {
             if (companies != null)
             {
                 companiesPath = companies.asText();
+            }
+            JsonNode users = config.get("usersPath");
+            if (users != null)
+            {
+                usersPath = users.asText();
             }
             logger.info("Loaded config from file");
         }

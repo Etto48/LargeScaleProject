@@ -96,7 +96,7 @@ public interface GameRepository extends MongoRepository<Game, String>, CustomGam
                 new Review(1, 2, "Super Smash Bros. Ultimate", "Pluto", "2021-03-03", "This game is awesome!", 6)
             )
         ));
-
+/*
         games.add(new Game(
             "The Legend of Zelda: Skyward Sword",
             "2021-03-03",
@@ -109,6 +109,8 @@ public interface GameRepository extends MongoRepository<Game, String>, CustomGam
             null
         ));
 
+
+ */
         return games;
     }
 }

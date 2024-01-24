@@ -1,5 +1,8 @@
 package it.unipi.gamecritic.controllers.api;
 
+import it.unipi.gamecritic.repositories.CustomUserRepository;
+import it.unipi.gamecritic.repositories.GameRepository;
+import it.unipi.gamecritic.repositories.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,12 +67,13 @@ public class AccountAPI {
         // TODO: check if username and password are valid
         // TODO: insert user in database
 
+
         User user = new User();
         user.username = username;
         user.password_hash = password;
         user.email = email;
         user.top_reviews = null;
-        
+
         session.setAttribute("user", user);
 
         return "success";
