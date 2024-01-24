@@ -2,16 +2,21 @@ package it.unipi.gamecritic.controllers.api;
 
 import it.unipi.gamecritic.repositories.UserRepository;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
-import it.unipi.gamecritic.entities.user.Admin;
-import it.unipi.gamecritic.entities.user.CompanyManager;
 import it.unipi.gamecritic.entities.user.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,9 +42,29 @@ public class AccountAPI {
         @RequestParam(value = "password", required = true) String password) {
         
         // TODO: check if username and password are valid
-        
-        User user = null;
-        if(username.equals("company"))
+        List<User> users = userRepository.findByDynamicAttribute("username", username);
+        if (users.size() == 0)
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+        }
+        User user = users.get(0);
+        try
+        {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            Base64.Encoder encoder = Base64.getEncoder();
+            String input_password_hash = encoder.encodeToString(hash);
+            if (!user.password_hash.equals(input_password_hash))
+            {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+            }
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+        }
+
+        /*if(username.equals("company"))
         {
             user = new CompanyManager();
         }
@@ -50,11 +75,7 @@ public class AccountAPI {
         else
         {
             user = new User();
-        }
-        user.username = username;
-        user.password_hash = password;
-        user.email = "";
-        user.top_reviews = null;
+        }*/
 
         session.setAttribute("user", user);        
         

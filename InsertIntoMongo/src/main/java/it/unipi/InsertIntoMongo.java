@@ -28,12 +28,12 @@ public class InsertIntoMongo {
     private static BigInteger gameIdCounter = new BigInteger("1");
     private static BigInteger reviewIdCounter = new BigInteger("1");
     private static BigInteger commentIdCounter = new BigInteger("1");
-
     private static BigInteger companyIdCounter = new BigInteger("1");
+    private static BigInteger userIdCounter = new BigInteger("1");
+    private static BigInteger userImageIdCounter = new BigInteger("1");
 
     private static String gamesPath = "./games/commented_games.json";
     private static String companiesPath = "./companies/combined_companies.json";
-    @SuppressWarnings("unused")
     private static String usersPath = "./users/users.json";
     private static String configPath = "./InsertIntoMongo/config.json";
     private static final Logger logger = LogManager.getLogger(InsertIntoMongo.class);
@@ -75,34 +75,39 @@ public class InsertIntoMongo {
             database.drop();
 
             // Load JSON data from a file
-            JsonNode jsonNode = objectMapper.readTree(new File(gamesPath));
+            JsonNode gamesJson = objectMapper.readTree(new File(gamesPath));
+            JsonNode companiesJson = objectMapper.readTree(new File(companiesPath));
+            JsonNode usersJson = objectMapper.readTree(new File(usersPath));
 
             // Insert data into the "videogames" collection
             MongoCollection<Document> videoGamesCollection = database.getCollection("videogames");
-            insertDynamicData(jsonNode, videoGamesCollection);
+            insertDynamicData(gamesJson, videoGamesCollection);
+            logger.info("Collection \"videogames\" created");
 
             // Insert data into the "reviews" collection
             MongoCollection<Document> reviewsCollection = database.getCollection("reviews");
-            insertReviews(jsonNode, reviewsCollection, videoGamesCollection);
+            insertReviews(gamesJson, reviewsCollection, videoGamesCollection);
+            logger.info("Collection \"reviews\" created");
 
             // Insert data into the "comments" collection
             MongoCollection<Document> commentsCollection = database.getCollection("comments");
-            insertComments(jsonNode, commentsCollection);
-            MongoCollection<Document> collection = database.getCollection("companies");
+            insertComments(gamesJson, commentsCollection);
+            logger.info("Collection \"comments\" created");
 
-            // Read JSON file and insert documents into MongoDB
-            JsonNode companiesJson = objectMapper.readTree(new File(companiesPath));
+            // Insert data into the "companies" collection
+            MongoCollection<Document> companiesCollection = database.getCollection("companies");
+            insertCompanies(companiesJson, companiesCollection);
+            logger.info("Collection \"companies\" created");
 
-            // Iterate over each element in the JSON array and insert it into MongoDB
-            Iterator<JsonNode> companiesIterator = companiesJson.iterator();
-            while (companiesIterator.hasNext()) {
-                JsonNode companyNode = companiesIterator.next();
-                Document companyDocument = Document.parse(companyNode.toString());
-                companyDocument.append("Top3Games",new ArrayList<>());
-                companyDocument.append("_id", companyIdCounter.toString());
-                companyIdCounter = companyIdCounter.add(new BigInteger("1"));
-                collection.insertOne(companyDocument);
-            }
+            // Insert data into the "users" collection
+            MongoCollection<Document> usersCollection = database.getCollection("users");
+            insertUsers(usersJson, usersCollection);
+            logger.info("Collection \"users\" created");
+
+            // Insert data into the "user_images" collection
+            MongoCollection<Document> userImagesCollection = database.getCollection("user_images");
+            insertUserImages(usersJson, userImagesCollection);
+            logger.info("Collection \"user_images\" created");
 
             // Close MongoDB connection
             mongoClient.close();
@@ -253,6 +258,47 @@ public class InsertIntoMongo {
         }
 
         collection.insertMany(documents);
+    }
+
+    private static void insertCompanies(JsonNode jsonNode, MongoCollection<Document> collection) {
+        // Iterate over each element in the JSON array and insert it into MongoDB
+        Iterator<JsonNode> companiesIterator = jsonNode.iterator();
+        while (companiesIterator.hasNext()) {
+            JsonNode companyNode = companiesIterator.next();
+            Document companyDocument = Document.parse(companyNode.toString());
+            companyDocument.append("Top3Games",new ArrayList<>());
+            companyDocument.append("_id", companyIdCounter.toString());
+            companyIdCounter = companyIdCounter.add(new BigInteger("1"));
+            collection.insertOne(companyDocument);
+        }
+    }
+
+    private static void insertUsers(JsonNode jsonNode, MongoCollection<Document> collection) {
+        // Iterate over each element in the JSON array and insert it into MongoDB
+        Iterator<JsonNode> usersIterator = jsonNode.iterator();
+        while (usersIterator.hasNext()) {
+            JsonNode userNode = usersIterator.next();
+            Document userDocument = new Document("_id", userIdCounter.toString())
+                .append("username", userNode.get("username").asText())
+                .append("email", userNode.get("email").asText())
+                .append("password_hash", userNode.get("password_hash").asText())
+                .append("Top3ReviewsByLikes", new ArrayList<>());
+            userIdCounter = userIdCounter.add(new BigInteger("1"));
+            collection.insertOne(userDocument);
+        }
+    }
+
+    private static void insertUserImages(JsonNode jsonNode, MongoCollection<Document> collection) {
+        // Iterate over each element in the JSON array and insert it into MongoDB
+        Iterator<JsonNode> usersIterator = jsonNode.iterator();
+        while (usersIterator.hasNext()) {
+            JsonNode userNode = usersIterator.next();
+            Document userDocument = new Document("_id", userImageIdCounter.toString())
+                    .append("username", userNode.get("username").asText())
+                    .append("image", userNode.get("image").asText());
+            userImageIdCounter = userImageIdCounter.add(new BigInteger("1"));
+            collection.insertOne(userDocument);
+        }
     }
 
     @SuppressWarnings("unused")
