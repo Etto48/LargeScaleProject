@@ -54,50 +54,62 @@ def main(args):
         
     with neo.GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH) as driver:
         tmp_path = os.path.abspath(args.tmp).replace("\\", "/").replace(" ","%20")
-        driver.execute_query(
-            """
-            match (n) detach delete n
-            """
-        )
         
-        print("Creating indexes...")
-        driver.execute_query(
-            """
-            create index username_index if not exists for (u:User) on (u.username)
-            """
-        )
-        driver.execute_query(
-            """
-            create index game_index if not exists for (g:Game) on (g.name)
-            """
-        )
+        with driver.session() as session:
         
-        print("Inserting users...")
-        driver.execute_query(
-            f"""
-            load csv with headers from "file:///{tmp_path}/users.csv" as row
-            create (u:User {{username: row.usernname}})
-            """
-        )
-        
-        print("Inserting games...")
-        driver.execute_query(
-            f"""
-            load csv with headers from "file:///{tmp_path}/games.csv" as row
-            create (g:Game {{name: row.name}})
-            """
-        )
-        
-        print("Inserting reviews...")
-        driver.execute_query(
-            f"""
-            load csv with headers from "file:///{tmp_path}/reviews.csv" as row
-            match (u:User {{username: row.author}})
-            match (g:Game {{name: row.game}})
-            create (u)-[:WROTE]->(r:Review {{text: row.text, rating: row.rating}})
-            create (r)-[:ABOUT]->(g)
-            """
-        )
+            session.run(
+                """
+                match (n) detach delete n
+                """
+            )
+            
+            print("Creating indexes...")
+            session.run(
+                """
+                create index username_index if not exists for (u:User) on (u.username)
+                """
+            )
+            session.run(
+                """
+                create index game_index if not exists for (g:Game) on (g.name)
+                """
+            )
+            
+            print("Inserting users...")
+            session.run(
+                f"""
+                load csv with headers from "file:///{tmp_path}/users.csv" as row
+                call {{
+                    with row
+                    create (u:User {{username: row.usernname}})
+                }} in transactions of 1000 rows
+                """
+            )
+            
+            print("Inserting games...")
+            session.run(
+                f"""
+                load csv with headers from "file:///{tmp_path}/games.csv" as row
+                call {{
+                    with row
+                    create (g:Game {{name: row.name}})
+                }} in transactions of 1000 rows
+                """
+            )
+            
+            print("Inserting reviews...")
+            session.run(
+                f"""
+                load csv with headers from "file:///{tmp_path}/reviews.csv" as row
+                call {{
+                    with row
+                    match (u:User {{username: row.author}})
+                    match (g:Game {{name: row.game}})
+                    create (u)-[:WROTE]->(r:Review {{text: row.text, rating: row.rating}})
+                    create (r)-[:ABOUT]->(g)
+                }} in transactions of 1000 rows
+                """
+            )
         
         print("Clearing tmp folder...")
         clear_tmp_folder(args.tmp)
