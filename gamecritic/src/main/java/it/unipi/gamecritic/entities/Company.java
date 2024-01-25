@@ -1,6 +1,7 @@
 package it.unipi.gamecritic.entities;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class Company {
     @Id
-    public String id;
+    public ObjectId id;
     @Field("Name")
     public String name;
     @Field("Overview")

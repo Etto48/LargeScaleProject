@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -129,7 +130,7 @@ public class InsertIntoMongo {
 
         for (JsonNode gameNode : jsonNode) {
             howManyReviews = 0;
-            Document document = new Document("_id", gameIdCounter.toString());
+            Document document = new Document("_id", idFromBignum(gameIdCounter));
             gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             // Iterate through the dynamic attributes before "reviews"
             Iterator<String> fieldNames = gameNode.fieldNames();
@@ -227,7 +228,7 @@ public class InsertIntoMongo {
             String gameId = gameIdCounter.toString(); // Get the id of the game being reviewed
             gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             for (JsonNode reviewNode : gameNode.get("reviews")) {
-                Document document = new Document("_id", reviewIdCounter.toString())
+                Document document = new Document("_id", idFromBignum(reviewIdCounter))
                         .append("gameId", gameId)
                         .append("score", reviewNode.get("score").asText())
                         .append("quote", reviewNode.get("quote").asText())
@@ -242,6 +243,19 @@ public class InsertIntoMongo {
         reviewsCollection.insertMany(documents);
     }
 
+    private static ObjectId idFromBignum(BigInteger id) {
+        String hex_string = id.toString(16);
+        if(hex_string.length() < 24)
+        {
+            hex_string = "0".repeat(24 - hex_string.length()) + hex_string;
+            return new ObjectId(hex_string);
+        }
+        else
+        {
+            throw new IllegalArgumentException("BigInteger is too big to be converted to ObjectId");
+        }
+    }
+
     private static void insertComments(JsonNode jsonNode, MongoCollection<Document> collection) {
         List<Document> documents = new ArrayList<>();
         reviewIdCounter = new BigInteger("1");
@@ -250,7 +264,7 @@ public class InsertIntoMongo {
                 String reviewId = reviewIdCounter.toString(); // Get the id of the review being commented
                 reviewIdCounter = reviewIdCounter.add(new BigInteger("1")); // Get the id of the review being commented
                 for (JsonNode commentNode : reviewNode.get("comments")) {
-                    Document document = new Document("_id", commentIdCounter.toString())
+                    Document document = new Document("_id", idFromBignum(commentIdCounter))
                             .append("reviewId", reviewId)
                             .append("author", commentNode.get("author").asText())
                             .append("quote", commentNode.get("quote").asText())
@@ -272,7 +286,7 @@ public class InsertIntoMongo {
             JsonNode companyNode = companiesIterator.next();
             Document companyDocument = Document.parse(companyNode.toString());
             companyDocument.append("Top3Games",new ArrayList<>());
-            companyDocument.append("_id", companyIdCounter.toString());
+            companyDocument.append("_id", idFromBignum(companyIdCounter));
             companyIdCounter = companyIdCounter.add(new BigInteger("1"));
             collection.insertOne(companyDocument);
         }
@@ -283,7 +297,7 @@ public class InsertIntoMongo {
         Iterator<JsonNode> usersIterator = jsonNode.iterator();
         while (usersIterator.hasNext()) {
             JsonNode userNode = usersIterator.next();
-            Document userDocument = new Document("_id", userIdCounter.toString())
+            Document userDocument = new Document("_id", idFromBignum(userIdCounter))
                 .append("username", userNode.get("username").asText())
                 .append("email", userNode.get("email").asText())
                 .append("password_hash", userNode.get("password_hash").asText())
@@ -306,7 +320,7 @@ public class InsertIntoMongo {
         Iterator<JsonNode> usersIterator = jsonNode.iterator();
         while (usersIterator.hasNext()) {
             JsonNode userNode = usersIterator.next();
-            Document userDocument = new Document("_id", userImageIdCounter.toString())
+            Document userDocument = new Document("_id", idFromBignum(userImageIdCounter))
                     .append("username", userNode.get("username").asText())
                     .append("image", userNode.get("image").asText());
             userImageIdCounter = userImageIdCounter.add(new BigInteger("1"));

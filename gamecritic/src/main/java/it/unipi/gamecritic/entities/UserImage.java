@@ -1,11 +1,12 @@
 package it.unipi.gamecritic.entities;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 public class UserImage {
     @Id
-    public String id;
+    public ObjectId id;
     public String username;
     @Field("image")
     public String b64_image;
