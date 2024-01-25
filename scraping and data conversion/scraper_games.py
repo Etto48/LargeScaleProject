@@ -8,8 +8,8 @@ g = ""
 doc = []
 data = [{}]
 baseURL = "https://www.mobygames.com/game/sort:moby_score/page:"
-pageN = 1
-howmanypages = 5000
+pageStart = 1016
+howmanypages = 183
 gamename = ""
 
 
@@ -20,22 +20,37 @@ def sanitize_filename(name):
 toIgnore = ['Credits','Players','Ranking','Collected By','Business Model','Moby Score']
 try:
     for i in range(howmanypages):
-        print(pageN)
-        pageURL = baseURL + str(pageN) + "/";
-        pageN += 1
-        page = requests.get(pageURL)
-        soup = BeautifulSoup(page.content, "html.parser")
-        x = re.findall('https://www.mobygames.com/game(.*?)"', str(soup))
-        for j in range(24):
-            x.pop(0)
-        for game in x:
+        print(i+pageStart)
+        with open("./id_jsons/"+str(i+pageStart)+".json") as f:
+            lines = f.readlines()
+
+        links = re.findall('https://www.mobygames.com/game(.*?)"', lines[0])
+
+
+        #pageN = pageStart + i
+        #print("page number: "+str(pageN))
+        #pageURL = baseURL + str(pageN) + "/";
+        #print(pageURL)
+        #page = session.get(pageURL)
+
+        #soup = BeautifulSoup(page.content, "html.parser")
+        #print(page.text)
+        #x = re.findall('https://www.mobygames.com/game(.*?)"', str(soup))
+        #for j in range(24):
+            #x.pop(0)
+        for game in links:
 
             URL = 'https://www.mobygames.com/game' + game
             print(URL)
             gamepage = requests.get(URL)
             gamesoup = BeautifulSoup(gamepage.content, "html.parser")
             # res = gamesoup.find_all("a")
-            gamename = gamesoup.find('h1').text.strip()
+            gamename = gamesoup.find('h1')
+            if gamename is None:
+                print("skip")
+                continue
+            else:
+                gamename = gamename.text.strip()
             data[0]["Name"] = gamename
             res1 = gamesoup.find_all(class_='metadata')
             for r in res1:
@@ -79,7 +94,9 @@ try:
             clean = res1.text.strip()
             data[0]['Description'] = clean
             img = gamesoup.find(alt="box cover")
-            data[0]['img'] = img['src']
+            if img is not None:
+                data[0]['img'] = img['src']
+
             sanitized_gamename = sanitize_filename(gamename)
             strname = f"./game_jsons/{sanitized_gamename}.json"
             with open(strname, "w") as file:
@@ -87,6 +104,23 @@ try:
             #doc = doc + data
             data = [{}]
 except Exception as e:
+    e_type, e_object, e_traceback = sys.exc_info()
+
+    e_filename = os.path.split(
+        e_traceback.tb_frame.f_code.co_filename
+    )[1]
+
+    e_message = str(e)
+
+    e_line_number = e_traceback.tb_lineno
+
+    print(f'exception type: {e_type}')
+
+    print(f'exception filename: {e_filename}')
+
+    print(f'exception line number: {e_line_number}')
+
+    print(f'exception message: {e_message}')
     print("Exception occurred, saving if possible")
     print(e)
     if gamename:
