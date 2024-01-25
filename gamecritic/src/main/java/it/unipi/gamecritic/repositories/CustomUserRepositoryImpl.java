@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import com.mongodb.DBObject;
+
 import java.util.List;
 
 public class CustomUserRepositoryImpl implements CustomUserRepository{
@@ -44,7 +46,9 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
             throw new IllegalArgumentException("The given attribute name or value must not be null");
         }
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));
-        return mongoTemplate.find(query, User.class, "users");
+        List<DBObject> user_dbos = mongoTemplate.find(query, DBObject.class, "users");
+        List<User> users = user_dbos.stream().map(User::userFactory).toList();
+        return users;
     }
 
     @Override
@@ -54,6 +58,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         }
         Criteria criteria = Criteria.where("username").regex(query, "i");
         Query q = new Query(criteria).limit(10);
-        return mongoTemplate.find(q, User.class, "users");
+        List<DBObject> user_dbos = mongoTemplate.find(q, DBObject.class, "users");
+        List<User> users = user_dbos.stream().map(User::userFactory).toList();
+        return users;
     }
 }

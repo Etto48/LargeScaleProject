@@ -31,7 +31,6 @@ public class CompanyController {
     @SuppressWarnings("unused")
     private final GameRepository gameRepository;
     private final CompanyRepository companyRepository;
-    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @Autowired
     public CompanyController(GameRepository gameRepository, CompanyRepository companyRepository) {
@@ -164,6 +163,9 @@ public class CompanyController {
                 model.addAttribute("company", (CompanyManager)user);
                 model.addAttribute("user", user);
                 model.addAttribute("request", request);
+                // TODO: find games in db
+                @SuppressWarnings("unused")
+                String company_name = ((CompanyManager)user).company_name;
                 List<Game> games = GameRepository.getMockupList();
                 model.addAttribute("games", games);
                 return "company_panel";

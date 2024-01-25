@@ -28,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.entities.UserImage;
+import it.unipi.gamecritic.entities.user.CompanyManager;
 import it.unipi.gamecritic.entities.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -61,6 +62,10 @@ public class UserController {
         for (User user : users) {
             if (user.username.equals(username)) {
                 model.addAttribute("viewed_user", user);
+                if(user.getAccountType() == "Company")
+                {
+                    model.addAttribute("company_name", ((CompanyManager)user).company_name);
+                }
 
                 Float avg_top_score = 0f;
                 if (user.top_reviews != null)

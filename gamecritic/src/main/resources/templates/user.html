@@ -15,7 +15,12 @@
             <div class="d-flex p-5 user-card">
                 <img class="rounded-circle user-image" th:src="'/user/' + ${#uris.escapePathSegment(viewed_user.username)} + '/image.png'" alt="User Image">
                 <div class="d-flex flex-column w-100 user-info">
-                    <h1 class="fs-1 fw-bold" th:text="${viewed_user.username}"></h1>
+                    <div class="d-flex flex-row align-content-center">
+                        <h1 class="fs-1 my-0 fw-bold" th:text="${viewed_user.username}"></h1>
+                        <i th:if="${viewed_user.getAccountType() == 'Company'}" class="fs-3 ms-2 bi bi-building-fill-check my-auto"></i>
+                        <i th:if="${viewed_user.getAccountType() == 'Admin'}" class="fs-3 ms-2 bi bi-tools my-auto"></i>
+                    </div>
+                    <a th:if="${viewed_user.getAccountType() == 'Company'}" th:href="'/company/' + ${#uris.escapePathSegment(company_name)}" class="underline-on-hover fs-4 text-secondary"><small th:text="${company_name}"></small></a>
                     <a th:href="'mailto:' + ${viewed_user.email}" class="underline-on-hover fs-4 text-secondary" th:text="${viewed_user.email}"></a>
                     <div class="d-flex flex-row gap-3">
                         <a th:href="'/user/' + ${#uris.escapePathSegment(viewed_user.username)} + '/followers'" class="underline-on-hover fs-4 text-secondary"><small>Followers</small></a>

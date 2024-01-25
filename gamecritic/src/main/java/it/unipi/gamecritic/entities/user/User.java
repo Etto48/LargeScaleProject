@@ -2,6 +2,7 @@
 
 package it.unipi.gamecritic.entities.user;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import it.unipi.gamecritic.controllers.api.GameAPI;
@@ -11,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.mongodb.DBObject;
 
 @Document("users")
 public class User {
@@ -35,6 +38,27 @@ public class User {
     }
 
     public User() {
+    }
+
+    public User(DBObject dbObject)
+    {
+        this.id = (String) dbObject.get("_id");
+        this.username = (String) dbObject.get("username");
+        this.password_hash = (String) dbObject.get("password_hash");
+        this.email = (String) dbObject.get("email");
+        @SuppressWarnings("unchecked")
+        ArrayList<Review> top_review = (ArrayList<Review>) dbObject.get("Top3ReviewsByLikes");
+        this.top_reviews = top_review.stream().collect(Vector::new, Vector::add, Vector::addAll);
+    }
+
+    public static User userFactory(DBObject dbObject)
+    {
+        if(dbObject.get("company_name") != null)
+            return new CompanyManager(dbObject);
+        else if(dbObject.get("is_admin") != null && (boolean)dbObject.get("is_admin"))
+            return new Admin(dbObject);
+        else
+            return new User(dbObject);
     }
 
     public String getAccountType() {

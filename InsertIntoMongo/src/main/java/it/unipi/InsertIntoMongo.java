@@ -35,6 +35,7 @@ public class InsertIntoMongo {
     private static String gamesPath = "./games/commented_games.json";
     private static String companiesPath = "./companies/combined_companies.json";
     private static String usersPath = "./users/users.json";
+    private static String cmAndAdminsPath = "./users/cm_and_admins.json";
     private static String configPath = "./InsertIntoMongo/config.json";
     private static final Logger logger = LogManager.getLogger(InsertIntoMongo.class);
     public static void main(String[] args) {
@@ -78,6 +79,8 @@ public class InsertIntoMongo {
             JsonNode gamesJson = objectMapper.readTree(new File(gamesPath));
             JsonNode companiesJson = objectMapper.readTree(new File(companiesPath));
             JsonNode usersJson = objectMapper.readTree(new File(usersPath));
+            JsonNode cmAndAdminsJson = objectMapper.readTree(new File(cmAndAdminsPath));
+            logger.info("Loaded JSON data");
 
             // Insert data into the "videogames" collection
             MongoCollection<Document> videoGamesCollection = database.getCollection("videogames");
@@ -102,11 +105,13 @@ public class InsertIntoMongo {
             // Insert data into the "users" collection
             MongoCollection<Document> usersCollection = database.getCollection("users");
             insertUsers(usersJson, usersCollection);
+            insertUsers(cmAndAdminsJson, usersCollection);
             logger.info("Collection \"users\" created");
 
             // Insert data into the "user_images" collection
             MongoCollection<Document> userImagesCollection = database.getCollection("user_images");
             insertUserImages(usersJson, userImagesCollection);
+            insertUserImages(cmAndAdminsJson, userImagesCollection);
             logger.info("Collection \"user_images\" created");
 
             // Close MongoDB connection
@@ -283,6 +288,14 @@ public class InsertIntoMongo {
                 .append("email", userNode.get("email").asText())
                 .append("password_hash", userNode.get("password_hash").asText())
                 .append("Top3ReviewsByLikes", new ArrayList<>());
+            if (userNode.has("company_name"))
+            {
+                userDocument.append("company_name", userNode.get("company_name").asText());
+            }
+            else if(userNode.has("is_admin"))
+            {
+                userDocument.append("is_admin", userNode.get("is_admin").asBoolean());
+            }
             userIdCounter = userIdCounter.add(new BigInteger("1"));
             collection.insertOne(userDocument);
         }
