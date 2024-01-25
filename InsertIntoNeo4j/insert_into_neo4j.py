@@ -12,6 +12,9 @@ def clear_tmp_folder(tmp_folder):
         for f in os.listdir(tmp_folder):
             os.remove(os.path.join(tmp_folder, f))
         os.rmdir(tmp_folder)
+        
+def prepare_path(path) -> str:
+    return os.path.abspath(path).replace("\\", "/").replace(" ","%20")
 
 def main(args):
     users = json.load(open(args.users))
@@ -19,12 +22,15 @@ def main(args):
     games = json.load(open(args.games))
     
     reviews = []
+    review_id = 1
     for game in games:
         for review in game["reviews"]:
             simplified_review = {
                 "author": review["author"],
                 "game": game["Name"],
+                "id": review_id,
             }
+            review_id += 1
             reviews.append(simplified_review)
     simple_users = []
     for user in users:
@@ -53,13 +59,18 @@ def main(args):
     pd.DataFrame(reviews).to_csv(os.path.join(args.tmp, "reviews.csv"), index=False)
         
     with neo.GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH) as driver:
-        tmp_path = os.path.abspath(args.tmp).replace("\\", "/").replace(" ","%20")
+        tmp_path = prepare_path(args.tmp)
+        likes_path = prepare_path(args.likes)
         
         with driver.session() as session:
         
             session.run(
-                """
-                match (n) detach delete n
+                f"""
+                match (n) 
+                call {{
+                    with n
+                    detach delete n
+                }} in transactions of {args.batch_size} rows
                 """
             )
             
@@ -74,6 +85,12 @@ def main(args):
                 create index game_index if not exists for (g:Game) on (g.name)
                 """
             )
+            session.run(
+                """
+                create index review_index if not exists for (r:Review) on (r.id)
+                """
+            )
+            
             
             print("Inserting users...")
             session.run(
@@ -82,7 +99,7 @@ def main(args):
                 call {{
                     with row
                     create (u:User {{username: row.usernname}})
-                }} in transactions of 1000 rows
+                }} in transactions of {args.batch_size} rows
                 """
             )
             
@@ -93,7 +110,7 @@ def main(args):
                 call {{
                     with row
                     create (g:Game {{name: row.name}})
-                }} in transactions of 1000 rows
+                }} in transactions of {args.batch_size} rows
                 """
             )
             
@@ -105,11 +122,25 @@ def main(args):
                     with row
                     match (u:User {{username: row.author}})
                     match (g:Game {{name: row.game}})
-                    create (u)-[:WROTE]->(r:Review {{text: row.text, rating: row.rating}})
+                    create (u)-[:WROTE]->(r:Review {{id: row.id}})
                     create (r)-[:ABOUT]->(g)
-                }} in transactions of 1000 rows
+                }} in transactions of {args.batch_size} rows
                 """
             )
+            
+            print("Inserting likes...")
+            session.run(
+                f"""
+                load csv with headers from "file:///{likes_path}" as row
+                call {{
+                    with row
+                    match (u:User {{username: row.name}})
+                    match (r:Review {{id: row.reviewId}})
+                    create (u)-[:LIKED]->(r)
+                }} in transactions of {args.batch_size} rows
+                """
+            )
+            
         
         print("Clearing tmp folder...")
         clear_tmp_folder(args.tmp)
@@ -118,9 +149,11 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Insert data into Neo4j')
-    parser.add_argument('--users', type=str, help='File with users', default="./users/users.json")
-    parser.add_argument('--cm_and_admins', type=str, help='File with CM and admins', default="./users/cm_and_admins.json")
-    parser.add_argument('--games', type=str, help='File with games', default="./games/commented_games.json")
+    parser.add_argument('--users', type=str, help='File with users', default="./dataset/users/users.json")
+    parser.add_argument('--cm_and_admins', type=str, help='File with CM and admins', default="./dataset/users/cm_and_admins.json")
+    parser.add_argument('--games', type=str, help='File with games', default="./dataset/games/commented_games.json")
+    parser.add_argument('--likes', type=str, help='File with likes', default="./dataset/likes/likes.csv")
     parser.add_argument('--tmp', type=str, help='tmp folder', default="./tmp")
+    parser.add_argument('--batch-size', type=int, help='Batch size', default=1000)
     args = parser.parse_args()
     main(args)

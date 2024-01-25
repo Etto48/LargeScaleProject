@@ -28,7 +28,6 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class SearchAPI {
-    @SuppressWarnings("unused")
     private final GameRepository gameRepository;
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;

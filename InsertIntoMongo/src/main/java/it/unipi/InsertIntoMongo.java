@@ -33,10 +33,10 @@ public class InsertIntoMongo {
     private static BigInteger userIdCounter = new BigInteger("1");
     private static BigInteger userImageIdCounter = new BigInteger("1");
 
-    private static String gamesPath = "./games/commented_games.json";
-    private static String companiesPath = "./companies/combined_companies.json";
-    private static String usersPath = "./users/users.json";
-    private static String cmAndAdminsPath = "./users/cm_and_admins.json";
+    private static String gamesPath = "./dataset/games/commented_games.json";
+    private static String companiesPath = "./dataset/companies/combined_companies.json";
+    private static String usersPath = "./dataset/users/users.json";
+    private static String cmAndAdminsPath = "./dataset/users/cm_and_admins.json";
     private static String configPath = "./InsertIntoMongo/config.json";
     private static final Logger logger = LogManager.getLogger(InsertIntoMongo.class);
     public static void main(String[] args) {

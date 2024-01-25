@@ -2,6 +2,7 @@
 .vscode/
 .idea/
 error/
+dataset/
 games/
 companies/
 images/image_cache/
