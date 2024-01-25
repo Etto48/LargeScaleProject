@@ -66,9 +66,10 @@ function handleSearchResults(data) {
     });
     data.users.forEach(function (user) {
         var new_user = {};
-        new_user.username = user;
-        new_user.url = "/user/" + encodeURIComponent(user);
-        new_user.img = "/user/" + encodeURIComponent(user) + "/image.png";
+        new_user.username = user.username;
+        new_user.url = "/user/" + encodeURIComponent(user.username);
+        new_user.img = "/user/" + encodeURIComponent(user.username) + "/image.png";
+        new_user.account_type = user.account_type;
         new_data.users.push(new_user);
     });
     data.companies.forEach(function (company) {

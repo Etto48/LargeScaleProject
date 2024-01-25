@@ -76,7 +76,7 @@ public class CompanyController {
         }
 
         model.addAttribute("company", company_object);
-        model.addAttribute("avg_top_score", 8.9);
+        model.addAttribute("avg_top_score", avg_top_score);
         return "company";
     }
 
@@ -87,7 +87,6 @@ public class CompanyController {
         HttpServletRequest request,
         HttpSession session)
     {
-        logger.info("bosipnifsnopsnojpdfs");
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
         model.addAttribute("request", request);
@@ -109,8 +108,6 @@ public class CompanyController {
             List<Game> games = GameRepository.getMockupList();
         //}
         model.addAttribute("company_name", company);
-        model.addAttribute("avg_score", null);
-        model.addAttribute("score_distribution", null);
         model.addAttribute("games", games);
 
         Float avg_score = 0.0f;
@@ -120,7 +117,7 @@ public class CompanyController {
 		}
         Integer games_with_score = 0;
 		for (Game game : games) {
-            Float score = Float.valueOf(game.customAttributes.get("user_review").toString());
+            Float score = Float.valueOf(game.customAttributes.get("user_score").toString());
             if(score != null)
             {
                 avg_score += score;

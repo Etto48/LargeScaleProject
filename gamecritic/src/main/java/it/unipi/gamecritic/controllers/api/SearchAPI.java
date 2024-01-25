@@ -34,8 +34,12 @@ public class SearchAPI {
     private final UserRepository userRepository;
     @SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    public class UserSearchResponse {
+        public String username;
+        public String account_type;
+    }
     public class SearchResponse {
-        public List<String> users;
+        public List<UserSearchResponse> users;
         public List<String> games;
         public List<String> companies;
     }
@@ -59,49 +63,17 @@ public class SearchAPI {
             games.add(ga);
         }
         List<Company> companies = companyRepository.search(query);
-        // TODO: search for users in the database
         List<User> users = userRepository.search(query);
-        // List<User> users = new Vector<>();
-        //List<Game> games = GameRepository.getMockupList();
-/*
-        users.add(new User(
-            "Pippo",
-            "",
-            "",
-            new Vector<>()
-        ));
-        users.add(new User(
-            "Pluto",
-            "",
-            "",
-            new Vector<>()
-        ));
-        users.add(new User(
-            "Paperino",
-            "",
-            "",
-            new Vector<>()
-        ));
-
- */
-        // filter results
-        for (int i = users.size(); i > 0; i--) {
-            if (!users.get(i - 1).username.toLowerCase().contains(query.toLowerCase())) {
-                users.remove(i - 1);
-            }
-        }
-        for (int i = games.size(); i > 0; i--) {
-            if (!games.get(i - 1).name.toLowerCase().contains(query.toLowerCase())) {
-                games.remove(i - 1);
-            }
-        }
 
         SearchResponse result = new SearchResponse();
         result.users = new Vector<>();
         result.games = new Vector<>();
         result.companies = new Vector<>();
         for (User user : users) {
-            result.users.add(user.username);
+            UserSearchResponse userSearchResponse = new UserSearchResponse();
+            userSearchResponse.username = user.username;
+            userSearchResponse.account_type = user.getAccountType();
+            result.users.add(userSearchResponse);
         }
         for (Game game : games) {
             result.games.add(game.name);

@@ -63,6 +63,12 @@
                             <a class="user-result search-result" href="{{url}}">
                                 <img src="{{img}}" alt="User Image"/>
                                 {{username}}
+                                {{#when account_type 'eq' 'Company'}}
+                                    <i class="bi bi-building-fill-check"></i>
+                                {{/when}}
+                                {{#when account_type 'eq' 'Admin'}}
+                                    <i class="bi bi-tools"></i>
+                                {{/when}}
                             </a>
                         {{/each}}
                     {{/if}}
