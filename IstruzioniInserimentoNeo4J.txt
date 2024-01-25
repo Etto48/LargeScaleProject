@@ -1,0 +1,93 @@
+---------AGGIUNGERE RECENSIONI E UTENTI--------------------------
+:auto
+call apoc.load.json("GameCritic.reviews_part1.json") YIELD value as item
+call{with item
+CREATE (user:User {id: item._id})
+// Iterate through elements and create review nodes
+FOREACH (element IN item.elements |
+    CREATE (review:Review {id: element._id})
+    //MERGE (videogame:Videogame {name: element.gameName})
+    create (user)-[:WROTE]->(review)
+    //MERGE (review)-[:REVIEWS]->(videogame)
+)} in transactions of 1000 rows
+---------AGGIUNGERE VIDEOGIOCHI----------------------------------
+//AddGames
+:auto
+call apoc.load.json("GameCritic.videogames.json") YIELD value as item
+call{with item
+CREATE (videogame:Videogame {name: item.name})
+// Iterate through elements and create review nodes
+with videogame, item
+unwind item.reviews as reviews
+match (r:Review) where r.id = reviews.reviewId
+create (r)-[:REVIEWS{score:reviews.score}]->(videogame)
+} in transactions of 1000 rows
+----------AGGREGAZIONE PER RECENSIONI E UTENTI (DA FARE SU COLLECTION REVIEWS)-------------
+[
+  {
+    $lookup:
+      /**
+       * from: The target collection.
+       * localField: The local join field.
+       * foreignField: The target join field.
+       * as: The name for the results.
+       * pipeline: Optional pipeline to run on the foreign collection.
+       * let: Optional variables to use in the pipeline field stages.
+       */
+      {
+        from: "videogames",
+        localField: "gameId",
+        foreignField: "_id",
+        as: "gameInfo",
+      },
+  },
+  {
+    $unwind:
+      /**
+       * path: Path to the array field.
+       * includeArrayIndex: Optional name for index.
+       * preserveNullAndEmptyArrays: Optional
+       *   toggle to unwind null and empty values.
+       */
+      {
+        path: "$gameInfo",
+      },
+  },
+  {
+    $group:
+      /**
+       * _id: The id of the group.
+       * fieldN: The first field name.
+       */
+      {
+        _id: "$author",
+        elements: {
+          $push: {
+            _id: "$_id",
+            gameName: "$gameInfo.Name",
+          },
+        },
+      },
+  },
+  {
+    $limit: //ce lo metto per dividere in più parti i risultati; le aggregation successive dovranno di conseguenza avere uno $skip 
+      /**
+       * Provide the number of documents to limit.
+       */
+      number,
+  },
+]
+-----------AGGREGAZIONE PER VIDEOGIOCHI(DA FARE SU COLLECTION VIDEOGAMES)-------------------
+[
+  {
+    $project:
+      /**
+       * specifications: The fields to
+       *   include or exclude.
+       */
+      {
+        name: "$Name",
+        reviews: "$reviews",
+      },
+  },
+]
