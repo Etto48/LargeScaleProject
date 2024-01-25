@@ -6,6 +6,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.entities.Review;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -31,7 +33,7 @@ public class AccountAPI {
         this.userRepository = userRepository;
     }
 
-    @RequestMapping(value = "/api/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/login", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String processLogin(
         Model model, 
@@ -40,7 +42,6 @@ public class AccountAPI {
         @RequestParam(value = "username", required = true) String username, 
         @RequestParam(value = "password", required = true) String password) {
         
-        // TODO: check if username and password are valid
         List<User> users = userRepository.findByDynamicAttribute("username", username);
         if (users.size() == 0)
         {
@@ -63,25 +64,13 @@ public class AccountAPI {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
         }
 
-        /*if(username.equals("company"))
-        {
-            user = new CompanyManager();
-        }
-        else if (username.equals("admin"))
-        {
-            user = new Admin();
-        }
-        else
-        {
-            user = new User();
-        }*/
-
+        // TODO: check if the user is a company manager or an admin
         session.setAttribute("user", user);        
         
-        return "success";
+        return "\"success\"";
     }
 
-    @RequestMapping(value = "/api/sign_up", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/sign_up", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String processSignUp(
         Model model, 
@@ -91,27 +80,31 @@ public class AccountAPI {
         @RequestParam(value = "password", required = true) String password,
         @RequestParam(value = "email", required = true) String email) 
     {
-        
         // TODO: check if username and password are valid
         // TODO: insert user in database
-
 
         User user = new User();
         user.username = username;
         user.password_hash = password;
         user.email = email;
-        user.top_reviews = null;
+        user.top_reviews = new Vector<Review>();
 
-        session.setAttribute("user", user);
-
-        return "success";
+        if(userRepository.insertUserIfNotExists(user))
+        {
+            session.setAttribute("user", user);
+            return "\"success\"";
+        }
+        else
+        {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
+        }
     }
 
 
-    @RequestMapping("/api/logout")
+    @RequestMapping(value = "/api/logout", produces = "application/json")
     @ResponseBody
     public String logout(Model model, HttpServletRequest request, HttpSession session) throws ServletException {
         session.invalidate();
-        return "success";
+        return "\"success\"";
     }
 }
