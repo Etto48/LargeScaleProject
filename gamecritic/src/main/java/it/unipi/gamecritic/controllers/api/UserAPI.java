@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,13 +17,26 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.Gson;
 
+import it.unipi.gamecritic.entities.UserImage;
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.UserImageRepository;
+import it.unipi.gamecritic.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserAPI {
+    @SuppressWarnings("unused")
+    private final UserRepository userRepository;
+    private final UserImageRepository userImageRepository;
     private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+
+    @Autowired
+    public UserAPI(UserRepository userRepository, UserImageRepository userImageRepository) {
+        this.userRepository = userRepository;
+        this.userImageRepository = userImageRepository;
+    }
+
     @RequestMapping(value = "/api/user/follow", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String user_follow(
@@ -107,9 +121,8 @@ public class UserAPI {
                 }
                 try {
                     byte[] image_bytes = image.getBytes();
-                    @SuppressWarnings("unused")
-                    String image_b64 = java.util.Base64.getEncoder().encodeToString(image_bytes);
-                    // TODO: save image in the database    
+                    UserImage user_image = new UserImage(user.username, image_bytes);
+                    userImageRepository.insertImage(user_image);
                     logger.info("Image uploaded: " + image.getBytes().length/1024f + "KB");
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while processing image");

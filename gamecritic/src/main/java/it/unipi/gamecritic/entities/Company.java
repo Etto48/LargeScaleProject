@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Company {
     @Id
-    public String _id;
+    public String id;
     @Field("Name")
     public String name;
     @Field("Overview")

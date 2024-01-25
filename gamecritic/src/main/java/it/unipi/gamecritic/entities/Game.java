@@ -5,7 +5,6 @@ import com.mongodb.DBObject;
 
 import it.unipi.gamecritic.controllers.api.GameAPI;
 
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
@@ -20,7 +19,7 @@ import java.util.Map;
 public class Game {
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
     @Id
-    public ObjectId id;
+    public String id;
     @Field("Name")
     public String name;
     @Field("Released")
