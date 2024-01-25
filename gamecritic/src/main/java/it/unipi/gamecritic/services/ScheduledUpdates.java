@@ -57,9 +57,9 @@ public class ScheduledUpdates {
                 games.add(g);
             }
             Update update = new Update().set("Top3Games", games);
-            System.out.println("company id: " + company._id);
+            System.out.println("company id: " + company.id);
             System.out.println("list: " + games.toString());
-            bulkOps.updateOne(Query.query(Criteria.where("_id").is(company._id)), update);
+            bulkOps.updateOne(Query.query(Criteria.where("_id").is(company.id)), update);
         }
         bulkOps.execute();
     }
