@@ -1,7 +1,5 @@
 package it.unipi.gamecritic.controllers.api;
 
-import it.unipi.gamecritic.repositories.UserRepository;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.User.UserRepository;
 import it.unipi.gamecritic.entities.Review;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

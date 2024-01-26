@@ -1,8 +1,9 @@
 //CustomUserRepositoryImpl
 
-package it.unipi.gamecritic.repositories;
+package it.unipi.gamecritic.repositories.User;
 
 import it.unipi.gamecritic.entities.user.User;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

@@ -18,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.Review;
-import it.unipi.gamecritic.repositories.GameRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 

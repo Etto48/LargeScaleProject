@@ -19,8 +19,8 @@ import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.UserImage;
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.UserImageRepository;
-import it.unipi.gamecritic.repositories.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 

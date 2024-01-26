@@ -3,7 +3,6 @@ package it.unipi.gamecritic.controllers;
 import java.util.List;
 import java.util.Vector;
 
-import it.unipi.gamecritic.repositories.CompanyRepository;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,8 @@ import it.unipi.gamecritic.entities.Company;
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.user.CompanyManager;
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.GameRepository;
+import it.unipi.gamecritic.repositories.Company.CompanyRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.server.PathParam;

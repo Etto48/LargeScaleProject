@@ -1,4 +1,4 @@
-package it.unipi.gamecritic.repositories;
+package it.unipi.gamecritic.repositories.Game;
 
 import com.mongodb.DBObject;
 

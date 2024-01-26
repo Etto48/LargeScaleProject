@@ -1,4 +1,4 @@
-package it.unipi.gamecritic.repositories;
+package it.unipi.gamecritic.repositories.Company;
 
 import it.unipi.gamecritic.entities.Company;
 

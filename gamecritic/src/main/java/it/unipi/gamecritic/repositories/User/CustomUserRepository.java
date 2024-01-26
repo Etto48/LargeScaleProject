@@ -1,6 +1,6 @@
 //CustomUserRepository
 
-package it.unipi.gamecritic.repositories;
+package it.unipi.gamecritic.repositories.User;
 
 import it.unipi.gamecritic.entities.user.User;
 

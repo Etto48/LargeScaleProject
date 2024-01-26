@@ -1,4 +1,4 @@
-package it.unipi.gamecritic.repositories;
+package it.unipi.gamecritic.repositories.Game;
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.Review;
 

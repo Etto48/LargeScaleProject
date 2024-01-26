@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import it.unipi.gamecritic.repositories.UserImageRepository;
-import it.unipi.gamecritic.repositories.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;

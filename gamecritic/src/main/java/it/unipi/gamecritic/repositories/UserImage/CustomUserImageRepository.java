@@ -1,4 +1,4 @@
-package it.unipi.gamecritic.repositories;
+package it.unipi.gamecritic.repositories.UserImage;
 
 import it.unipi.gamecritic.entities.UserImage;
 

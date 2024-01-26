@@ -1,6 +1,7 @@
-package it.unipi.gamecritic.repositories;
+package it.unipi.gamecritic.repositories.Game;
 
 import com.mongodb.DBObject;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import java.util.List;
