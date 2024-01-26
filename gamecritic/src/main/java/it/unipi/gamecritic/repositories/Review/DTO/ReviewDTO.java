@@ -9,6 +9,7 @@ import org.springframework.data.neo4j.repository.query.Query;
 import java.math.BigInteger;
 @Node("Review")
 public class ReviewDTO {
+
     @Id
     @GeneratedValue
     public Long id;
@@ -16,14 +17,14 @@ public class ReviewDTO {
     public String reviewId;
     @Property("rating")
     public String rating;
-    @Property("text")
-    public String text;
+    @Property("likeCount")
+    public Integer likeCount;
 
-    public ReviewDTO(Long id, String rating, String reviewId, String text) {
+    public ReviewDTO(Long id, String rating, String reviewId, Integer likeCount) {
         this.id = id;
         this.reviewId = reviewId;
         this.rating = rating;
-        this.text = text != null ? text : "No text available";
+        this.likeCount = likeCount;
     }
 
     public void setId(Long id) {
@@ -32,10 +33,6 @@ public class ReviewDTO {
 
     public void setRating(String rating) {
         this.rating = rating;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public void setReviewId(String reviewId) {

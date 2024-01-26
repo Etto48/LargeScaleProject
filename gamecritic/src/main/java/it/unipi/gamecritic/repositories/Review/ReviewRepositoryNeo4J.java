@@ -14,6 +14,13 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, Long> 
             "WITH review, COUNT(like) AS likeCount\n" +
             "ORDER BY likeCount DESC\n" +
             "LIMIT 3\n" +
-            "RETURN review;")
-    List<ReviewDTO> findMostLikedReviews(@Param("username") String username);
+            "RETURN review, likeCount;")
+    List<ReviewDTO> findMostLikedReviewsForUsers(@Param("username") String username);
+    @Query("MATCH (game:Game {name: $name})<-[:ABOUT]-(review:Review)\n" +
+            "OPTIONAL MATCH (review)<-[like:LIKED]-()\n" +
+            "WITH review, COUNT(like) AS likeCount\n" +
+            "ORDER BY likeCount DESC\n" +
+            "LIMIT 3\n" +
+            "RETURN review, likeCount;")
+    List<ReviewDTO> findMostLikedReviewsForGames(@Param("name") String name);
 }
