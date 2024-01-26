@@ -2,7 +2,7 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
     <body>
-        <div th:fragment="comment(comment)" class="ms-2 my-2 me-0 d-flex flex-column" th:id="'comment-' + ${comment.id}">
+        <div th:fragment="comment(comment)" class="ms-0 my-2 me-0 d-flex flex-column" th:id="'comment-' + ${comment.getId()}">
             <div class="d-flex flex-column comment-body p-2 mb-3">
                 <div class="d-flex flex-row">
                     <img class="rounded-circle me-2 my-auto" th:src="'/user/' + ${#uris.escapePathSegment(comment.author)} + '/image.png'" alt="User Image" style="width: 25px; height: 25px">
@@ -11,24 +11,15 @@
                 <div class="d-flex flex-row">
                     <span class="my-2" th:text="${comment.quote}"></span>
                     <div class="align-self-end ms-auto gap-2">
-                        <button class="btn btn-dark respond-button" th:onclick="'openNewComment(' + ${comment.id} + ');'" th:if="${user != null}">
-                            <i class="bi bi-chat-fill"></i>
-                        </button>
-                        <button th:replace="~{fragments/delete.html :: comment(${comment.id})}"></button>
+                        <button th:replace="~{fragments/delete.html :: comment(${comment.getId()})}"></button>
                     </div>
-                </div>
-            </div>
-            <div class="d-flex d-row subcomment-container" th:if="${comment.comments.size() > 0}">
-                <div class="vr me-2 rounded" style="width: 3px"></div>
-                <div class="d-flex flex-column subcomment-list" style="width: 100%;">
-                    <div th:each="comment : ${comment.comments}" th:insert="~{fragments/comment.html :: comment(${comment})}"></div>
                 </div>
             </div>
         </div>
 
         <div class="create-new-comment m-0" th:fragment="create_new(review)" th:if="${user != null}">
-            <div id="new-comment-form" class="card p-2 new-comment-form">
-                <form>
+            <div id="new-comment-form-container" class="card p-2">
+                <form id="new-comment-form">
                     <div class="d-flex flex-row">
                         <button class="btn btn-dark ms-auto h-50" type="button"><i class="bi bi-x fs-2" onclick="toggleNewComment();"></i></button>
                     </div>
@@ -37,7 +28,11 @@
                 </form>
             </div>
             <script src="/js/create_comment.js"></script>
-            <script th:text="'prepareCommentForm(' + ${review.id} + ');'"></script>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                prepareCommentForm(/*[[${review.getId()}]]*/ null);
+                /*]]>*/
+            </script>
         </div>
     </body>
 </html>

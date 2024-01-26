@@ -1,6 +1,6 @@
 package it.unipi.gamecritic.controllers;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,18 +14,21 @@ import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Review;
+import it.unipi.gamecritic.repositories.Comment.CommentRepository;
 import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CommentsController {
+    private final CommentRepository commentRepository;
     private final ReviewRepository reviewRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CommentsController.class);
 
     @Autowired
-    public CommentsController(ReviewRepository reviewRepository) {
+    public CommentsController(CommentRepository commentRepository, ReviewRepository reviewRepository) {
+        this.commentRepository = commentRepository;
         this.reviewRepository = reviewRepository;
     }
 
@@ -34,81 +37,16 @@ public class CommentsController {
         model.addAttribute("request", request);
         model.addAttribute("user", session.getAttribute("user"));
         
-        try{
-            Review review = reviewRepository.findSingleReview(review_id);
-            if (review == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found");
-            }
-            model.addAttribute("review", review);
+        Review review = reviewRepository.findSingleReview(review_id);
+        if (review == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found");
         }
-        catch (NumberFormatException e)
-        {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found because of invalid id");
-        }
+        model.addAttribute("review", review);
 
-        // TODO: get comments from database
-        Vector<Comment> comments = new Vector<Comment>();
-        comments.add(new Comment() {
-            {
-                id = 0;
-                author = "Pippo";
-                review_id = 0;
-                quote = "Yeah pretty much";
-                comments = new Vector<Comment>() {
-                    {
-                        add(new Comment() {
-                            {
-                                id = 1;
-                                author = "Pluto";
-                                review_id = 0;
-                                quote = "I agree";
-                                comments = new Vector<Comment>() {
-                                    {
-                                        add(new Comment() {
-                                            {
-                                                id = 2;
-                                                author = "Paperino";
-                                                review_id = 0;
-                                                quote = "I disagree";
-                                                comments = new Vector<Comment>();
-                                            }
-                                        });
-                                        add(new Comment() {
-                                            {
-                                                id = 3;
-                                                author = "Topolino";
-                                                review_id = 0;
-                                                quote = "I agree";
-                                                comments = new Vector<Comment>();
-                                            }
-                                        });
-                                    }
-                                };
-                            }
-                        });
-                        add(new Comment() {
-                            {
-                                id = 4;
-                                author = "Paperino";
-                                review_id = 0;
-                                quote = "I am confused";
-                                comments = new Vector<Comment>();
-                            }
-                        });
-                    }
-                };
-            }
-        });
-        comments.add(new Comment() {
-            {
-                id = 5;
-                author = "Pluto";
-                review_id = 0;
-                quote = "My opinion is different";
-                comments = new Vector<Comment>();
-            }
-        });
-        
+        List<Comment> comments = commentRepository.findByReviewId(review_id);
+        if (comments == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comments not found");
+        }
         model.addAttribute("comments", comments);
 
         return "comments";

@@ -88,14 +88,11 @@ public class InsertIntoMongo {
             insertDynamicData(gamesJson, videoGamesCollection);
             logger.info("Collection \"videogames\" created");
 
-            // Insert data into the "reviews" collection
+            // Insert data into the "reviews" collection and the "comments" collection
             MongoCollection<Document> reviewsCollection = database.getCollection("reviews");
-            insertReviews(gamesJson, reviewsCollection);
-            logger.info("Collection \"reviews\" created");
-
-            // Insert data into the "comments" collection
             MongoCollection<Document> commentsCollection = database.getCollection("comments");
-            insertComments(gamesJson, commentsCollection);
+            insertReviewsAndComments(gamesJson, reviewsCollection, commentsCollection);
+            logger.info("Collection \"reviews\" created");
             logger.info("Collection \"comments\" created");
 
             // Insert data into the "companies" collection
@@ -220,8 +217,9 @@ public class InsertIntoMongo {
         collection.insertMany(documents);
     }
 
-    private static void insertReviews(JsonNode jsonNode, MongoCollection<Document> reviewsCollection) {
-        List<Document> documents = new ArrayList<>();
+    private static void insertReviewsAndComments(JsonNode jsonNode, MongoCollection<Document> reviewsCollection, MongoCollection<Document> commentsCollection) {
+        List<Document> reviews = new ArrayList<>();
+        List<Document> comments = new ArrayList<>();
         for (JsonNode gameNode : jsonNode) {
             for (JsonNode reviewNode : gameNode.get("reviews")) {
                 Integer score = reviewNode.get("score").asInt();
@@ -243,12 +241,22 @@ public class InsertIntoMongo {
                         .append("quote", reviewNode.get("quote").asText())
                         .append("author", reviewNode.get("author").asText())
                         .append("date", reviewNode.get("date").asText());
+                for (JsonNode commentNode : reviewNode.get("comments"))
+                {
+                    Document commentDocument = new Document("_id", idFromBignum(commentIdCounter))
+                        .append("reviewId", idFromBignum(reviewIdCounter))
+                        .append("author", commentNode.get("author").asText())
+                        .append("quote", commentNode.get("quote").asText())
+                        .append("date", commentNode.get("date").asText());
+                    commentIdCounter = commentIdCounter.add(new BigInteger("1"));
+                    comments.add(commentDocument);
+                }
                 reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));
-                documents.add(document);
+                reviews.add(document);
             }
         }
-
-        reviewsCollection.insertMany(documents);
+        reviewsCollection.insertMany(reviews);
+        commentsCollection.insertMany(comments);
     }
 
     private static ObjectId idFromBignum(BigInteger id) {
@@ -262,29 +270,6 @@ public class InsertIntoMongo {
         {
             throw new IllegalArgumentException("BigInteger is too big to be converted to ObjectId");
         }
-    }
-
-    private static void insertComments(JsonNode jsonNode, MongoCollection<Document> collection) {
-        List<Document> documents = new ArrayList<>();
-        reviewIdCounter = new BigInteger("1");
-        for (JsonNode gameNode : jsonNode) {
-            for (JsonNode reviewNode : gameNode.get("reviews")) {
-                String reviewId = reviewIdCounter.toString(); // Get the id of the review being commented
-                reviewIdCounter = reviewIdCounter.add(new BigInteger("1")); // Get the id of the review being commented
-                for (JsonNode commentNode : reviewNode.get("comments")) {
-                    Document document = new Document("_id", idFromBignum(commentIdCounter))
-                            .append("reviewId", reviewId)
-                            .append("author", commentNode.get("author").asText())
-                            .append("quote", commentNode.get("quote").asText())
-                            .append("date", commentNode.get("date").asText())
-                            .append("responses", new ArrayList<>());
-                    commentIdCounter = commentIdCounter.add(new BigInteger("1"));
-                    documents.add(document);
-                }
-            }
-        }
-
-        collection.insertMany(documents);
     }
 
     private static void insertCompanies(JsonNode jsonNode, MongoCollection<Document> collection) {

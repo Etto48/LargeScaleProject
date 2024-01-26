@@ -22,7 +22,7 @@ public class LikeAPI {
     @RequestMapping(value = "/api/like/set/review", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String like_post_review(
-        @RequestParam(value = "id", required = true) Integer id,
+        @RequestParam(value = "id", required = true) String id,
         @RequestParam(value = "liked", required = true) Boolean liked,
         HttpServletRequest request,
         HttpSession session)
@@ -53,7 +53,7 @@ public class LikeAPI {
     @RequestMapping(value = "/api/like/get/review", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String like_get_review(
-        @RequestParam(value = "id", required = true) Integer id,
+        @RequestParam(value = "id", required = true) String id,
         HttpServletRequest request,
         HttpSession session)
     {

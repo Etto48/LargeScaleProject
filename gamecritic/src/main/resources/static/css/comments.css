@@ -3,13 +3,8 @@ main.container {
 }
 
 div.comment-body {
-    box-shadow: 0 0 0 0 rgb(0, 0, 0, 0.2);
-    transition: box-shadow 0.2s ease-in-out;
-    border-radius: 5px;
-}
-
-div.comment-body:has(button):hover {
     box-shadow: 0 5px 10px 0 rgb(0, 0, 0, 0.2);
+    border-radius: 5px;
 }
 
 .respond-button {
@@ -17,11 +12,7 @@ div.comment-body:has(button):hover {
     transition: opacity 0.2s ease-in-out;
 }
 
-div.comment-body:hover .respond-button {
-    opacity: 1;
-}
-
-main .respond-button:hover {
+.respond-button:hover {
     opacity: 1;
 }
 
@@ -38,7 +29,7 @@ main .respond-button:hover {
     margin: 0.5em;
 }
 
-.create-new-comment .new-comment-form {
+.create-new-comment #new-comment-form-container {
     display: none;
     position: fixed;
     top: 50%;
@@ -48,11 +39,11 @@ main .respond-button:hover {
     flex-direction: column;
 }
 
-.create-new-comment .new-comment-form.show {
+.create-new-comment #new-comment-form-container.show {
     display: flex;
 }
 
-.create-new-comment:has(.new-comment-form.show)::after {
+.create-new-comment:has(#new-comment-form-container.show)::after {
     content: "";
     position: fixed;
     background-color: rgba(0, 0, 0, 0.5);
