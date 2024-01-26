@@ -59,4 +59,13 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         Query query = new Query(Criteria.where("_id").is(oid));
         return mongoTemplate.findOne(query, Review.class, "reviews");
     }
+
+    @Override
+    public void insertReview(Review review)
+    {
+        if(review == null) {
+            throw new IllegalArgumentException("review must not be null");
+        }
+        mongoTemplate.insert(review, "reviews");
+    }
 }

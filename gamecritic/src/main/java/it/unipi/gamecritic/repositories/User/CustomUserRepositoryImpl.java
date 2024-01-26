@@ -24,7 +24,9 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         mongoTemplate.insert(user, "users");
     }
 
-    /// Returns true if the user was inserted, false if the user already exists
+    /** 
+     * Returns true if the user was inserted, false if the user already exists
+     **/
     public boolean insertUserIfNotExists(User user) {
         // Check if the user with the given username already exists
         Criteria criteria = Criteria.where("username").is(user.getUsername());
