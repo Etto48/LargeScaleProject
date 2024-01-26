@@ -48,16 +48,21 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     }
 
     @Override
-    public Review findSingleReview(Long id)
+    public Review findSingleReview(String id)
     {
         if(id == null) {
             throw new IllegalArgumentException("id must not be null");
         }
-        String string_id = Long.toHexString(id);
-        string_id = "0".repeat(24 - string_id.length()) + string_id;
-        ObjectId oid = new ObjectId(string_id);
-        Query query = new Query(Criteria.where("_id").is(oid));
-        return mongoTemplate.findOne(query, Review.class, "reviews");
+        try
+        {
+            ObjectId oid = new ObjectId(id);
+            Query query = new Query(Criteria.where("_id").is(oid));
+            return mongoTemplate.findOne(query, Review.class, "reviews");
+        }
+        catch (IllegalArgumentException e)
+        {
+            return null;
+        }
     }
 
     @Override

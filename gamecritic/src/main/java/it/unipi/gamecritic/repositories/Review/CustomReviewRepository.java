@@ -8,6 +8,6 @@ public interface CustomReviewRepository {
     List<Review> findByDynamicAttribute(String attributeName, String attributeValue);
     List<Review> findByAuthor(String author);
     List<Review> findByGame(String game);
-    Review findSingleReview(Long id);
+    Review findSingleReview(String id);
     void insertReview(Review review);
 }

@@ -14,10 +14,11 @@
                 </div>
                 <p class="my-auto p-2 mb-auto h-100" th:text="${#strings.abbreviate(review.quote,120)}"></p>
                 <button class="btn btn-primary my-auto" type="button"
-                    th:onclick="'showReview(' + ${review.id} + ');'">
+                    th:data-review-id = "${review.getId()}"
+                    onclick="showReview(this.getAttribute('data-review-id'));">
                     Read More
                 </button>
-                <div th:id="'review-' + ${review.id}" class="card my-auto long-review flex-column">
+                <div th:id="'review-' + ${review.getId()}" class="card my-auto long-review flex-column">
                     <div class="d-flex flex-row mb-2">
                         <div th:replace="~{fragments/score.html :: score_small(${review.score})}"></div>
                         <div class="d-flex flex-column ms-2">
@@ -26,7 +27,8 @@
                             <small class="text-secondary" th:text="${review.date}"></small>
                         </div>
                         <button class="btn btn-dark ms-auto py-0" type="button"
-                            th:onclick="'hideReview(' + ${review.id} + ');'">
+                            th:data-review-id="${review.getId()}"
+                            onclick="hideReview(this.getAttribute('data-review-id'));">
                             <i class="bi bi-x fs-2"></i>
                         </button>
                     </div>
@@ -40,12 +42,14 @@
         </div>
 
         <div class="d-flex flex-row justify-content-end review-actions gap-2" th:fragment="review_actions(review)">
-            <button class="btn btn-dark" th:onclick="'window.location.href=\'/comments/' + ${review.getId()} + '\''">
+            <button class="btn btn-dark" 
+                th:data-review-id="${review.getId()}"
+                onclick="window.location.href='/comments/'+ this.getAttribute('data-review-id')">
                 <i class="bi bi-chat-fill text-secondary"></i>
                 <span class="text-secondary mx-2">Comments</span>
             </button>
-            <button th:replace="~{fragments/like.html :: review(${review.id})}"></button>
-            <button th:replace="~{fragments/delete.html :: review(${review.id})}"></button>
+            <button th:replace="~{fragments/like.html :: review(${review.getId()})}"></button>
+            <button th:replace="~{fragments/delete.html :: review(${review.getId()})}"></button>
         </div>
 
         <div class="d-flex flex-column mt-2" th:fragment="list_reviews(reviews,title_mode)">
