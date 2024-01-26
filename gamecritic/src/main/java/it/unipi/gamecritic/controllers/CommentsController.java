@@ -2,22 +2,49 @@ package it.unipi.gamecritic.controllers;
 
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Review;
+import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.server.PathParam;
 
 @Controller
 public class CommentsController {
+    private final ReviewRepository reviewRepository;
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(CommentsController.class);
+
+    @Autowired
+    public CommentsController(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
+    }
+
     @RequestMapping("/comments/{review_id}")
-    public String comments(@PathParam("review_id") String review_id, Model model, HttpServletRequest request, HttpSession session) {
+    public String comments(@PathVariable("review_id") String review_id, Model model, HttpServletRequest request, HttpSession session) {
         model.addAttribute("request", request);
         model.addAttribute("user", session.getAttribute("user"));
+        
+        try{
+            Review review = reviewRepository.findSingleReview(Long.parseLong(review_id));
+            if (review == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found");
+            }
+            model.addAttribute("review", review);
+        }
+        catch (NumberFormatException e)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found because of invalid id");
+        }
 
         // TODO: get comments from database
         Vector<Comment> comments = new Vector<Comment>();
@@ -82,15 +109,6 @@ public class CommentsController {
             }
         });
         
-        // TODO: get review from database
-        Review review = new Review();
-        review.game = "The Legend of Zelda: Breath of the Wild";
-        review.date = "2021-01-01";
-        review.author = "Pippo";
-        review.quote = "The legend of Zelda: Breath of the Wild is a game that has been released in 2017 for the Nintendo Switch and the Wii U. It is an open world game that has been praised for its freedom of exploration and its physics engine. It is the first game in the series to feature voice acting.";
-        review.score = 9;
-
-        model.addAttribute("review", review);
         model.addAttribute("comments", comments);
 
         return "comments";

@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CompanyAPI {
-    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(CompanyAPI.class);
     @RequestMapping(value = "/api/company/edit-game", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String company_edit_game(

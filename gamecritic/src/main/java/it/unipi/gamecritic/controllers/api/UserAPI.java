@@ -29,7 +29,7 @@ public class UserAPI {
     @SuppressWarnings("unused")
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
-    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserAPI.class);
 
     @Autowired
     public UserAPI(UserRepository userRepository, UserImageRepository userImageRepository) {

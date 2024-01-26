@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LikeAPI {
-    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(LikeAPI.class);
     @RequestMapping(value = "/api/like/set/review", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String like_post_review(

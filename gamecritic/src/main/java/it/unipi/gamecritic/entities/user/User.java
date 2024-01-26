@@ -5,7 +5,6 @@ package it.unipi.gamecritic.entities.user;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import it.unipi.gamecritic.controllers.api.GameAPI;
 import it.unipi.gamecritic.entities.Review;
 
 import org.bson.types.ObjectId;
@@ -20,7 +19,7 @@ import com.mongodb.DBObject;
 @Document("users")
 public class User {
     @SuppressWarnings("unused")
-    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(User.class);
     @Id
     public ObjectId id;
     @Field("username")

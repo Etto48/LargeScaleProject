@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CommentAPI {
-    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentAPI.class);
     static Integer id = 69; // TODO: get the id of the new comment from the database
     public class NewCommentInfo {
         public Integer id;

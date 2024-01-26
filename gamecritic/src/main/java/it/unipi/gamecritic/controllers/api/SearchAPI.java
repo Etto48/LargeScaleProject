@@ -33,7 +33,7 @@ public class SearchAPI {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     @SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+	private static final Logger logger = LoggerFactory.getLogger(SearchAPI.class);
     public class UserSearchResponse {
         public String username;
         public String account_type;

@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ReviewAPI {
-    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReviewAPI.class);
     @RequestMapping(value = "/api/review/new", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String new_review(

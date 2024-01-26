@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminAPI {
-    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminAPI.class);
     public void ban(String username, User user) {
         // TODO: ban user
         logger.info("Ban user \"" + username + "\" by " + user.username);

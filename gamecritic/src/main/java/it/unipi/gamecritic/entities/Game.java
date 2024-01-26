@@ -3,8 +3,6 @@ package it.unipi.gamecritic.entities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 
-import it.unipi.gamecritic.controllers.api.GameAPI;
-
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,7 @@ import java.util.Map;
 
 @Document(collection = "videogames")
 public class Game {
-	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+	private static final Logger logger = LoggerFactory.getLogger(Game.class);
     @Id
     public ObjectId id;
     @Field("Name")

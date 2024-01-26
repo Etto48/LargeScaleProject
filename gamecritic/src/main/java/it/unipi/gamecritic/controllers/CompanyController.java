@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.server.ResponseStatusException;
 
-import it.unipi.gamecritic.controllers.api.GameAPI;
 import it.unipi.gamecritic.entities.Company;
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.user.CompanyManager;
@@ -24,14 +23,13 @@ import it.unipi.gamecritic.repositories.Company.CompanyRepository;
 import it.unipi.gamecritic.repositories.Game.GameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.server.PathParam;
 
 @Controller
 public class CompanyController {
     @SuppressWarnings("unused")
     private final GameRepository gameRepository;
     private final CompanyRepository companyRepository;
-    private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+    private static final Logger logger = LoggerFactory.getLogger(CompanyController.class);
     @Autowired
     public CompanyController(GameRepository gameRepository, CompanyRepository companyRepository) {
         this.gameRepository = gameRepository;
@@ -82,7 +80,7 @@ public class CompanyController {
 
     @RequestMapping(value = "/company/{company}/games", method = RequestMethod.GET)
     public String company_games(
-        @PathParam("company") String company,
+        @PathVariable("company") String company,
         Model model,
         HttpServletRequest request,
         HttpSession session)
