@@ -3,6 +3,8 @@ package it.unipi.gamecritic.controllers.api;
 import java.util.ArrayList;
 import java.util.List;
 import com.mongodb.DBObject;
+import it.unipi.gamecritic.repositories.Review.DTO.ReviewDTO;
+import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +26,12 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class GameAPI {
     private final GameRepository gameRepository;
+    private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
 	@Autowired
-	public GameAPI(GameRepository gameRepository) {
+	public GameAPI(GameRepository gameRepository, ReviewRepositoryNeo4J reviewRepositoryNeo4J) {
 		this.gameRepository = gameRepository;
+        this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
 	}
     @RequestMapping(value = "/api/game", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -103,7 +107,6 @@ public class GameAPI {
         }
         else if (kind.equals("best"))
         {
-            //companyRepository.updateTop3Games();
             logger.info("page" + page.toString());
             List<DBObject> l = gameRepository.findBest(offset);
             if (l.isEmpty()){
