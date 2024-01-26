@@ -27,6 +27,7 @@ def main(args):
         for review in game["reviews"]:
             simplified_review = {
                 "author": review["author"],
+                "score": review["score"],
                 "game": game["Name"],
                 "id": review_id,
             }
