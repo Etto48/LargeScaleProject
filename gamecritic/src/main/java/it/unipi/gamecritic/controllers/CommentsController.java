@@ -35,7 +35,7 @@ public class CommentsController {
         model.addAttribute("user", session.getAttribute("user"));
         
         try{
-            Review review = reviewRepository.findSingleReview(Long.parseLong(review_id));
+            Review review = reviewRepository.findSingleReview(review_id);
             if (review == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found");
             }

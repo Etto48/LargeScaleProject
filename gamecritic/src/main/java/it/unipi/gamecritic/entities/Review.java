@@ -41,7 +41,7 @@ public class Review {
         }
     }
 
-    public Long getId() {
-        return Long.parseLong(id.toHexString(),16);
+    public String getId() {
+        return id.toHexString();
     }
 }
