@@ -66,11 +66,12 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     }
 
     @Override
-    public void insertReview(Review review)
+    public String insertReview(Review review)
     {
         if(review == null) {
             throw new IllegalArgumentException("review must not be null");
         }
         mongoTemplate.insert(review, "reviews");
+        return review.getId();
     }
 }

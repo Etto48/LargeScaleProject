@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.google.gson.Gson;
+
 import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.Review.ReviewRepository;
@@ -25,6 +27,15 @@ public class ReviewAPI {
     @Autowired
     public ReviewAPI(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
+    }
+
+    public class NewReviewInfo {
+        public String id;
+        public String author;
+        public NewReviewInfo(String id, String author) {
+            this.id = id;
+            this.author = author;
+        }
     }
 
     @RequestMapping(value = "/api/review/new", method = RequestMethod.POST, produces = "application/json")
@@ -43,8 +54,9 @@ public class ReviewAPI {
         else
         {
             Review review = new Review(game, score, quote, user.username, null);
-            reviewRepository.insertReview(review);
-            return "{}";
+            String review_id = reviewRepository.insertReview(review);
+            Gson gson = new Gson();
+            return gson.toJson(new NewReviewInfo(review_id, user.username));
         }
     }
 }

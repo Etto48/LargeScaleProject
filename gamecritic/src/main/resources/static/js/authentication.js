@@ -12,12 +12,12 @@ function login() {
             if (data === "success") {
                 window.location.href = "/";
             } else {
-                document.getElementById("form").classList.add("error");
+                document.getElementById("main").classList.add("error");
                 document.getElementById("error").innerHTML = "Invalid username or password";
             }
         },
         error: function (data) {
-            document.getElementById("form").classList.add("error");
+            document.getElementById("main").classList.add("error");
             document.getElementById("error").innerHTML = "Invalid username or password";
         }
     });
@@ -30,7 +30,7 @@ function sign_up() {
     var confirm_password = document.getElementById("password_check_sign_up").value;
     
     if (password !== confirm_password) {
-        document.getElementById("form").classList.add("error");
+        document.getElementById("main").classList.add("error");
         document.getElementById("error").innerHTML = "Passwords do not match";
     }
     else 
@@ -47,12 +47,12 @@ function sign_up() {
                 if (data === "success") {
                     window.location.href = "/";
                 } else {
-                    document.getElementById("form").classList.add("error");
+                    document.getElementById("main").classList.add("error");
                     document.getElementById("error").innerHTML = "Invalid username or password";
                 }
             },
             error: function (data) {
-                document.getElementById("form").classList.add("error");
+                document.getElementById("main").classList.add("error");
                 document.getElementById("error").innerHTML = "Invalid username or password";
             }
         });
@@ -73,4 +73,13 @@ function prepareForm(id,mode) {
             throw new Error("Invalid form mode");
         }
     });
+
+    // for each input add an event listener to remove the error class when the user starts typing
+    var inputs = document.getElementById(id).getElementsByTagName("input");
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener('input', function (event) {
+            document.getElementById("main").classList.remove("error");
+            document.getElementById("error").innerHTML = "";
+        });
+    }
 }

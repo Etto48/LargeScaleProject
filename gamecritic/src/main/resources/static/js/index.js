@@ -83,10 +83,8 @@ function setKind(new_kind) {
     kind = new_kind;
     current_page = 0;
     var main = document.getElementById("main");
-    var template = document.getElementById("game-template");
     var dummy_loading_game = document.getElementById("dummy-loading-game");
     $(main).empty();
-    $(main).append(template);
     $(main).append(dummy_loading_game);
 
     document.getElementById("hottest").disabled = false;

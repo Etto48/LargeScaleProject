@@ -55,17 +55,23 @@ function enableSlider() {
     });
 }
 
+function appendReview(user, quote, id) {
+    // TODO: Implement this (low priority)
+}
+
 function createReview() {
+    var quote = document.getElementById("new-review-quote").value
     $.ajax({
         type: "POST",
         url: "/api/review/new",
         data: {
             game: document.getElementById("new-review-game").value,
             score: document.getElementById("new-review-score").value,
-            quote: document.getElementById("new-review-quote").value
+            quote
         },
         success: function (data) {
             closeNewReview(true);
+            appendReview(data.author, quote, data.id)
         },
         error: function (data) {
             alert("Error creating review");

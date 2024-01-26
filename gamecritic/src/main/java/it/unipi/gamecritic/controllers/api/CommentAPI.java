@@ -12,18 +12,25 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.Gson;
 
+import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.Comment.CommentRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CommentAPI {
+    private final CommentRepository commentRepository;
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CommentAPI.class);
-    static Integer id = 69; // TODO: get the id of the new comment from the database
+
+    public CommentAPI(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
     public class NewCommentInfo {
-        public Integer id;
+        public String id;
         public String author;
-        public NewCommentInfo(Integer id, String author) {
+        public NewCommentInfo(String id, String author) {
             this.id = id;
             this.author = author;
         }
@@ -32,8 +39,7 @@ public class CommentAPI {
     @RequestMapping(value = "/api/comment/new", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String new_comment(
-        @RequestParam(value = "review_id", required = true) Integer review_id,
-        @RequestParam(value = "parent_id", required = false) Integer parent_id,
+        @RequestParam(value = "review_id", required = true) String review_id,
         @RequestParam(value = "quote", required = true) String quote,
         HttpServletRequest request,
         HttpSession session) {
@@ -44,10 +50,10 @@ public class CommentAPI {
         }
         else
         {
-            // TODO: insert the comment in the database
-            logger.info("New comment for review " + review_id + " (in response to: "+parent_id+") from \"" + user.username + "\":\nquote: \"" + quote + "\"");
+            Comment comment = new Comment(review_id, user.username, quote, null);
+            String comment_id = commentRepository.insertComment(comment);
 
-            NewCommentInfo info = new NewCommentInfo(id++, user.username);
+            NewCommentInfo info = new NewCommentInfo(comment_id, user.username);
             Gson gson = new Gson();
             return gson.toJson(info);
         }

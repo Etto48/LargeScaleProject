@@ -9,5 +9,5 @@ public interface CustomReviewRepository {
     List<Review> findByAuthor(String author);
     List<Review> findByGame(String game);
     Review findSingleReview(String id);
-    void insertReview(Review review);
+    String insertReview(Review review);
 }
