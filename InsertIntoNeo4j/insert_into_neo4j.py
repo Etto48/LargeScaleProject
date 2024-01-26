@@ -16,6 +16,10 @@ def clear_tmp_folder(tmp_folder):
 def prepare_path(path) -> str:
     return os.path.abspath(path).replace("\\", "/").replace(" ","%20")
 
+def id_to_hex_str(id: int) -> str:
+    ret = hex(id)[2:]
+    return "0" * (24 - len(ret)) + ret
+
 def main(args):
     users = json.load(open(args.users))
     cm_and_admins = json.load(open(args.cm_and_admins))
@@ -27,9 +31,9 @@ def main(args):
         for review in game["reviews"]:
             simplified_review = {
                 "author": review["author"],
-                "score": review["score"],
+                "score": max(min(int(review["score"]),10),1),
                 "game": game["Name"],
-                "id": review_id,
+                "id": id_to_hex_str(review_id),
             }
             review_id += 1
             reviews.append(simplified_review)
@@ -123,7 +127,7 @@ def main(args):
                     with row
                     match (u:User {{username: row.author}})
                     match (g:Game {{name: row.game}})
-                    create (u)-[:WROTE]->(r:Review {{reviewId: row.id, score: row.score}})
+                    create (u)-[:WROTE]->(r:Review {{reviewId: row.id, score: toInteger(row.score)}})
                     create (r)-[:ABOUT]->(g)
                 }} in transactions of {args.batch_size} rows
                 """
