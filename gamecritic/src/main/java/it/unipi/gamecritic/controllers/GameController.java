@@ -19,17 +19,20 @@ import org.springframework.web.server.ResponseStatusException;
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class GameController {
+	private final ReviewRepository reviewRepository;
 	private final GameRepository gameRepository;
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
 	@Autowired
-	public GameController(GameRepository gameRepository) {
+	public GameController(ReviewRepository reviewRepository, GameRepository gameRepository) {
+		this.reviewRepository = reviewRepository;
 		this.gameRepository = gameRepository;
 	}
     @RequestMapping(value = "/game/{name}")
@@ -67,42 +70,17 @@ public class GameController {
     }
 
 	@RequestMapping("/game/{name}/reviews") 
-	public String game_reviews(@PathVariable(value="name") String name, Model model, HttpServletRequest request, HttpSession session) {
+	public String game_reviews(
+		@PathVariable(value="name") String name, 
+		Model model, 
+		HttpServletRequest request, 
+		HttpSession session) 
+	{
 		model.addAttribute("request", request);
 		model.addAttribute("user", session.getAttribute("user"));
 		
-		// TODO: get the reviews from the db
-		Vector<Review> reviews = new Vector<Review>();
-		reviews.add(new Review() {
-			{
-				id=0;
-				author = "Pippo";
-				date = "2015-05-12";
-				game = "The Witcher 3: Wild Hunt";
-				quote = "The Witcher 3: Wild Hunt is a thoughtful, diverse, and frequently awe-inspiring adventure. Its stories are deep and satisfying, unafraid to touch on themes of personal character, presenting players with choices and consequences that aren’t about turning into a hero or a villain. In the end, it’s quite simply one of the best RPGs ever made.";
-				score = 9;
-			}
-		});
-		reviews.add(new Review() {
-			{
-				id=1;
-				author = "Pluto";
-				date = "2015-05-12";
-				game = "The Witcher 3: Wild Hunt";
-				quote = "Wild Hunt is an immaculately detailed adventure, with evocative writing, jaw-droppingly gorgeous art, and a neck-snapping soundtrack. But it’s the stories that you weave, with the consequences of your choices echoing across the game world, that make Wild Hunt something special. In a time of constant sword and sorcery overkill, Wild Hunt is an exemplary reminder of what can be achieved, even by a small team, even with an old-fashioned approach.";
-				score = 6;
-			}
-		});
-		reviews.add(new Review() {
-			{
-				id=2;
-				author = "Paperino";
-				date = "2015-05-12";
-				game = "The Witcher 3: Wild Hunt";
-				quote = "The Witcher 3: Wild Hunt encompasses what I hope is the future of RPGs. It stands out for its wonderful writing, variety of quests and things to do in the world, and how your choices have impact on the political whirlwind around you. Usually something is sacrificed when creating a world this ambitious, but everything felt right on cue. I couldn’t put it down, and it’s the first RPG in a long time that I’ve wanted to play through twice.";
-				score = 3;
-			}
-		});
+		List<Review> reviews = reviewRepository.findByGame(name);
+
 		if (reviews.size() == 0) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
 		}

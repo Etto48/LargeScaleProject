@@ -37,7 +37,7 @@
         </div>
 
         <div class="d-flex flex-row justify-content-end review-actions gap-2" th:fragment="review_actions(review)">
-            <button class="btn btn-dark" th:onclick="'window.location.href=\'/comments/' + ${review.id} + '\''">
+            <button class="btn btn-dark" th:onclick="'window.location.href=\'/comments/' + ${review.getId()} + '\''">
                 <i class="bi bi-chat-fill text-secondary"></i>
                 <span class="text-secondary mx-2">Comments</span>
             </button>

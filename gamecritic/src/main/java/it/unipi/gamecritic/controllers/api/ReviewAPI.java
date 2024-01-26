@@ -1,7 +1,5 @@
 package it.unipi.gamecritic.controllers.api;
 
-import java.util.Vector;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -11,9 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.google.gson.Gson;
-
-import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.entities.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -43,7 +38,7 @@ public class ReviewAPI {
         }
     }
 
-    @RequestMapping(value = "/api/review/get", method = RequestMethod.GET, produces = "application/json")
+    /*@RequestMapping(value = "/api/review/get", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String get_review(
         @RequestParam(value="game", required=false) String game, 
@@ -72,5 +67,5 @@ public class ReviewAPI {
 
         Gson gson = new Gson();
         return gson.toJson(reviews);
-    }
+    }*/
 }

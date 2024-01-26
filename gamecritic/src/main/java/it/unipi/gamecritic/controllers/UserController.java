@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import it.unipi.gamecritic.repositories.User.UserRepository;
 import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
 
@@ -35,13 +36,15 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
+    private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    public UserController(UserRepository userRepository, UserImageRepository userImageRepository) {
+    public UserController(ReviewRepository reviewRepository, UserRepository userRepository, UserImageRepository userImageRepository) {
+        this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.userImageRepository = userImageRepository;
     }
@@ -100,144 +103,8 @@ public class UserController {
         model.addAttribute("user", session.getAttribute("user"));
         model.addAttribute("viewed_user_username", username);
 
-        // TODO: get reviews from database
-        Vector<Review> reviews = new Vector<Review>()
-        {
-            {
-                add(new Review()
-                {
-                    {
-                        id = 1;
-                        game_id = 5;
-                        game = "Super Mario Bros";
-                        date = "2021-01-01";
-                        score = 7;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 2;
-                        game_id = 6;
-                        game = "Super Mario Bros 2";
-                        date = "2021-01-01";
-                        score = 9;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 3;
-                        game_id = 7;
-                        game = "Super Mario Bros 3";
-                        date = "2021-01-01";
-                        score = 8;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 4;
-                        game_id = 5;
-                        game = "Super Mario Bros";
-                        date = "2021-01-01";
-                        score = 5;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 5;
-                        game_id = 6;
-                        game = "Super Mario Bros 2";
-                        date = "2021-01-01";
-                        score = 2;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 6;
-                        game_id = 7;
-                        game = "Super Mario Bros 3";
-                        date = "2021-01-01";
-                        score = 10;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 7;
-                        game_id = 7;
-                        game = "Super Mario Bros 3";
-                        date = "2021-01-01";
-                        score = 10;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 8;
-                        game_id = 5;
-                        game = "Super Mario Bros";
-                        date = "2021-01-01";
-                        score = 1;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 9;
-                        game_id = 6;
-                        game = "Super Mario Bros 2";
-                        date = "2021-01-01";
-                        score = 6;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 10;
-                        game_id = 7;
-                        game = "Super Mario Bros 3";
-                        date = "2021-01-01";
-                        score = 2;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-                add(new Review()
-                {
-                    {
-                        id = 11;
-                        game_id = 7;
-                        game = "Super Mario Bros 3";
-                        date = "2021-01-01";
-                        score = 2;
-                        author = "Pippo";
-                        quote = "This game is awesome!";
-                    }
-                });
-            }
-        };
+        List<Review> reviews = reviewRepository.findByAuthor(username);
+        
         model.addAttribute("reviews", reviews);
         Float avg_score = 0f;
         Vector<Float> distribution = new Vector<Float>();

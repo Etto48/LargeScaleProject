@@ -82,8 +82,8 @@ public class CommentsController {
             }
         });
         
+        // TODO: get review from database
         Review review = new Review();
-        review.id = 0;
         review.game = "The Legend of Zelda: Breath of the Wild";
         review.date = "2021-01-01";
         review.author = "Pippo";

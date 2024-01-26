@@ -90,7 +90,7 @@ public class InsertIntoMongo {
 
             // Insert data into the "reviews" collection
             MongoCollection<Document> reviewsCollection = database.getCollection("reviews");
-            insertReviews(gamesJson, reviewsCollection, videoGamesCollection);
+            insertReviews(gamesJson, reviewsCollection);
             logger.info("Collection \"reviews\" created");
 
             // Insert data into the "comments" collection
@@ -220,21 +220,29 @@ public class InsertIntoMongo {
         collection.insertMany(documents);
     }
 
-    private static void insertReviews(JsonNode jsonNode, MongoCollection<Document> reviewsCollection, MongoCollection<Document> videoGamesCollection) {
+    private static void insertReviews(JsonNode jsonNode, MongoCollection<Document> reviewsCollection) {
         List<Document> documents = new ArrayList<>();
-        gameIdCounter = new BigInteger("1");
-        reviewIdCounter = new BigInteger("1");
         for (JsonNode gameNode : jsonNode) {
-            String gameId = gameIdCounter.toString(); // Get the id of the game being reviewed
-            gameIdCounter = gameIdCounter.add(new BigInteger("1"));
             for (JsonNode reviewNode : gameNode.get("reviews")) {
+                Integer score = reviewNode.get("score").asInt();
+                if (score == 0)
+                {
+                    if (reviewNode.get("score").asText().equals("0"))
+                    {
+                        score = 1;
+                    }
+                    else
+                    {
+                        logger.warn("Review with non-int score \""+reviewNode.get("score").asText()+"\" found, setting score to null");
+                        score = null;
+                    }
+                }
                 Document document = new Document("_id", idFromBignum(reviewIdCounter))
-                        .append("gameId", gameId)
-                        .append("score", reviewNode.get("score").asText())
+                        .append("game", gameNode.get("Name").asText())
+                        .append("score", score)
                         .append("quote", reviewNode.get("quote").asText())
                         .append("author", reviewNode.get("author").asText())
-                        .append("date", reviewNode.get("date").asText())
-                        .append("source", reviewNode.get("source").asText());
+                        .append("date", reviewNode.get("date").asText());
                 reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));
                 documents.add(document);
             }
