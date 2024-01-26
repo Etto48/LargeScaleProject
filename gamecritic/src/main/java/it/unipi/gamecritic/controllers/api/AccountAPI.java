@@ -84,7 +84,18 @@ public class AccountAPI {
 
         User user = new User();
         user.username = username;
-        user.password_hash = password;
+        try
+        {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            Base64.Encoder encoder = Base64.getEncoder();
+            password = encoder.encodeToString(hash);
+            user.password_hash = password;
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+        }
         user.email = email;
         user.top_reviews = new Vector<Review>();
 

@@ -122,7 +122,7 @@ def main(args):
                     with row
                     match (u:User {{username: row.author}})
                     match (g:Game {{name: row.game}})
-                    create (u)-[:WROTE]->(r:Review {{id: row.id}})
+                    create (u)-[:WROTE]->(r:Review {{id: row.id, score: row.score}})
                     create (r)-[:ABOUT]->(g)
                 }} in transactions of {args.batch_size} rows
                 """

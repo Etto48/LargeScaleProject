@@ -62,14 +62,6 @@ function loadLikes(button_id, type, data) {
     });
 }
 
-function loadLikesGame(name) {
-    loadLikes("like-game-button","game",{name:name});
-    var like_button = document.getElementById("like-game-button");
-    like_button.addEventListener("click", function() {
-        likeGame(name);
-    });
-}
-
 function loadLikesReview(review_id) {
     var button_id = "like-review-"+review_id+"-button";
     loadLikes(button_id,"review",{id:review_id});

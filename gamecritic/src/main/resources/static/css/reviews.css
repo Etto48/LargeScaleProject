@@ -7,6 +7,10 @@
     width: calc(100% - 104px);
 }
 
+.reviews-empty {
+    height: 321.32px;
+}
+
 main {
     flex-direction: column-reverse;
 }

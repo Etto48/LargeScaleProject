@@ -115,9 +115,16 @@ public class UserController {
             avg_score += review.score;
             distribution.set(review.score - 1, distribution.get(review.score - 1) + 1);
         }
-        avg_score /= reviews.size();
-        for (int i = 0; i < 10; i++) {
-            distribution.set(i, distribution.get(i) / reviews.size() * 100);
+        if(reviews.size() == 0)
+        {
+            avg_score = null;
+        }
+        else
+        {
+            avg_score /= reviews.size();
+            for (int i = 0; i < 10; i++) {
+                distribution.set(i, distribution.get(i) / reviews.size() * 100);
+            }
         }
         model.addAttribute("avg_score", avg_score);
         model.addAttribute("score_distribution", distribution);
