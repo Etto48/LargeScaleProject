@@ -15,15 +15,15 @@ public class ReviewDTO {
     public Long id;
     @Property("reviewId")
     public String reviewId;
-    @Property("rating")
-    public String rating;
+    @Property("score")
+    public String score;
     @Property("likeCount")
     public Integer likeCount;
 
-    public ReviewDTO(Long id, String rating, String reviewId, Integer likeCount) {
+    public ReviewDTO(Long id, String score, String reviewId, Integer likeCount) {
         this.id = id;
         this.reviewId = reviewId;
-        this.rating = rating;
+        this.score = score;
         this.likeCount = likeCount;
     }
 
@@ -31,8 +31,8 @@ public class ReviewDTO {
         this.id = id;
     }
 
-    public void setRating(String rating) {
-        this.rating = rating;
+    public void setScore(String score) {
+        this.score = score;
     }
 
     public void setReviewId(String reviewId) {

@@ -7,6 +7,7 @@ import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.SplittableRandom;
 
 public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, Long> {
     @Query("MATCH (user:User {username: $username})-[:WROTE]->(review:Review)\n" +
@@ -23,4 +24,13 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, Long> 
             "LIMIT 3\n" +
             "RETURN review, likeCount;")
     List<ReviewDTO> findMostLikedReviewsForGames(@Param("name") String name);
+    @Query("MERGE (u:User {username: $author})\n" +
+            "MERGE (g:Game {name: $gameName})\n" +
+            "CREATE (u)-[:WROTE]->(r:Review {reviewId: $reviewId, score: $score})\n" +
+            "CREATE (r)-[:ABOUT]->(g)\n" +
+            "RETURN r;")
+    ReviewDTO insertReview(@Param("username")String author,
+                      @Param("gameName")String gameName,
+                      @Param("reviewId")String reviewId,
+                      @Param("score")String score);
 }
