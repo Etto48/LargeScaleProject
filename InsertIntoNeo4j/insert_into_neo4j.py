@@ -4,9 +4,6 @@ import os
 import json
 import pandas as pd
 
-NEO4J_URI = "bolt://localhost:7687"
-NEO4J_AUTH = ()
-
 def clear_tmp_folder(tmp_folder):
     if os.path.exists(tmp_folder):
         for f in os.listdir(tmp_folder):
@@ -21,6 +18,10 @@ def id_to_hex_str(id: int) -> str:
     return "0" * (24 - len(ret)) + ret
 
 def main(args):
+    NEO4J_URI = "bolt://localhost:7687"
+    NEO4J_AUTH = ()
+    if (args.auth):
+        NEO4J_AUTH = (input("Neo4j username: "), input("Neo4j password: "))
     users = json.load(open(args.users))
     cm_and_admins = json.load(open(args.cm_and_admins))
     games = json.load(open(args.games))
@@ -66,6 +67,7 @@ def main(args):
     with neo.GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH) as driver:
         tmp_path = prepare_path(args.tmp)
         likes_path = prepare_path(args.likes)
+        follows_path = prepare_path(args.follows)
         
         with driver.session() as session:
         
@@ -146,6 +148,19 @@ def main(args):
                 """
             )
             
+            print("Inserting follows...")
+            session.run(
+                f"""
+                load csv with headers from "file:///{follows_path}" as row
+                call {{
+                    with row
+                    match (follower:User {{username: row.follower}})
+                    match (followed:User {{username: row.followed}})
+                    create (follower)-[:FOLLOWS]->(followed)
+                }} in transactions of {args.batch_size} rows
+                """
+            )
+            
         
         print("Clearing tmp folder...")
         clear_tmp_folder(args.tmp)
@@ -158,7 +173,9 @@ if __name__ == "__main__":
     parser.add_argument('--cm_and_admins', type=str, help='File with CM and admins', default="./dataset/users/cm_and_admins.json")
     parser.add_argument('--games', type=str, help='File with games', default="./dataset/games/commented_games.json")
     parser.add_argument('--likes', type=str, help='File with likes', default="./dataset/likes/likes.csv")
+    parser.add_argument('--follows', type=str, help='File with follows', default="./dataset/follows/follows.csv")
     parser.add_argument('--tmp', type=str, help='tmp folder', default="./tmp")
+    parser.add_argument('--auth', action='store_true', help='Use authentication', default=False)
     parser.add_argument('--batch-size', type=int, help='Batch size', default=1000)
     args = parser.parse_args()
     main(args)
