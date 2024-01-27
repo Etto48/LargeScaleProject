@@ -62,7 +62,7 @@ public class AccountAPI {
         {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
         }
-        
+
         session.setAttribute("user", user);        
         
         return "\"success\"";
@@ -78,9 +78,6 @@ public class AccountAPI {
         @RequestParam(value = "password", required = true) String password,
         @RequestParam(value = "email", required = true) String email) 
     {
-        // TODO: check if username and password are valid
-        // TODO: insert user in database
-
         User user = new User();
         user.username = username;
         try
