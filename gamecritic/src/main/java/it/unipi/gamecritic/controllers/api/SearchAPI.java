@@ -1,10 +1,8 @@
 package it.unipi.gamecritic.controllers.api;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import com.mongodb.DBObject;
 import it.unipi.gamecritic.entities.Company;
 
 import org.slf4j.Logger;
@@ -56,12 +54,7 @@ public class SearchAPI {
         HttpServletRequest request, 
         HttpSession session) {
 
-        List<DBObject> l = gameRepository.search(query);
-        List<Game> games = new ArrayList<>();
-        for (DBObject o : l) {
-            Game ga = new Game(o);
-            games.add(ga);
-        }
+        List<Game> games = gameRepository.search(query);
         List<Company> companies = companyRepository.search(query);
         List<User> users = userRepository.search(query);
 

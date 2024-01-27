@@ -1,9 +1,6 @@
 package it.unipi.gamecritic.controllers.api;
 
-import java.util.ArrayList;
 import java.util.List;
-import com.mongodb.DBObject;
-import it.unipi.gamecritic.repositories.Review.DTO.ReviewDTO;
 import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +23,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class GameAPI {
     private final GameRepository gameRepository;
+    @SuppressWarnings("unused")
     private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
 	@Autowired
@@ -40,20 +38,11 @@ public class GameAPI {
         HttpServletRequest request,
         HttpSession session) 
     {
-        // TODO: get the game from the database
-        List<Game> games = GameRepository.getMockupList();
         
-        Game game = null;
-        for (Game g : games)
+        List<Game> games = gameRepository.findByDynamicAttribute("Name", name);
+        if (!games.isEmpty())
         {
-            if (g.name.equals(name))
-            {
-                game = g;
-                break;
-            }
-        }
-        if (game != null)
-        {
+            Game game = games.get(0);
             Gson gson = new Gson();
             return gson.toJson(game);
         }
@@ -78,53 +67,34 @@ public class GameAPI {
         if (kind.equals("hottest"))
         {
             logger.info("page" + page.toString());
-            List<DBObject> l = gameRepository.findVideoGamesWithMostReviewsLastMonth(offset,"month");
-            if (l.isEmpty()){
+            List<Game> games = gameRepository.findVideoGamesWithMostReviewsLastMonth(offset,"month");
+            if (games.isEmpty()){
                 logger.warn("No games found on \""+kind+"\" page "+page.toString());
             }
-            List<Game> g = new ArrayList<>();
-            for (DBObject o : l) {
-                Game ga = new Game(o);
-                g.add(ga);
-            }
             Gson gson = new Gson();
-            return gson.toJson(g);
+            return gson.toJson(games);
         }
         else if (kind.equals("newest"))
         {
             logger.info("page" + page.toString());
-            List<DBObject> l = gameRepository.findLatest(offset);
-            if (l.isEmpty()){
+            List<Game> games = gameRepository.findLatest(offset);
+            if (games.isEmpty()){
                 logger.warn("No games found on \""+kind+"\" page "+page.toString());
             }
-            List<Game> g = new ArrayList<>();
-            for (DBObject o : l) {
-                Game ga = new Game(o);
-                g.add(ga);
-            }
             Gson gson = new Gson();
-            return gson.toJson(g);
+            return gson.toJson(games);
         }
         else if (kind.equals("best"))
         {
             logger.info("page" + page.toString());
-            List<DBObject> l = gameRepository.findBest(offset);
-            if (l.isEmpty()){
+            List<Game> games = gameRepository.findBest(offset);
+            if (games.isEmpty()){
                 logger.warn("No games found on \""+kind+"\" page "+page.toString());
             }
-            List<Game> g = new ArrayList<>();
-            for (DBObject o : l) {
-                Game ga = new Game(o);
-                g.add(ga);
-            }
             Gson gson = new Gson();
-            return gson.toJson(g);
+            return gson.toJson(games);
         }
         
-        // TODO: get the top games from the database
-        List<Game> games = GameRepository.getMockupList();
-
-        Gson gson = new Gson();
-        return gson.toJson(games);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kind not found");
     }
 }

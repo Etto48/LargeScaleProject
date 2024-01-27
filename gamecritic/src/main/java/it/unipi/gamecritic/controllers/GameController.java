@@ -1,11 +1,9 @@
 package it.unipi.gamecritic.controllers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,23 +42,10 @@ public class GameController {
 		List<String> excludedNames = Arrays.asList("Name","Description", "reviews", "user_reviews","img","user_review","_id","Top3ReviewsByLikes","reviewCount","Released","Publishers","Developers","Critics");
 		model.addAttribute("excludedNames", excludedNames);
 
-		// get the game from the db
-		List<DBObject> dbo = gameRepository.findByDynamicAttribute("Name",name);
-		List<Game> games = new ArrayList<>();
-		for (DBObject o : dbo) {
-			Game ga = new Game(o);
-			games.add(ga);
-		}
-        //List<Game> games = GameRepository.getMockupList();
-	
-		boolean found = false;
-		for (Game game : games) {
-			if (game.name.equals(name)) {
-				model.addAttribute("game", game);
-				found = true;
-			}
-		}
-		if (found) {
+		List<Game> games = gameRepository.findByDynamicAttribute("Name",name);
+		
+		if (!games.isEmpty()) {
+			model.addAttribute("game", games.get(0));
 			return "game";
 		}
 		else

@@ -76,7 +76,7 @@ public class UserController {
                     for (Review review : user.top_reviews) {
                         avg_top_score += review.score;
                     }
-                    if (user.top_reviews.size() > 0)
+                    if (!user.top_reviews.isEmpty())
                     {
                         avg_top_score /= user.top_reviews.size();
                     }

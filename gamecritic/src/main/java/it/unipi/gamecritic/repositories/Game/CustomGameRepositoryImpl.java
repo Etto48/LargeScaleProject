@@ -2,9 +2,13 @@ package it.unipi.gamecritic.repositories.Game;
 
 import com.mongodb.DBObject;
 
+import it.unipi.gamecritic.entities.Game;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import java.util.List;
+import java.util.Vector;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Query;
@@ -20,40 +24,64 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
     }
 
     @Override
-    public List<DBObject> search(String query){
+    public List<Game> search(String query){
         if(query == null) {
             throw new IllegalArgumentException("Query cannot be null");
         }
         Criteria criteria = Criteria.where("Name").regex(query, "i");
         Query q = new Query(criteria).limit(10).with(Sort.by(Sort.Order.desc("reviewCount")));
 
-        return mongoTemplate.find(q, DBObject.class, "videogames");
+        List<DBObject> game_objects = mongoTemplate.find(q, DBObject.class, "videogames");
+        List<Game> games = game_objects.stream().map(
+            game_object -> {
+                return new Game(game_object);
+            }
+        ).collect(Vector::new, Vector::add, Vector::addAll);
+        return games;
     }
     @Override
-    public List<DBObject> findByDynamicAttribute(String attributeName, String attributeValue) {
+    public List<Game> findByDynamicAttribute(String attributeName, String attributeValue) {
         if(attributeName == null || attributeValue == null) {
             throw new IllegalArgumentException("The given attribute name or value must not be null");
         }
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));
-        return mongoTemplate.find(query, DBObject.class, "videogames");
+        List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
+        List<Game> games = game_objects.stream().map(
+            game_object -> {
+                return new Game(game_object);
+            }
+        ).collect(Vector::new, Vector::add, Vector::addAll);
+        return games;
     }
 
     @Override
-    public List<DBObject> findLatest(Integer offset){
+    public List<Game> findLatest(Integer offset){
         Query query = new Query();
         query.addCriteria(Criteria.where("Released.Release Date").ne("Undated"));
         query.with(Sort.by(Sort.Order.desc("Released.Release Date"))).skip(offset).limit(10);
-        return mongoTemplate.find(query, DBObject.class, "videogames");
+        List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
+        List<Game> games = game_objects.stream().map(
+                game_object -> {
+                    return new Game(game_object);
+                }
+        ).collect(Vector::new, Vector::add, Vector::addAll);
+        return games;
     }
 
     @Override
-    public List<DBObject> findBest(Integer offset) {
+    public List<Game> findBest(Integer offset) {
         Query query = new Query();
         query.with(Sort.by(Sort.Order.desc("user_review"), Sort.Order.desc("reviewCount"))).skip(offset).limit(10);
-        return mongoTemplate.find(query, DBObject.class, "videogames");
+        List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
+        List<Game> games = game_objects.stream().map(
+                game_object -> {
+                    return new Game(game_object);
+                }
+        ).collect(Vector::new, Vector::add, Vector::addAll);
+        return games;
     }
     @Override
-    public List<DBObject> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest) {
+    public List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest) {
         LocalDate currentDate = LocalDate.now();
         LocalDate ago;
         if (latest.equals("month")){
@@ -120,8 +148,12 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "  }")
         );
         List<DBObject> result = mongoTemplate.aggregate(a, "videogames", DBObject.class).getMappedResults();
-        return result;
-
+        List<Game> games = result.stream().map(
+                game_object -> {
+                    return new Game(game_object);
+                }
+        ).collect(Vector::new, Vector::add, Vector::addAll);
+        return games;
     }
 }
 

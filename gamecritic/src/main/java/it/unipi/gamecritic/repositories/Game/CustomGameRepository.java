@@ -1,15 +1,15 @@
 package it.unipi.gamecritic.repositories.Game;
 
-import com.mongodb.DBObject;
+import it.unipi.gamecritic.entities.Game;
 
 import java.util.List;
 
 public interface CustomGameRepository {
     //List<Game> findByName(String Name);
-    List<DBObject> findByDynamicAttribute(String attributeName, String attributeValue);
-    List<DBObject> findLatest(Integer offset);
-    List<DBObject> findBest(Integer offset);
-    List<DBObject> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
-    List<DBObject> search(String query);
+    List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
+    List<Game> findLatest(Integer offset);
+    List<Game> findBest(Integer offset);
+    List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
+    List<Game> search(String query);
     //List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
 }

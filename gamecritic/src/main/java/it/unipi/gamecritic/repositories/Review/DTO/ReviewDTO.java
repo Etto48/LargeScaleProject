@@ -1,18 +1,18 @@
 package it.unipi.gamecritic.repositories.Review.DTO;
 
+import java.util.UUID;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
-import org.springframework.data.neo4j.repository.query.Query;
 
-import java.math.BigInteger;
 @Node("Review")
 public class ReviewDTO {
 
     @Id
     @GeneratedValue
-    public Long id;
+    public UUID id;
     @Property("reviewId")
     public String reviewId;
     @Property("score")
@@ -20,14 +20,14 @@ public class ReviewDTO {
     @Property("likeCount")
     public Integer likeCount;
 
-    public ReviewDTO(Long id, String score, String reviewId, Integer likeCount) {
+    public ReviewDTO(UUID id, String score, String reviewId, Integer likeCount) {
         this.id = id;
         this.reviewId = reviewId;
         this.score = score;
         this.likeCount = likeCount;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

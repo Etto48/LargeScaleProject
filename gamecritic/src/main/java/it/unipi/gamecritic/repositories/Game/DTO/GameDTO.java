@@ -1,6 +1,7 @@
 package it.unipi.gamecritic.repositories.Game.DTO;
 
-import it.unipi.gamecritic.entities.Game;
+import java.util.UUID;
+
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
@@ -10,7 +11,7 @@ import org.springframework.data.neo4j.core.schema.Property;
 public class GameDTO {
     @Id
     @GeneratedValue
-    public Long id;
+    public UUID id;
     @Property("name")
     public String name;
 
