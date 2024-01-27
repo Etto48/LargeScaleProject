@@ -9,6 +9,7 @@ public interface CustomGameRepository {
     List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
     List<Game> findLatest(Integer offset);
     List<Game> findBest(Integer offset);
+    List<Game> findVideoGamesOfCompany(String companyName);
     List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
     List<Game> search(String query);
     //List<Game> findByDynamicAttribute(String attributeName, String attributeValue);

@@ -168,67 +168,130 @@ function loadGameInfo() {
             resetVectorInput("game-genres-edit");
             if(data.customAttributes.Genres)
             {
-                data.customAttributes.Genres.forEach(function (genre) {
-                    addVectorEntryWithId("game-genres-edit", genre);
-                });
+                if (data.customAttributes.Genres instanceof Array)
+                {
+                    data.customAttributes.Genres.forEach(function (genre) {
+                        addVectorEntryWithId("game-genres-edit", genre);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-genres-edit", data.customAttributes.Genres);
+                }
             }
             resetVectorInput("game-platforms-edit");
             if(data.customAttributes.Platforms)
             {
-                data.customAttributes.Platforms.forEach(function (platform) {
-                    addVectorEntryWithId("game-platforms-edit", platform);
-                });
+                if (data.customAttributes.Platforms instanceof Array)
+                {
+                    data.customAttributes.Platforms.forEach(function (platform) {
+                        addVectorEntryWithId("game-platforms-edit", platform);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-platforms-edit", data.customAttributes.Platforms);
+                }
             }
             resetVectorInput("game-developers-edit");
             if(data.customAttributes.Developers)
             {
-                data.customAttributes.Developers.forEach(function (developer) {
-                    addVectorEntryWithId("game-developers-edit", developer);
-                });
+                if (data.customAttributes.Developers instanceof Array)
+                {
+                    data.customAttributes.Developers.forEach(function (developer) {
+                        addVectorEntryWithId("game-developers-edit", developer);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-developers-edit", data.customAttributes.Developers);
+                }
             }
             resetVectorInput("game-publishers-edit");
             if(data.customAttributes.Publishers)
             {
-                data.customAttributes.Publishers.forEach(function (publisher) {
-                    addVectorEntryWithId("game-publishers-edit", publisher);
-                });
+                if (data.customAttributes.Publishers instanceof Array)
+                {
+                    data.customAttributes.Publishers.forEach(function (publisher) {
+                        addVectorEntryWithId("game-publishers-edit", publisher);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-publishers-edit", data.customAttributes.Publishers);
+                }
             }
             document.getElementById("game-release-date-edit").type = "date";
             document.getElementById("game-release-date-edit").value = data.released;
             resetVectorInput("game-narrative-edit");
             if(data.customAttributes.Narrative)
             {
-                data.customAttributes.narrative.forEach(function (narrative) {
-                    addVectorEntryWithId("game-narrative-edit", narrative);
-                });
+                if (data.customAttributes.Narrative instanceof Array)
+                {
+                    data.customAttributes.Narrative.forEach(function (narrative) {
+                        addVectorEntryWithId("game-narrative-edit", narrative);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-narrative-edit", data.customAttributes.Narrative);
+                }
             }
             resetVectorInput("game-gameplay-edit");
             if(data.customAttributes.Gameplay)
             {
-                data.customAttributes.Gameplay.forEach(function (gameplay) {
-                    addVectorEntryWithId("game-gameplay-edit", gameplay);
-                });
+                if (data.customAttributes.Gameplay instanceof Array)
+                {
+                    data.customAttributes.Gameplay.forEach(function (gameplay) {
+                        addVectorEntryWithId("game-gameplay-edit", gameplay);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-gameplay-edit", data.customAttributes.Gameplay);
+                }
             }
             resetVectorInput("game-perspective-edit");
             if(data.customAttributes.Perspective)
             {
-                data.customAttributes.perspective.forEach(function (perspective) {
-                    addVectorEntryWithId("game-perspective-edit", perspective);
-                });
+                if (data.customAttributes.Perspective instanceof Array)
+                {
+                    data.customAttributes.Perspective.forEach(function (perspective) {
+                        addVectorEntryWithId("game-perspective-edit", perspective);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-perspective-edit", data.customAttributes.Perspective);
+                }
             }
             resetVectorInput("game-setting-edit");
             if(data.customAttributes.Setting)
             {
-                data.customAttributes.Setting.forEach(function (setting) {
-                    addVectorEntryWithId("game-setting-edit", setting);
-                });
+                if (data.customAttributes.Setting instanceof Array)
+                {
+                    data.customAttributes.Setting.forEach(function (setting) {
+                        addVectorEntryWithId("game-setting-edit", setting);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-setting-edit", data.customAttributes.Setting);
+                }
             }
             resetVectorInput("game-input-devices-edit");
             if(data.customAttributes["Input Devices Supported"])
             {
-                data.customAttributes["Input Devices Supported"].forEach(function (input_device) {
-                    addVectorEntryWithId("game-input-devices-edit", input_device);
-                });
+                if (data.customAttributes["Input Devices Supported"] instanceof Array)
+                {
+                    data.customAttributes["Input Devices Supported"].forEach(function (input_device) {
+                        addVectorEntryWithId("game-input-devices-edit", input_device);
+                    });
+                }
+                else
+                {
+                    addVectorEntryWithId("game-input-devices-edit", data.customAttributes["Input Devices Supported"]);
+                }
             }
         },
         error: function (xhr, status, error) {

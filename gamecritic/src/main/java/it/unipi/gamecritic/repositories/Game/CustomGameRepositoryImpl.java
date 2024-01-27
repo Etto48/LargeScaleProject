@@ -80,6 +80,25 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         ).collect(Vector::new, Vector::add, Vector::addAll);
         return games;
     }
+
+    @Override
+    public List<Game> findVideoGamesOfCompany(String companyName) {
+        Query query = new Query();
+        query.addCriteria(
+            new Criteria().orOperator(
+                Criteria.where("Developers").elemMatch(Criteria.where("$eq").is(companyName)),
+                Criteria.where("Publishers").elemMatch(Criteria.where("$eq").is(companyName))
+            )
+        );
+        List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
+        List<Game> games = game_objects.stream().map(
+                game_object -> {
+                    return new Game(game_object);
+                }
+        ).collect(Vector::new, Vector::add, Vector::addAll);
+        return games;
+    }
+
     @Override
     public List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest) {
         LocalDate currentDate = LocalDate.now();
