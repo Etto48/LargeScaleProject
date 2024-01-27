@@ -7,7 +7,6 @@ import it.unipi.gamecritic.entities.Game;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import java.util.List;
-import java.util.Vector;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -32,12 +31,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         Query q = new Query(criteria).limit(10).with(Sort.by(Sort.Order.desc("reviewCount")));
 
         List<DBObject> game_objects = mongoTemplate.find(q, DBObject.class, "videogames");
-        List<Game> games = game_objects.stream().map(
-            game_object -> {
-                return new Game(game_object);
-            }
-        ).collect(Vector::new, Vector::add, Vector::addAll);
-        return games;
+        return game_objects.stream().map(Game::new).toList();
     }
     @Override
     public List<Game> findByDynamicAttribute(String attributeName, String attributeValue) {
@@ -46,12 +40,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         }
         Query query = new Query(Criteria.where(attributeName).is(attributeValue));
         List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
-        List<Game> games = game_objects.stream().map(
-            game_object -> {
-                return new Game(game_object);
-            }
-        ).collect(Vector::new, Vector::add, Vector::addAll);
-        return games;
+        return game_objects.stream().map(Game::new).toList();
     }
 
     @Override
@@ -60,12 +49,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         query.addCriteria(Criteria.where("Released.Release Date").ne("Undated"));
         query.with(Sort.by(Sort.Order.desc("Released.Release Date"))).skip(offset).limit(10);
         List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
-        List<Game> games = game_objects.stream().map(
-                game_object -> {
-                    return new Game(game_object);
-                }
-        ).collect(Vector::new, Vector::add, Vector::addAll);
-        return games;
+        return game_objects.stream().map(Game::new).toList();
     }
 
     @Override
@@ -73,12 +57,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         Query query = new Query();
         query.with(Sort.by(Sort.Order.desc("user_review"), Sort.Order.desc("reviewCount"))).skip(offset).limit(10);
         List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
-        List<Game> games = game_objects.stream().map(
-                game_object -> {
-                    return new Game(game_object);
-                }
-        ).collect(Vector::new, Vector::add, Vector::addAll);
-        return games;
+        return game_objects.stream().map(Game::new).toList();
     }
 
     @Override
@@ -91,12 +70,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
             )
         );
         List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
-        List<Game> games = game_objects.stream().map(
-                game_object -> {
-                    return new Game(game_object);
-                }
-        ).collect(Vector::new, Vector::add, Vector::addAll);
-        return games;
+        return game_objects.stream().map(Game::new).toList();
     }
 
     @Override
@@ -166,13 +140,8 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "      10,\n" +
                         "  }")
         );
-        List<DBObject> result = mongoTemplate.aggregate(a, "videogames", DBObject.class).getMappedResults();
-        List<Game> games = result.stream().map(
-                game_object -> {
-                    return new Game(game_object);
-                }
-        ).collect(Vector::new, Vector::add, Vector::addAll);
-        return games;
+        List<DBObject> game_objects = mongoTemplate.aggregate(a, "videogames", DBObject.class).getMappedResults();
+        return game_objects.stream().map(Game::new).toList();
     }
 }
 

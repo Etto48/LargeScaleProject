@@ -62,8 +62,7 @@ public class AccountAPI {
         {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
         }
-
-        // TODO: check if the user is a company manager or an admin
+        
         session.setAttribute("user", user);        
         
         return "\"success\"";
