@@ -5,6 +5,7 @@ import it.unipi.gamecritic.entities.UserImage;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 public class CustomUserImageRepositoryImpl implements CustomUserImageRepository{
     private final MongoTemplate mongoTemplate;
@@ -27,6 +28,8 @@ public class CustomUserImageRepositoryImpl implements CustomUserImageRepository{
         if (userImage == null) {
             throw new IllegalArgumentException("The given username or image must not be null");
         }
-        mongoTemplate.insert(userImage, "user_images");
+        Query query = new Query(Criteria.where("username").is(userImage.username));
+        Update update = new Update().set("image", userImage.b64_image);
+        mongoTemplate.upsert(query, update, "user_images");
     }
 }
