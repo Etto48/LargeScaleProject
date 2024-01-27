@@ -42,4 +42,20 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
         return comment.getId();
     }
 
+    @Override
+    public void deleteComment(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("The given id must not be null");
+        }
+        try
+        {
+            ObjectId oid = new ObjectId(id);
+            Query query = new Query(Criteria.where("_id").is(oid));
+            mongoTemplate.remove(query, Comment.class, "comments");
+        }
+        catch(IllegalArgumentException e)
+        {
+            return;
+        }
+    }
 }

@@ -7,4 +7,5 @@ import it.unipi.gamecritic.entities.Comment;
 public interface CustomCommentRepository {
     List<Comment> findByReviewId(String reviewId);
     String insertComment(Comment comment);
+    void deleteComment(String id);
 }

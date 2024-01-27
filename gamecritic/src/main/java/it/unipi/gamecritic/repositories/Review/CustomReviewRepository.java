@@ -10,4 +10,5 @@ public interface CustomReviewRepository {
     List<Review> findByGame(String game);
     Review findSingleReview(String id);
     String insertReview(Review review);
+    void deleteReview(String id);
 }

@@ -2,6 +2,8 @@
 
 package it.unipi.gamecritic.repositories.User;
 
+import it.unipi.gamecritic.entities.Comment;
+import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.entities.user.User;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -41,6 +43,17 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
             System.out.println("User with the given username already exists");
             return false;
         }
+    }
+
+    public void deleteUser(String username) {
+        if (username == null) {
+            throw new IllegalArgumentException("The given username must not be null");
+        }
+        Query usersQuery = new Query(Criteria.where("username").is(username));
+        Query reviewsAndCommentsQuery = new Query(Criteria.where("author").is(username));
+        mongoTemplate.remove(usersQuery, User.class, "users");
+        mongoTemplate.remove(reviewsAndCommentsQuery, Review.class, "reviews");
+        mongoTemplate.remove(reviewsAndCommentsQuery, Comment.class, "comments");
     }
 
     @Override

@@ -12,5 +12,6 @@ public interface CustomGameRepository {
     List<Game> findVideoGamesOfCompany(String companyName);
     List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
     List<Game> search(String query);
+    void deleteGame(String name);
     //List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
 }

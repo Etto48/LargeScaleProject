@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,29 +16,46 @@ import org.springframework.web.server.ResponseStatusException;
 import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.Comment.CommentRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepository;
+import it.unipi.gamecritic.repositories.User.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminAPI {
+    private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
+    private final GameRepository gameRepository;
+    private final CommentRepository commentRepository;
+
+    @Autowired
+    public AdminAPI(UserRepository userRepository, ReviewRepository reviewRepository, GameRepository gameRepository, CommentRepository commentRepository) {
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
+        this.gameRepository = gameRepository;
+        this.commentRepository = commentRepository;
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(AdminAPI.class);
     public void ban(String username, User user) {
-        // TODO: ban user
+        userRepository.deleteUser(username);
         logger.info("Ban user \"" + username + "\" by " + user.username);
     }
 
-    public void delete_review(Integer id, User user) {
-        // TODO: delete review
+    public void delete_review(String id, User user) {
+        reviewRepository.deleteReview(id);
         logger.info("Delete review " + id + " by " + user.username);
     }
 
-    public void delete_comment(Integer id, User user) {
-        // TODO: delete comment
+    public void delete_comment(String id, User user) {
+        commentRepository.deleteComment(id);
         logger.info("Delete comment " + id + " by " + user.username);
     }
 
     public void delete_game(String name, User user) {
-        // TODO: delete game
+        gameRepository.deleteGame(name);
         logger.info("Delete game \"" + name + "\" by " + user.username);
     }
 
@@ -71,7 +89,7 @@ public class AdminAPI {
     @RequestMapping(value = "/api/admin/delete/review", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String admin_delete_review(
-        @RequestParam(value = "id", required = true) Integer id,
+        @RequestParam(value = "id", required = true) String id,
         HttpServletRequest request,
         HttpSession session)
     {
@@ -97,7 +115,7 @@ public class AdminAPI {
     @RequestMapping(value = "/api/admin/delete/comment", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String admin_delete_comment(
-        @RequestParam(value = "id", required = true) Integer id,
+        @RequestParam(value = "id", required = true) String id,
         HttpServletRequest request,
         HttpSession session)
     {
@@ -209,18 +227,10 @@ public class AdminAPI {
                         if (tokens.size() == 3) {
                             switch (tokens.get(1)) {
                                 case "review":
-                                    try {
-                                        delete_review(Integer.parseInt(tokens.get(2)), user);
-                                    } catch (NumberFormatException e) {
-                                        return gson.toJson(new TerminalResponse("Id must be an integer", true));
-                                    }
+                                    delete_review(tokens.get(2), user);
                                     break;
                                 case "comment":
-                                    try {
-                                        delete_comment(Integer.parseInt(tokens.get(2)), user);
-                                    } catch (NumberFormatException e) {
-                                        return gson.toJson(new TerminalResponse("Id must be an integer", true));
-                                    }
+                                    delete_comment(tokens.get(2), user);
                                     break;
                                 case "game":
                                     delete_game(tokens.get(2), user);

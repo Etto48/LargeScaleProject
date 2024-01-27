@@ -2,7 +2,9 @@ package it.unipi.gamecritic.repositories.Game;
 
 import com.mongodb.DBObject;
 
+import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Game;
+import it.unipi.gamecritic.entities.Review;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -142,6 +144,22 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         );
         List<DBObject> game_objects = mongoTemplate.aggregate(a, "videogames", DBObject.class).getMappedResults();
         return game_objects.stream().map(Game::new).toList();
+    }
+
+    @Override
+    public void deleteGame(String name) {
+        if(name == null) {
+            throw new IllegalArgumentException("The given name must not be null");
+        }
+        Query gamesQuery = new Query(Criteria.where("Name").is(name));
+        Query reviewsQuery = new Query(Criteria.where("game").is(name));
+
+        mongoTemplate.remove(gamesQuery, Game.class, "videogames");
+        mongoTemplate.find(reviewsQuery,Review.class, "reviews").forEach(review -> {
+            Query commentsQuery = new Query(Criteria.where("reviewId").is(review.id));
+            mongoTemplate.remove(commentsQuery, Comment.class, "comments");
+        });
+        mongoTemplate.remove(reviewsQuery, Review.class, "reviews");
     }
 }
 

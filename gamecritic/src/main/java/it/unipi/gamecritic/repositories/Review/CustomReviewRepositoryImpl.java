@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Review;
 
 public class CustomReviewRepositoryImpl implements CustomReviewRepository {
@@ -73,5 +74,25 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         }
         mongoTemplate.insert(review, "reviews");
         return review.getId();
+    }
+
+    @Override
+    public void deleteReview(String id)
+    {
+        if(id == null) {
+            throw new IllegalArgumentException("id must not be null");
+        }
+        try
+        {
+            ObjectId oid = new ObjectId(id);
+            Query reviewsQuery = new Query(Criteria.where("_id").is(oid));
+            Query commentsQuery = new Query(Criteria.where("reviewId").is(id));
+            mongoTemplate.remove(reviewsQuery, Review.class, "reviews");
+            mongoTemplate.remove(commentsQuery, Comment.class, "comments");
+        }
+        catch (IllegalArgumentException e)
+        {
+            return;
+        }
     }
 }

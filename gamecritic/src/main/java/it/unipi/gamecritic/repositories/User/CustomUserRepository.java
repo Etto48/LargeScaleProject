@@ -10,7 +10,8 @@ public interface CustomUserRepository {
     //List<User> findByName(String Name);
 
     List<User> findByDynamicAttribute(String attributeName, String attributeValue);
-    public boolean insertUserIfNotExists(User user);
+    boolean insertUserIfNotExists(User user);
+    void deleteUser(String username);
     // public List<User> findByUsername(String username);
     List<User> search(String query);
 /*
