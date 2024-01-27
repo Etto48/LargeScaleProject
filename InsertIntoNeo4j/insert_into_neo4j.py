@@ -25,6 +25,8 @@ def main(args):
     users = json.load(open(args.users))
     cm_and_admins = json.load(open(args.cm_and_admins))
     games = json.load(open(args.games))
+    likes = pd.read_csv(args.likes)
+    likes["reviewId"] = likes["reviewId"].map(id_to_hex_str)
     
     reviews = []
     review_id = 1
@@ -63,10 +65,10 @@ def main(args):
     pd.DataFrame(simple_games).to_csv(os.path.join(args.tmp, "games.csv"), index=False)
     pd.DataFrame(simple_users).to_csv(os.path.join(args.tmp, "users.csv"), index=False)
     pd.DataFrame(reviews).to_csv(os.path.join(args.tmp, "reviews.csv"), index=False)
+    likes.to_csv(os.path.join(args.tmp, "likes.csv"), index=False)
         
     with neo.GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH) as driver:
         tmp_path = prepare_path(args.tmp)
-        likes_path = prepare_path(args.likes)
         follows_path = prepare_path(args.follows)
         
         with driver.session() as session:
@@ -84,9 +86,24 @@ def main(args):
             print("Creating indexes...")
             session.run(
                 """
-                create index username_index if not exists for (u:User) on (u.username)
+                drop index username_index if exists
                 """
             )
+            session.run(
+                """
+                drop index game_index if exists
+                """
+            )
+            session.run(
+                """
+                drop index review_index if exists
+                """
+            )
+            session.run(
+                """
+                create index username_index if not exists for (u:User) on (u.username)
+                """
+            ).consume()
             session.run(
                 """
                 create index game_index if not exists for (g:Game) on (g.name)
@@ -94,7 +111,7 @@ def main(args):
             )
             session.run(
                 """
-                create index review_index if not exists for (r:Review) on (r.id)
+                create index review_index if not exists for (r:Review) on (r.reviewId)
                 """
             )
             
@@ -138,11 +155,11 @@ def main(args):
             print("Inserting likes...")
             session.run(
                 f"""
-                load csv with headers from "file:///{likes_path}" as row
+                load csv with headers from "file:///{tmp_path}/likes.csv" as row
                 call {{
                     with row
                     match (u:User {{username: row.name}})
-                    match (r:Review {{id: row.reviewId}})
+                    match (r:Review {{reviewId: row.reviewId}})
                     create (u)-[:LIKED]->(r)
                 }} in transactions of {args.batch_size} rows
                 """
