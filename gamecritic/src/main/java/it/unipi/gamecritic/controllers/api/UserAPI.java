@@ -110,6 +110,8 @@ public class UserAPI {
             }
             if (image != null)
             {
+
+                // TODO: there is a bug when there is already an image
                 String image_type = image.getContentType();
                 if(image_type == null || !image_type.equals("image/png"))
                 {
