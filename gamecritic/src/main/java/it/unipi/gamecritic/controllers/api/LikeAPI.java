@@ -27,6 +27,7 @@ public class LikeAPI {
         this.reviewRepository = reviewRepository;
     }
 
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(LikeAPI.class);
     @RequestMapping(value = "/api/like/set/review", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -39,8 +40,14 @@ public class LikeAPI {
         User user = (User) session.getAttribute("user");
         if (user != null)
         {
-            // TODO: insert the like in the database
-            logger.info("New like for review " + id + " from \"" + user.username + "\": " + liked);
+            if (liked)
+            {
+                reviewRepository.setLike(user.username, id);   
+            }
+            else
+            {
+                reviewRepository.removeLike(user.username, id);
+            }
             return "{}";
         }
         else
@@ -51,9 +58,9 @@ public class LikeAPI {
 
     public class LikeInfo {
         public Boolean liked;
-        public Integer likes;
+        public Long likes;
 
-        public LikeInfo(Boolean liked, Integer likes) {
+        public LikeInfo(Boolean liked, Long likes) {
             this.liked = liked;
             this.likes = likes;
         }
@@ -68,16 +75,13 @@ public class LikeAPI {
     {
         User user = (User) session.getAttribute("user");
         LikeInfo info = null;
+        long likes = reviewRepository.getLikes(id);
+        Boolean liked = null;
         if (user != null)
         {
-            // TODO: get like info from database and check if the user liked the review
-            info = new LikeInfo(true, 69);   
+            liked = reviewRepository.userLikedReview(user.username, id);
         }
-        else
-        {
-            // TODO: get like info from database
-            info = new LikeInfo(null, 69);
-        }
+        info = new LikeInfo(liked, likes);
         Gson gson = new Gson();
         return gson.toJson(info);
     }

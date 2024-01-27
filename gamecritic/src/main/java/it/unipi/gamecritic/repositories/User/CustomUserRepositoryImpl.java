@@ -4,6 +4,7 @@ package it.unipi.gamecritic.repositories.User;
 
 import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Review;
+import it.unipi.gamecritic.entities.UserImage;
 import it.unipi.gamecritic.entities.user.User;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -51,7 +52,9 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         }
         Query usersQuery = new Query(Criteria.where("username").is(username));
         Query reviewsAndCommentsQuery = new Query(Criteria.where("author").is(username));
+        Query imageQuery = new Query(Criteria.where("username").is(username));
         mongoTemplate.remove(usersQuery, User.class, "users");
+        mongoTemplate.remove(imageQuery, UserImage.class, "user_images");
         mongoTemplate.remove(reviewsAndCommentsQuery, Review.class, "reviews");
         mongoTemplate.remove(reviewsAndCommentsQuery, Comment.class, "comments");
     }

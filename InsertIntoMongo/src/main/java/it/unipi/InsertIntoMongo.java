@@ -213,7 +213,7 @@ public class InsertIntoMongo {
             document.append("Top3ReviewsByLikes", new ArrayList<>());
             documents.add(document);
         }
-
+        reviewIdCounter = new BigInteger("1");
         collection.insertMany(documents);
     }
 
