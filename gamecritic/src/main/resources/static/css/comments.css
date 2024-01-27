@@ -7,19 +7,6 @@ div.comment-body {
     border-radius: 5px;
 }
 
-.respond-button {
-    opacity: 0.1;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.respond-button:hover {
-    opacity: 1;
-}
-
-#create-new-comment-button:has(.bi-check-circle-fill) {
-    opacity: 1;
-}
-
 #create-new-comment-button-text.bi-check-circle-fill{
     color: #308752;
 }

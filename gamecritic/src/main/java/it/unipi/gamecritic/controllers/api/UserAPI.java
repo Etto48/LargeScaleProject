@@ -1,6 +1,7 @@
 package it.unipi.gamecritic.controllers.api;
 
 import java.security.MessageDigest;
+import java.util.List;
 import java.util.Vector;
 
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ import com.google.gson.Gson;
 import it.unipi.gamecritic.entities.UserImage;
 import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.User.DTO.SuggestionDTO;
 import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -29,12 +32,14 @@ public class UserAPI {
     @SuppressWarnings("unused")
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
+    private final UserRepositoryNeo4J userRepositoryNeo4J;
     private static final Logger logger = LoggerFactory.getLogger(UserAPI.class);
 
     @Autowired
-    public UserAPI(UserRepository userRepository, UserImageRepository userImageRepository) {
+    public UserAPI(UserRepository userRepository, UserImageRepository userImageRepository, UserRepositoryNeo4J userRepositoryNeo4J) {
         this.userRepository = userRepository;
         this.userImageRepository = userImageRepository;
+        this.userRepositoryNeo4J = userRepositoryNeo4J;
     }
 
     @RequestMapping(value = "/api/user/follow", method = RequestMethod.POST, produces = "application/json")
@@ -140,9 +145,9 @@ public class UserAPI {
 
     public class SuggestionResponse
     {
-        public Vector<User> users;
+        public Vector<String> users;
         public Vector<String> games;
-        public SuggestionResponse(Vector<User> users, Vector<String> games)
+        public SuggestionResponse(Vector<String> users, Vector<String> games)
         {
             this.users = users;
             this.games = games;
@@ -159,13 +164,13 @@ public class UserAPI {
         if (user != null)
         {
             // TODO: get suggestions from db
-            Vector<User> suggestions = new Vector<User>();
-            suggestions.add(new User("Pippo", null, null, null));
-            suggestions.add(new User("Pluto", null, null, null));
-            suggestions.add(new User("Paperino", null, null, null));
-            suggestions.add(new User("Topolino", null, null, null));
-
-            SuggestionResponse response = new SuggestionResponse(suggestions, null);
+            List<SuggestionDTO> suggestions = userRepositoryNeo4J.findSuggestedUsers(user.username);
+            Vector<String> users = new Vector<String>();
+            for (SuggestionDTO suggestion : suggestions)
+            {
+                users.add(suggestion.reccomendedUser.username);
+            }
+            SuggestionResponse response = new SuggestionResponse(users, null);
             Gson gson = new Gson();
             return gson.toJson(response);
         }

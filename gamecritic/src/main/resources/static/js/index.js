@@ -1,4 +1,5 @@
 var current_page = 0;
+var loading_page = null;
 var kind = "hottest";
 
 function addSuggestions() {
@@ -10,11 +11,17 @@ function addSuggestions() {
                 return;
             }
             var template = Handlebars.compile(document.getElementById("suggestions-template").innerHTML);
+            var users = [];
             data.users.forEach(function (user) {
-                user.url = "/user/" + encodeURIComponent(user.username);
-                user.img = "/user/" + encodeURIComponent(user.username) + "/image.png";
+                var new_user = {};
+                new_user.username = user;
+                new_user.url = "/user/" + encodeURIComponent(new_user.username);
+                new_user.img = "/user/" + encodeURIComponent(new_user.username) + "/image.png";
+                users.push(new_user);
             });
-            var html = template(data);
+            var games = [];
+            var template_data = {users: users, games: games};
+            var html = template(template_data);
             $(html).insertBefore("#dummy-loading-game");
         },
         error: function (error) {
@@ -72,9 +79,11 @@ function addGames(page) {
             });
             addSuggestions();
             window.scroll({top: tempScrollTop, behavior: "instant"});
+            loading_page = null;
         },
         error: function (error) {
             console.log(error);
+            loading_page = null;
         }
     });
 }
@@ -96,7 +105,8 @@ function setKind(new_kind) {
 
 document.addEventListener("DOMContentLoaded", function (event) {
     function checkAndAddGames() {
-        if (canSee("dummy-loading-game")) {
+        if (canSee("dummy-loading-game") && loading_page == null) {
+            loading_page = current_page;
             addGames(current_page++);
         }
     }
