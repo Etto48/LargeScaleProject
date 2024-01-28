@@ -23,9 +23,11 @@ function addSuggestions() {
             var template_data = {users: users, games: games};
             var html = template(template_data);
             $(html).insertBefore("#dummy-loading-game");
+            loading_page = null;
         },
         error: function (error) {
             console.log(error);
+            loading_page = null;
         }
     });
 }
@@ -79,7 +81,6 @@ function addGames(page) {
             });
             addSuggestions();
             window.scroll({top: tempScrollTop, behavior: "instant"});
-            loading_page = null;
         },
         error: function (error) {
             console.log(error);

@@ -10,6 +10,7 @@ import it.unipi.gamecritic.entities.user.User;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 
 import com.mongodb.DBObject;
 
@@ -20,6 +21,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     public CustomUserRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
+    @Override
     public void insertUser(User user) {
         if (user == null) {
             throw new IllegalArgumentException("The given user must not be null");
@@ -30,6 +32,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     /** 
      * Returns true if the user was inserted, false if the user already exists
      **/
+    @Override
     public boolean insertUserIfNotExists(User user) {
         // Check if the user with the given username already exists
         Criteria criteria = Criteria.where("username").is(user.getUsername());
@@ -46,6 +49,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         }
     }
 
+    @Override
+    @Async
     public void deleteUser(String username) {
         if (username == null) {
             throw new IllegalArgumentException("The given username must not be null");

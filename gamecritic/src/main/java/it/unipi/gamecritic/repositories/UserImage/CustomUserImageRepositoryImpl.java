@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.scheduling.annotation.Async;
 
 public class CustomUserImageRepositoryImpl implements CustomUserImageRepository{
     private final MongoTemplate mongoTemplate;
@@ -24,6 +25,7 @@ public class CustomUserImageRepositoryImpl implements CustomUserImageRepository{
     }
 
     @Override
+    @Async
     public void insertImage(UserImage userImage) {
         if (userImage == null) {
             throw new IllegalArgumentException("The given username or image must not be null");

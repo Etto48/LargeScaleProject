@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -147,6 +148,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
     }
 
     @Override
+    @Async
     public void deleteGame(String name) {
         if(name == null) {
             throw new IllegalArgumentException("The given name must not be null");

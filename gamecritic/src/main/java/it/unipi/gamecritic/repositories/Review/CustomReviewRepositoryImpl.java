@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 
 import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Review;
@@ -77,6 +78,7 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     }
 
     @Override
+    @Async
     public void deleteReview(String id)
     {
         if(id == null) {

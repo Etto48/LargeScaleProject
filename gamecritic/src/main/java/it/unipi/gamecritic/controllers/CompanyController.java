@@ -26,7 +26,6 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CompanyController {
-    @SuppressWarnings("unused")
     private final GameRepository gameRepository;
     private final CompanyRepository companyRepository;
     private static final Logger logger = LoggerFactory.getLogger(CompanyController.class);
@@ -89,22 +88,7 @@ public class CompanyController {
         model.addAttribute("user", user);
         model.addAttribute("request", request);
 
-        // TODO: find games in db
-        //List<Game> games = GameRepository.getMockupList();
-
-        /* List<DBObject> result = companyRepository.findCompaniesGames(company);
-        List<Game> games = new ArrayList<>();
-        if (result != null) {
-            for (DBObject o : result) {
-                Game ga = new Game(o);
-                games.add(ga);
-            }
-        }
-        else {
-
-         */
-            List<Game> games = GameRepository.getMockupList();
-        //}
+        List<Game> games = gameRepository.findVideoGamesOfCompany(company);
         model.addAttribute("company_name", company);
         model.addAttribute("games", games);
 
@@ -115,13 +99,20 @@ public class CompanyController {
 		}
         Integer games_with_score = 0;
 		for (Game game : games) {
-            Float score = Float.valueOf(game.customAttributes.get("user_score").toString());
+            if(game.customAttributes.get("user_review") == null)
+            {
+                continue;
+            }
+            Float score = Float.valueOf(game.customAttributes.get("user_review").toString());
             if(score != null)
             {
                 avg_score += score;
-                Integer index = (int) Math.round(score) - 1;
+                int low_index = (int) Math.floor(score);
+                int high_index = (int) Math.ceil(score);
+                float alpha = score - low_index;
+                score_distribution.set(low_index - 1, score_distribution.get(low_index - 1) + (1 - alpha));
+                score_distribution.set(high_index - 1, score_distribution.get(high_index - 1) + alpha);
                 games_with_score++;
-			    score_distribution.set(index, score_distribution.get(index) + 1);
             }
 		}
         if(games_with_score > 0)

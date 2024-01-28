@@ -4,6 +4,7 @@ import it.unipi.gamecritic.repositories.Review.DTO.ReviewDTO;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,9 +30,10 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "MERGE (u:User {username: $author})\n" +
         "MERGE (g:Game {name: $gameName})\n" +
         "CREATE (u)-[:WROTE]->(r:Review {reviewId: $reviewId, score: $score})\n" +
-        "CREATE (r)-[:ABOUT]->(g)\n" +
-        "RETURN r;")
-    ReviewDTO insertReview(
+        "CREATE (r)-[:ABOUT]->(g)"
+    )
+    @Async
+    Void insertReview(
         @Param("username")String author,
         @Param("gameName")String gameName,
         @Param("reviewId")String reviewId,
@@ -54,6 +56,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "MATCH (u:User {username: $username})\n"+
         "MATCH (r:Review {reviewId: $reviewId})\n"+
         "MERGE (u)-[l:LIKED]->(r);")
+    @Async
     Void setLike(
         @Param("username")String username,
         @Param("reviewId")String reviewId);
@@ -62,6 +65,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "MATCH (u:User {username: $username})-[l:LIKED]->(r:Review {reviewId: $reviewId})\n"+
         "DELETE l;"
     )
+    @Async
     Void removeLike(
         @Param("username")String username,
         @Param("reviewId")String reviewId);

@@ -2,7 +2,7 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
     <body>
-        <div class="d-flex top-reviews align-items-stretch" th:fragment="top_reviews(reviews,title_mode)">
+        <div class="d-flex top-reviews flex-md-column flex-row align-items-stretch" th:fragment="top_reviews(reviews,title_mode)">
             <div th:if="${reviews != null}" class="m-2 d-flex flex-column top-review" th:each="review : ${reviews}">
                 <div class="d-flex flex-row">
                     <div th:replace="~{fragments/score.html :: score_small(${review.score})}"></div>
@@ -36,7 +36,7 @@
                     <div th:replace="~{fragments/review.html :: review_actions(${review})}"></div>
                 </div>
             </div>
-            <div th:if="${reviews == null || #lists.size(reviews) == 0}" class="m-2 d-flex flex-row m-auto">
+            <div th:if="${reviews == null || #lists.size(reviews) == 0}" class="d-flex flex-row m-auto">
                 <p class="fs-2 text-secondary">No reviews yet</p>
             </div>
         </div>

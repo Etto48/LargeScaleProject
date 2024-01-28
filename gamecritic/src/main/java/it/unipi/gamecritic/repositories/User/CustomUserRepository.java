@@ -9,6 +9,7 @@ import java.util.List;
 public interface CustomUserRepository {
     //List<User> findByName(String Name);
 
+    void insertUser(User user);
     List<User> findByDynamicAttribute(String attributeName, String attributeValue);
     boolean insertUserIfNotExists(User user);
     void deleteUser(String username);
