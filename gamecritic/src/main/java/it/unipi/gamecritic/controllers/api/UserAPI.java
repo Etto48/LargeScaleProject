@@ -20,9 +20,11 @@ import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.UserImage;
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.Game.DTO.GameDTO;
 import it.unipi.gamecritic.repositories.User.UserRepository;
 import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
-import it.unipi.gamecritic.repositories.User.DTO.SuggestionDTO;
+import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
 import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -33,13 +35,19 @@ public class UserAPI {
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
     private final UserRepositoryNeo4J userRepositoryNeo4J;
+    private final GameRepositoryNeo4J gameRepositoryNeo4J;
     private static final Logger logger = LoggerFactory.getLogger(UserAPI.class);
 
     @Autowired
-    public UserAPI(UserRepository userRepository, UserImageRepository userImageRepository, UserRepositoryNeo4J userRepositoryNeo4J) {
+    public UserAPI(
+        UserRepository userRepository, 
+        UserImageRepository userImageRepository, 
+        UserRepositoryNeo4J userRepositoryNeo4J,
+        GameRepositoryNeo4J gameRepositoryNeo4J) {
         this.userRepository = userRepository;
         this.userImageRepository = userImageRepository;
         this.userRepositoryNeo4J = userRepositoryNeo4J;
+        this.gameRepositoryNeo4J = gameRepositoryNeo4J;
     }
 
     @RequestMapping(value = "/api/user/follow", method = RequestMethod.POST, produces = "application/json")
@@ -163,14 +171,19 @@ public class UserAPI {
         User user = (User) session.getAttribute("user");
         if (user != null)
         {
-            // TODO: get suggestions from db
-            List<SuggestionDTO> suggestions = userRepositoryNeo4J.findSuggestedUsers(user.username);
+            List<UserDTO> userSuggestions = userRepositoryNeo4J.findSuggestedUsers(user.username);
+            List<GameDTO> gameSuggestions = gameRepositoryNeo4J.findSuggestedGames(user.username);
             Vector<String> users = new Vector<String>();
-            for (SuggestionDTO suggestion : suggestions)
+            Vector<String> games = new Vector<String>();
+            for (UserDTO suggestion : userSuggestions)
             {
-                users.add(suggestion.reccomendedUser.username);
+                users.add(suggestion.username);
             }
-            SuggestionResponse response = new SuggestionResponse(users, null);
+            for (GameDTO suggestion : gameSuggestions)
+            {
+                games.add(suggestion.name);
+            }
+            SuggestionResponse response = new SuggestionResponse(users, games);
             Gson gson = new Gson();
             return gson.toJson(response);
         }
