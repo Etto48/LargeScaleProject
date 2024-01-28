@@ -15,7 +15,7 @@ public interface GameRepositoryNeo4J extends Neo4jRepository<GameDTO, UUID> {
         "where not (u1)-[:WROTE]->(:Review)-[:ABOUT]->(g)\n"+
         "with g,r,u2, sum(r.score)/count(u2) as avgScore, count(r) as reviewCount\n"+
         "return g\n"+
-        "order by avgScore desc, reviewCount asc limit 4"
+        "order by avgScore desc, reviewCount desc limit 4"
     )
     List<GameDTO> findSuggestedGames(
         @Param("username") String username
