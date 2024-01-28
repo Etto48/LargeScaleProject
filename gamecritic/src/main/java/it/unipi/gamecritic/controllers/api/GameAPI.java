@@ -63,10 +63,8 @@ public class GameAPI {
         
         Integer num_results = 10;
         Integer offset = page * num_results;
-        logger.info("GameAPI request");
         if (kind.equals("hottest"))
         {
-            logger.info("page" + page.toString());
             List<Game> games = gameRepository.findVideoGamesWithMostReviewsLastMonth(offset,"month");
             if (games.isEmpty()){
                 logger.warn("No games found on \""+kind+"\" page "+page.toString());
@@ -76,7 +74,6 @@ public class GameAPI {
         }
         else if (kind.equals("newest"))
         {
-            logger.info("page" + page.toString());
             List<Game> games = gameRepository.findLatest(offset);
             if (games.isEmpty()){
                 logger.warn("No games found on \""+kind+"\" page "+page.toString());
@@ -86,7 +83,6 @@ public class GameAPI {
         }
         else if (kind.equals("best"))
         {
-            logger.info("page" + page.toString());
             List<Game> games = gameRepository.findBest(offset);
             if (games.isEmpty()){
                 logger.warn("No games found on \""+kind+"\" page "+page.toString());

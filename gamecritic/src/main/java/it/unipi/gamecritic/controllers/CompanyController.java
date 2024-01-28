@@ -28,6 +28,7 @@ import jakarta.servlet.http.HttpSession;
 public class CompanyController {
     private final GameRepository gameRepository;
     private final CompanyRepository companyRepository;
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CompanyController.class);
     @Autowired
     public CompanyController(GameRepository gameRepository, CompanyRepository companyRepository) {
@@ -51,7 +52,6 @@ public class CompanyController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company not found");
         }
         Company company_object = company_list.get(0);
-        logger.info("company's name: "+company_object.name);
         Float avg_top_score = 0.0f;
         Integer games_with_score = 0;
         for (Document game : company_object.top_games)
