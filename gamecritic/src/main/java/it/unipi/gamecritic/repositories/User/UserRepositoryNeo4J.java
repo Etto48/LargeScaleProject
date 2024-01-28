@@ -4,6 +4,7 @@ import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,5 +45,13 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
         @Param("username") String username
     );
 
-    
+    @Query(
+        "match (u:User {username: $username})\n"+
+        "match (u)-[:WROTE]->(r:Review)\n"+
+        "detach delete u, r"
+    )
+    @Async
+    Void deleteUser(
+        @Param("username") String username
+    );
 }

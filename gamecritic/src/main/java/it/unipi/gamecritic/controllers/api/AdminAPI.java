@@ -18,34 +18,53 @@ import com.google.gson.Gson;
 import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.Comment.CommentRepository;
 import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
 import it.unipi.gamecritic.repositories.Review.ReviewRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminAPI {
     private final UserRepository userRepository;
+    private final UserRepositoryNeo4J userRepositoryNeo4J;
     private final ReviewRepository reviewRepository;
+    private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
     private final GameRepository gameRepository;
+    private final GameRepositoryNeo4J gameRepositoryNeo4J;
     private final CommentRepository commentRepository;
 
     @Autowired
-    public AdminAPI(UserRepository userRepository, ReviewRepository reviewRepository, GameRepository gameRepository, CommentRepository commentRepository) {
+    public AdminAPI(
+        UserRepository userRepository, 
+        UserRepositoryNeo4J userRepositoryNeo4J,
+        ReviewRepository reviewRepository, 
+        ReviewRepositoryNeo4J reviewRepositoryNeo4J,
+        GameRepository gameRepository, 
+        GameRepositoryNeo4J gameRepositoryNeo4J,
+        CommentRepository commentRepository) 
+    {
         this.userRepository = userRepository;
+        this.userRepositoryNeo4J = userRepositoryNeo4J;
         this.reviewRepository = reviewRepository;
+        this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
         this.gameRepository = gameRepository;
+        this.gameRepositoryNeo4J = gameRepositoryNeo4J;
         this.commentRepository = commentRepository;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(AdminAPI.class);
     public void ban(String username, User user) {
         userRepository.deleteUser(username);
+        userRepositoryNeo4J.deleteUser(username);
         logger.info("Ban user \"" + username + "\" by " + user.username);
     }
 
     public void delete_review(String id, User user) {
         reviewRepository.deleteReview(id);
+        reviewRepositoryNeo4J.deleteReview(id);
         logger.info("Delete review " + id + " by " + user.username);
     }
 
@@ -56,6 +75,7 @@ public class AdminAPI {
 
     public void delete_game(String name, User user) {
         gameRepository.deleteGame(name);
+        gameRepositoryNeo4J.deleteGame(name);
         logger.info("Delete game \"" + name + "\" by " + user.username);
     }
 

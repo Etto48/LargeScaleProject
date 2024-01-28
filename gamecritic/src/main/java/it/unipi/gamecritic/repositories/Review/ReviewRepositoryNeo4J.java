@@ -69,4 +69,13 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
     Void removeLike(
         @Param("username")String username,
         @Param("reviewId")String reviewId);
+
+    @Query(
+        "match (r:Review {reviewId: $reviewId})\n"+
+        "detach delete r"
+    )
+    @Async
+    Void deleteReview(
+        @Param("reviewId")String reviewId
+    );
 }
