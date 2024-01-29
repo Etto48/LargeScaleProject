@@ -65,11 +65,13 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
 
     @Override
     public List<Game> findVideoGamesOfCompany(String companyName) {
-        Criteria criteria = new Criteria().orOperator(
-                Criteria.where("Publishers").is(companyName),
-                Criteria.where("Developers").is(companyName)
+        Query query = new Query();
+        query.addCriteria(
+            new Criteria().orOperator(
+                Criteria.where("Developers").elemMatch(Criteria.where("$eq").is(companyName)),
+                Criteria.where("Publishers").elemMatch(Criteria.where("$eq").is(companyName))
+            )
         );
-        Query query = new Query(criteria);
         List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
         return game_objects.stream().map(Game::new).toList();
     }
