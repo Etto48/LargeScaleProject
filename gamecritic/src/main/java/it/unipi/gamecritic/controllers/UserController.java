@@ -10,6 +10,8 @@ import java.util.Vector;
 
 import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
 import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
 
 import org.apache.commons.io.FileUtils;
@@ -38,14 +40,21 @@ import jakarta.servlet.http.HttpSession;
 public class UserController {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final UserRepositoryNeo4J userRepositoryNeo4J;
     private final UserImageRepository userImageRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    public UserController(ReviewRepository reviewRepository, UserRepository userRepository, UserImageRepository userImageRepository) {
+    public UserController(
+        ReviewRepository reviewRepository, 
+        UserRepository userRepository, 
+        UserRepositoryNeo4J userRepositoryNeo4J,
+        UserImageRepository userImageRepository) 
+    {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
+        this.userRepositoryNeo4J = userRepositoryNeo4J;
         this.userImageRepository = userImageRepository;
     }
 
@@ -166,15 +175,10 @@ public class UserController {
         model.addAttribute("request", request);
         model.addAttribute("viewed_user_username", username);
 
-        // TODO: get followers from database
-        Vector<User> followers = new Vector<User>();
-        followers.add(new User("Pippo", null, null, null));
-        followers.add(new User("Pluto", null, null, null));
-        followers.add(new User("Paperino", null, null, null));
+        List<UserDTO> followers = userRepositoryNeo4J.findFollowers(username);
 
         model.addAttribute("follows", followers);
         model.addAttribute("mode", "followers");
-
         return "user_follow_list";
     }
 
@@ -190,15 +194,10 @@ public class UserController {
         model.addAttribute("request", request);
         model.addAttribute("viewed_user_username", username);
 
-        // TODO: get followed from database
-        Vector<User> followed = new Vector<User>();
-        followed.add(new User("Pippo", null, null, null));
-        followed.add(new User("Pluto", null, null, null));
-        followed.add(new User("Paperino", null, null, null));
+        List<UserDTO> followed = userRepositoryNeo4J.findFollowed(username);
 
         model.addAttribute("follows", followed);
         model.addAttribute("mode", "followed");
-
         return "user_follow_list";
     }
 }

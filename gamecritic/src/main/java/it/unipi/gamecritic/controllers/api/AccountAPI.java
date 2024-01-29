@@ -1,8 +1,6 @@
 package it.unipi.gamecritic.controllers.api;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.List;
 import java.util.Vector;
 
@@ -49,11 +47,7 @@ public class AccountAPI {
         User user = users.get(0);
         try
         {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes());
-            Base64.Encoder encoder = Base64.getEncoder();
-            String input_password_hash = encoder.encodeToString(hash);
-            if (!user.password_hash.equals(input_password_hash))
+            if (!user.checkPassword(password))
             {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
             }
@@ -82,11 +76,7 @@ public class AccountAPI {
         user.username = username;
         try
         {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes());
-            Base64.Encoder encoder = Base64.getEncoder();
-            password = encoder.encodeToString(hash);
-            user.password_hash = password;
+            user.setPasswordHash(password);
         }
         catch (NoSuchAlgorithmException e)
         {

@@ -33,7 +33,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "CREATE (r)-[:ABOUT]->(g)"
     )
     @Async
-    Void insertReview(
+    void insertReview(
         @Param("username")String author,
         @Param("gameName")String gameName,
         @Param("reviewId")String reviewId,
@@ -55,9 +55,9 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
     @Query(
         "MATCH (u:User {username: $username})\n"+
         "MATCH (r:Review {reviewId: $reviewId})\n"+
-        "MERGE (u)-[l:LIKED]->(r);")
+        "MERGE (u)-[l:LIKED]->(r)")
     @Async
-    Void setLike(
+    void setLike(
         @Param("username")String username,
         @Param("reviewId")String reviewId);
 
@@ -66,7 +66,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "DELETE l;"
     )
     @Async
-    Void removeLike(
+    void removeLike(
         @Param("username")String username,
         @Param("reviewId")String reviewId);
 
@@ -75,7 +75,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "detach delete r"
     )
     @Async
-    Void deleteReview(
+    void deleteReview(
         @Param("reviewId")String reviewId
     );
 }

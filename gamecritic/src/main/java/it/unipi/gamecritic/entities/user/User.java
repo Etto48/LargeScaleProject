@@ -2,7 +2,10 @@
 
 package it.unipi.gamecritic.entities.user;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Vector;
 
 import it.unipi.gamecritic.entities.Review;
@@ -67,5 +70,21 @@ public class User {
     }
     public String getUsername() {
         return this.username;
+    }
+
+    private String encodePassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(password.getBytes());
+        byte[] digest = md.digest();
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(digest);
+    }
+
+    public void setPasswordHash(String password) throws NoSuchAlgorithmException{
+        this.password_hash = encodePassword(password);
+    }
+
+    public boolean checkPassword(String password) throws NoSuchAlgorithmException{
+        return this.password_hash.equals(encodePassword(password));
     }
 }

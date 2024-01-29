@@ -1,6 +1,5 @@
 package it.unipi.gamecritic.controllers.api;
 
-import java.security.MessageDigest;
 import java.util.List;
 import java.util.Vector;
 
@@ -31,7 +30,6 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserAPI {
-    @SuppressWarnings("unused")
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
     private final UserRepositoryNeo4J userRepositoryNeo4J;
@@ -61,8 +59,14 @@ public class UserAPI {
         User user = (User) session.getAttribute("user");
         if (user != null)
         {
-            // TODO: follow user
-            logger.info("Follow user \"" + username + "\" ("+follow+") by " + user.username);
+            if (follow)
+            {
+                userRepositoryNeo4J.addFollowRelationship(user.username, username);
+            }
+            else
+            {
+                userRepositoryNeo4J.removeFollowRelationship(user.username, username);
+            }
             return "{}";
         }
         else
@@ -81,9 +85,7 @@ public class UserAPI {
         User user = (User) session.getAttribute("user");
         if (user != null)
         {
-            // TODO: check if user follows username
-            boolean follows = true;
-
+            Boolean follows = userRepositoryNeo4J.getFollowRelationship(user.username, username);
             Gson gson = new Gson();
             return gson.toJson(follows);
         }
@@ -107,24 +109,20 @@ public class UserAPI {
         {
             if (email != null)
             {
-                // TODO: save email in the database
-                logger.info("Email changed: " + email);
+                user.email = email;
             }
             if (password != null)
             {
                 try {
-                    byte[] password_hash = MessageDigest.getInstance("SHA-256").digest(password.getBytes("UTF-8"));
-                    String password_hash_b64 = java.util.Base64.getEncoder().encodeToString(password_hash);
-                    // TODO: save password in the database
-                    logger.info("Password changed: " + password_hash_b64);
+                    user.setPasswordHash(password);
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while processing password");
                 }
             }
+            userRepository.updateUser(user, password != null, email != null);
             if (image != null)
             {
 
-                // TODO: there is a bug when there is already an image
                 String image_type = image.getContentType();
                 if(image_type == null || !image_type.equals("image/png"))
                 {

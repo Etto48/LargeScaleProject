@@ -28,7 +28,7 @@ public interface GameRepositoryNeo4J extends Neo4jRepository<GameDTO, UUID> {
         "detach delete g, r"
     )
     @Async
-    Void deleteGame(
+    void deleteGame(
         @Param("name") String name
     );
 }

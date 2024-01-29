@@ -10,6 +10,7 @@ import it.unipi.gamecritic.entities.user.User;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
 
 import com.mongodb.DBObject;
@@ -28,6 +29,30 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         }
         mongoTemplate.insert(user, "users");
     }
+    @Override
+    @Async
+    public void updateUser(User user, boolean updatePassword, boolean updateEmail) {
+        if (user == null) {
+            throw new IllegalArgumentException("The given user must not be null");
+        }
+        if(!updatePassword && !updateEmail)
+        {
+            return;
+        }
+        Query query = new Query(Criteria.where("username").is(user.username));
+        Update update = new Update();
+        if(updatePassword)
+        {
+            update.set("password_hash", user.password_hash);
+        }
+        if(updateEmail)
+        {
+            update.set("email", user.email);
+        }
+        
+        mongoTemplate.updateFirst(query, update,  User.class, "users");
+    }
+
 
     /** 
      * Returns true if the user was inserted, false if the user already exists
