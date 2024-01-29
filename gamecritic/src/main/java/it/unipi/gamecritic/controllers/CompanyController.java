@@ -1,5 +1,7 @@
 package it.unipi.gamecritic.controllers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -151,11 +153,33 @@ public class CompanyController {
                 model.addAttribute("request", request);
                 String company_name = ((CompanyManager)user).company_name;
                 List<Game> games = gameRepository.findVideoGamesOfCompany(company_name);
+                List<String> allAttributes = new ArrayList<>();
+                List<String> excludedAttributes = new ArrayList<>();
+                excludedAttributes.add("reviews");
+                excludedAttributes.add("user_review");
+                excludedAttributes.add("reviewCount");
+                excludedAttributes.add("Top3ReviewsByLikes");
+                excludedAttributes.add("_id");
+                excludedAttributes.add("Critics");
+                excludedAttributes.add("Name");
+                excludedAttributes.add("Description");
+                excludedAttributes.add("img");
+                for (Game g : games){
+                    for (String att : g.customAttributes.keySet()){
+                        if (!allAttributes.contains(att) && !excludedAttributes.contains(att)){
+                            allAttributes.add(att);
+                        }
+                    }
+                }
+                logger.info("allAtt: "+allAttributes.toString());
                 model.addAttribute("games", games);
+                model.addAttribute("allAttributes",allAttributes);
                 return "company_panel";
             } else {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a company");
             }
         }
     }
+
+
 }
