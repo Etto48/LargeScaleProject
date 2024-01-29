@@ -150,6 +150,27 @@ function loadGameInfo() {
             name: game_name
         },
         success: function (data) {
+            var keys = Object.keys(data.customAttributes);
+            var values = keys.map(function(v) { return data.customAttributes[v]; });
+            var pDiv = document.getElementById('attributeHolder');
+            var cDiv = pDiv.children;
+            for (var i = 0; i < cDiv.length; i++) {
+                if (Object.keys(data.customAttributes).includes(cDiv[i].id)){
+                    cDiv[i].style.display="initial";
+                    console.log(cDiv[i].id)
+                    console.log(data.customAttributes[cDiv[i].id])
+                    if (cDiv[i].id === "Released"){
+                        document.getElementById("ReleaseDateEditorInput").value = data.customAttributes[cDiv[i].id]["Release Date"];
+                        document.getElementById("PlatformEditorInput").value = data.customAttributes[cDiv[i].id]["Platform"];
+                    }
+                    else
+                    document.getElementById(cDiv[i].id+"EditorInput").value = data.customAttributes[cDiv[i].id]
+                    //cDiv[i].value = data.customAttributes[cDiv[i].id]
+                }
+                else{
+                    cDiv[i].style.display="none";
+                }
+            }
             if (data.customAttributes.Description) {
                 document.getElementById("game-description-edit").value = data.customAttributes.Description;
             } 
@@ -221,8 +242,8 @@ function loadGameInfo() {
                     addVectorEntryWithId("game-publishers-edit", data.customAttributes.Publishers);
                 }
             }
-            document.getElementById("game-release-date-edit").type = "date";
-            document.getElementById("game-release-date-edit").value = data.released;
+            //document.getElementById("game-release-date-edit").type = "date";
+            //document.getElementById("game-release-date-edit").value = data.released;
             resetVectorInput("game-narrative-edit");
             if(data.customAttributes.Narrative)
             {
@@ -298,4 +319,14 @@ function loadGameInfo() {
             console.log("Error loading game info: " + xhr.status + " " + xhr.statusText);
         }
     });
+}
+
+function addAttribute(){
+    var button = document.getElementById('moreAttributes');
+
+    var newDiv = document.createElement('div');
+
+    newDiv.setAttribute('th:replace',"~{fragments/interfaces.html :: vector_input(\'game-input-devices-edit\',\'Add a supported input device\')}");
+
+    button.parentNode.insertBefore(newDiv, button);
 }
