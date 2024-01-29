@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +14,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CompanyAPI {
+    private final GameRepository gameRepository;
+    private final GameRepositoryNeo4J gameRepositoryNeo4J;
+
+    @Autowired
+    public CompanyAPI(GameRepository gameRepository, GameRepositoryNeo4J gameRepositoryNeo4J) {
+        this.gameRepository = gameRepository;
+        this.gameRepositoryNeo4J = gameRepositoryNeo4J;
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(CompanyAPI.class);
     @RequestMapping(value = "/api/company/edit-game", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -99,8 +111,8 @@ public class CompanyAPI {
         {
             if(user.getAccountType().equals("Company"))
             {
-                // TODO: delete game
-                logger.info("Delete game \"" + name + "\" by " + user.username);
+                gameRepository.deleteGame(name);
+                gameRepositoryNeo4J.deleteGame(name);
                 return "{}";
             }
             else
