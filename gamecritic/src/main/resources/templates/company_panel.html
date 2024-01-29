@@ -31,31 +31,32 @@
 				</select>
 				<textarea id="game-description-edit" class="form-control" placeholder="Game Description" rows="5"></textarea>
 				<input id="game-img-edit" type="url" class="form-control" placeholder="Game Image URL"/>
-				<div id = "attributeHolder">
-					<div th:each="att : ${allAttributes}" th:id="${att}" style="display:none">
-						<div th:switch="${att}">
-							<div th:case="'Released'">
-								<div th:replace="~{fragments/interfaces.html :: vector_input('Release Date','ReleaseDateEditor', 'Add a Release Date' )}"></div>
-								<div th:replace="~{fragments/interfaces.html :: vector_input('Platform','PlatformEditor', 'Add a Platform')}"></div>
-							</div>
-							<div th:case="*">
-								<div th:replace="~{fragments/interfaces.html :: vector_input(${att},${att}+'Editor', 'Add a ' + ${att})}"></div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-publishers-edit','Add a publisher')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-developers-edit','Add a developer')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-platforms-edit','Add a platform')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-genres-edit','Add a genre')}"></div>
+				<input id="game-release-date-edit" type="text" class="form-control" placeholder="Game Release Date" onfocus="(this.type='date')" onblur="if(this.value==''){this.type='text'}"/>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-narrative-edit','Add a narrative type')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-gameplay-edit','Add a gameplay type')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-perspective-edit','Add a perspective')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-setting-edit','Add a setting')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-input-devices-edit','Add a supported input device')}"></div>
 				<input type="submit" class="btn btn-primary" value="Edit"/>
 			</form>
 			<form id="publish-form" class="w-100 flex-column gap-2 mw-600px">
-				<input id="NamePublish" type="text" class="form-control" placeholder="Game Name"/>
-				<textarea id="DescriptionPublish" class="form-control" placeholder="Game Description" rows="5"></textarea>
-				<input id="imgPublish" type="url" class="form-control" placeholder="Game Image URL"/>
-				<div th:replace="~{fragments/interfaces.html :: vector_input('Release Date','ReleaseDatePublish','Add a Release Date')}"></div>
-				<div th:replace="~{fragments/interfaces.html :: vector_input('Platform','PlatformPublish','Add a Platform')}"></div>
-				<div th:replace="~{fragments/interfaces.html :: vector_input('Publishers','PublishersPublish','Add Publishers')}"></div>
-				<div th:replace="~{fragments/interfaces.html :: vector_input('Developers','DevelopersPublish','Add Developers')}"></div>
-				<div th:replace="~{fragments/interfaces.html :: vector_input('Genre','GenrePublish','Add a Genre')}"></div>
-				<div th:replace="~{fragments/interfaces.html :: new_attributes_input()}"></div>
+				<input id="game-name-publish" type="text" class="form-control" placeholder="Game Name"/>
+				<textarea id="game-description-publish" class="form-control" placeholder="Game Description" rows="5"></textarea>
+				<input id="game-img-publish" type="url" class="form-control" placeholder="Game Image URL"/>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-publishers-publish','Add a publisher')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-developers-publish','Add a developer')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-platforms-publish','Add a platform')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-genres-publish','Add a genre')}"></div>
+				<input id="game-release-date-publish" type="text" class="form-control" placeholder="Game Release Date" onfocus="(this.type='date')" onblur="if(this.value==''){this.type='text'}"/>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-narrative-publish','Add a narrative type')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-gameplay-publish','Add a gameplay type')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-perspective-publish','Add a perspective')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-setting-publish','Add a setting')}"></div>
+				<div th:replace="~{fragments/interfaces.html :: vector_input('game-input-devices-publish','Add a supported input device')}"></div>
 				<input type="submit" class="btn btn-primary" value="Publish"/>
 			</form>
 			<form id="delete-form" class="w-100 flex-column gap-2 mw-600px">
