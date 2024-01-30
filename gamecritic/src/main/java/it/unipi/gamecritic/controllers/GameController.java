@@ -54,6 +54,22 @@ public class GameController {
 		}
     }
 
+	private static int clamp_score(int value)
+	{
+		if (value < 1)
+		{
+			return 1;
+		}
+		else if (value > 10)
+		{
+			return 10;
+		}
+		else
+		{
+			return value;
+		}
+	}
+
 	@RequestMapping("/game/{name}/reviews") 
 	public String game_reviews(
 		@PathVariable(value="name") String name, 
@@ -79,7 +95,7 @@ public class GameController {
 			score_distribution.add(0f);
 		}
 		for (Review review : reviews) {
-			score_distribution.set(review.score - 1, score_distribution.get(review.score - 1) + 1);
+			score_distribution.set(clamp_score(review.score) - 1, score_distribution.get(clamp_score(review.score) - 1) + 1);
 		}
 		for (int i = 0; i < 10; i++) {
 			score_distribution.set(i, score_distribution.get(i) / reviews.size() * 100);

@@ -8,6 +8,7 @@ function addSuggestions() {
         type: "GET",
         success: function (data) {
             if(Object.keys(data).length == 0 || (data.users.length == 0 && data.games.length == 0)) {
+                loading_page = null;
                 return;
             }
             var template = Handlebars.compile(document.getElementById("suggestions-template").innerHTML);

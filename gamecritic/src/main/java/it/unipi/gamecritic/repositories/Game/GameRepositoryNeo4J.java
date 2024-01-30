@@ -2,6 +2,7 @@ package it.unipi.gamecritic.repositories.Game;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
@@ -28,7 +29,7 @@ public interface GameRepositoryNeo4J extends Neo4jRepository<GameDTO, UUID> {
         "detach delete g, r"
     )
     @Async
-    void deleteGame(
+    CompletableFuture<Void> deleteGame(
         @Param("name") String name
     );
 }

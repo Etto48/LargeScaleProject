@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
     @Query(
@@ -16,7 +17,7 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
         "MERGE (follower)-[:FOLLOWS]->(followed)"
     )
     @Async
-    void addFollowRelationship(
+    CompletableFuture<Void> addFollowRelationship(
             @Param("followerUsername") String followerUsername,
             @Param("followedUsername") String followedUsername
     );
@@ -26,7 +27,7 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
         "DELETE r"
     )
     @Async
-    void removeFollowRelationship(
+    CompletableFuture<Void> removeFollowRelationship(
             @Param("followerUsername") String followerUsername,
             @Param("followedUsername") String followedUsername
     );
@@ -75,7 +76,7 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
         "detach delete u, r"
     )
     @Async
-    void deleteUser(
+    CompletableFuture<Void> deleteUser(
         @Param("username") String username
     );
 }

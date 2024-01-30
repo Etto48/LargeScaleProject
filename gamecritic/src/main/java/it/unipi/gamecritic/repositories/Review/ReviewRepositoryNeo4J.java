@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> {
     @Query(
@@ -33,7 +34,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "CREATE (r)-[:ABOUT]->(g)"
     )
     @Async
-    void insertReview(
+    CompletableFuture<Void> insertReview(
         @Param("username")String author,
         @Param("gameName")String gameName,
         @Param("reviewId")String reviewId,
@@ -57,7 +58,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "MATCH (r:Review {reviewId: $reviewId})\n"+
         "MERGE (u)-[l:LIKED]->(r)")
     @Async
-    void setLike(
+    CompletableFuture<Void> setLike(
         @Param("username")String username,
         @Param("reviewId")String reviewId);
 
@@ -66,7 +67,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "DELETE l;"
     )
     @Async
-    void removeLike(
+    CompletableFuture<Void> removeLike(
         @Param("username")String username,
         @Param("reviewId")String reviewId);
 
@@ -75,7 +76,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "detach delete r"
     )
     @Async
-    void deleteReview(
+    CompletableFuture<Void> deleteReview(
         @Param("reviewId")String reviewId
     );
 }

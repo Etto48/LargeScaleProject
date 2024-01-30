@@ -77,6 +77,22 @@ public class CompanyController {
         return "company";
     }
 
+    private static int clamp_score(int value)
+    {
+        if (value < 1)
+        {
+            return 1;
+        }
+        else if (value > 10)
+        {
+            return 10;
+        }
+        else
+        {
+            return value;
+        }
+    }
+
     @RequestMapping(value = "/company/{company}/games", method = RequestMethod.GET)
     public String company_games(
         @PathVariable("company") String company,
@@ -107,8 +123,8 @@ public class CompanyController {
             if(score != null)
             {
                 avg_score += score;
-                int low_index = (int) Math.floor(score);
-                int high_index = (int) Math.ceil(score);
+                int low_index = clamp_score((int) Math.floor(score));
+                int high_index = clamp_score((int) Math.ceil(score));
                 float alpha = score - low_index;
                 score_distribution.set(low_index - 1, score_distribution.get(low_index - 1) + (1 - alpha));
                 score_distribution.set(high_index - 1, score_distribution.get(high_index - 1) + alpha);
