@@ -1,5 +1,6 @@
 package it.unipi.gamecritic.repositories.User;
 
+import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
@@ -79,4 +80,12 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
     CompletableFuture<Void> deleteUser(
         @Param("username") String username
     );
+
+    @Query(
+        "match (u:User)-[:WROTE]->(r:Review)<-[l:LIKED]-(:User)\n"+
+        "return u, count(l) as likes\n"+
+        "order by likes desc\n"+
+        "limit 10"
+    )
+    List<TopUserDTO> topUsersByLikes();
 }

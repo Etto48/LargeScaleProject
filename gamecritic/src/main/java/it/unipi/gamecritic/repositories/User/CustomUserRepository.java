@@ -3,6 +3,7 @@
 package it.unipi.gamecritic.repositories.User;
 
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public interface CustomUserRepository {
     void deleteUser(String username);
     // public List<User> findByUsername(String username);
     List<User> search(String query);
+    List<TopUserDTO> topUsersByReviews(Integer months);
 /*
     List<DBObject> findLatest(Integer offset);
     List<DBObject> findBest(Integer offset);

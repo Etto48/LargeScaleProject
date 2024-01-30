@@ -6,8 +6,11 @@ import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.entities.UserImage;
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -15,6 +18,9 @@ import org.springframework.scheduling.annotation.Async;
 
 import com.mongodb.DBObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class CustomUserRepositoryImpl implements CustomUserRepository{
@@ -109,6 +115,44 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         Query q = new Query(criteria).limit(10);
         List<DBObject> user_dbos = mongoTemplate.find(q, DBObject.class, "users");
         List<User> users = user_dbos.stream().map(User::userFactory).toList();
+        return users;
+    }
+
+    @Override
+    public List<TopUserDTO> topUsersByReviews(Integer months) {
+        if (months == null || months < 1) {
+            throw new IllegalArgumentException("The given months must not be null nor less than 1");
+        }
+        Calendar now = Calendar.getInstance();
+        DateFormat date = new SimpleDateFormat("yyyy");
+        Integer this_year = Integer.parseInt(date.format(now));
+        Integer this_month = now.get(Calendar.MONTH) + 1;
+        String regex = "^(";
+        for(int i = 0; i < months; i++)
+        {
+            Integer month = this_month - i;
+            Integer year = this_year;
+            if(month <= 0)
+            {
+                month += 12;
+                year -= 1;
+            }
+            regex += year.toString() + "-" + String.format("%02d", month);
+            if(i != months - 1)
+            {
+                regex += "|";
+            }
+        }
+        regex += ")";
+
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("date").regex(regex)),
+            Aggregation.group("author").count().as("reviews"),
+            Aggregation.sort(Sort.Direction.DESC, "reviews"),
+            Aggregation.limit(10)
+        );
+        List<DBObject> user_dbos = mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+        List<TopUserDTO> users = user_dbos.stream().map(user -> new TopUserDTO(user.get("_id").toString(), (Integer)user.get("reviews"))).toList();
         return users;
     }
 }

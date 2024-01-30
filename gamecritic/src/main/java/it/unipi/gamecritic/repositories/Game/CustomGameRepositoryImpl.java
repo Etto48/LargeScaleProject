@@ -5,9 +5,12 @@ import com.mongodb.DBObject;
 import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.Review;
+import it.unipi.gamecritic.repositories.Game.DTO.TopGameDTO;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
+
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -15,6 +18,8 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Async;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -68,8 +73,10 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         Query query = new Query();
         query.addCriteria(
             new Criteria().orOperator(
-                Criteria.where("Developers").elemMatch(Criteria.where("$eq").is(companyName)),
-                Criteria.where("Publishers").elemMatch(Criteria.where("$eq").is(companyName))
+                Criteria.where("Developers").is(companyName),
+                Criteria.where("Publishers").is(companyName),
+                Criteria.where("Developers").elemMatch(new Criteria().is(companyName)),
+                Criteria.where("Publishers").elemMatch(new Criteria().is(companyName))
             )
         );
         List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
@@ -162,6 +169,52 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
             mongoTemplate.remove(commentsQuery, Comment.class, "comments");
         });
         mongoTemplate.remove(reviewsQuery, Review.class, "reviews");
+    }
+
+    @Override
+    public List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName) {
+        if (months == null || months < 1) {
+            throw new IllegalArgumentException("The given months must not be null nor less than 1");
+        }
+        Calendar now = Calendar.getInstance();
+        DateFormat date = new SimpleDateFormat("yyyy");
+        Integer this_year = Integer.parseInt(date.format(now));
+        Integer this_month = now.get(Calendar.MONTH) + 1;
+        String regex = "^(";
+        for(int i = 0; i < months; i++)
+        {
+            Integer month = this_month - i;
+            Integer year = this_year;
+            if(month <= 0)
+            {
+                month += 12;
+                year -= 1;
+            }
+            regex += year.toString() + "-" + String.format("%02d", month);
+            if(i != months - 1)
+            {
+                regex += "|";
+            }
+        }
+        regex += ")";
+
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(new Criteria().orOperator(
+                Criteria.where("Developers").is(companyName),
+                Criteria.where("Publishers").is(companyName),
+                Criteria.where("Developers").elemMatch(new Criteria().is(companyName)),
+                Criteria.where("Publishers").elemMatch(new Criteria().is(companyName))
+            )),
+            Aggregation.unwind("reviews"),
+            Aggregation.match(new Criteria().andOperator(
+                Criteria.where("reviews.date").regex(regex),
+                Criteria.where("reviews.score").ne(null)
+            )),
+            Aggregation.group("Name").avg("reviews.score").as("averageScore")
+        );
+        List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "games", DBObject.class).getMappedResults();
+        List<TopGameDTO> games = games_dbos.stream().map(game -> new TopGameDTO(game.get("_id").toString(), (Float)game.get("averageScore"))).toList();
+        return games;
     }
 }
 
