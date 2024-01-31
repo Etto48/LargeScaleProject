@@ -13,15 +13,38 @@ function setActiveForm(form) {
         loadStats("company");
     }
 }
+function isValidDateFormat(dateString) {
+  var regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(dateString)) {
+    return false;
+  }
+  var parts = dateString.split("-");
+  var year = parseInt(parts[0], 10);
+  var month = parseInt(parts[1], 10);
+  var day = parseInt(parts[2], 10);
+  if (isNaN(year) || isNaN(month) || isNaN(day)) {
+    return false;
+  }
+  var currentYear = new Date().getFullYear();
+  if (year < 1000 || year > currentYear || month < 1 || month > 12 || day < 1 || day > 31) {
+    return false;
+  }
+  return true;
+}
 
 function setupForms() {
     document.getElementById("edit-form").addEventListener("submit", function (event) {
         event.preventDefault();
-        editGame();
+        var items = retrieveAttributesEdit();
+        if (items == "bad") return;
+        console.log("id da mandare "+document.getElementById("_idHolder").textContent)
+        editGame(items);
     });
     document.getElementById("publish-form").addEventListener("submit", function (event) {
         event.preventDefault();
-        publishGame();
+        var items = retrieveAttributesPublish();
+        if (items == "bad") return;
+        publishGame(items);
     });
     document.getElementById("delete-form").addEventListener("submit", function (event) {
         event.preventDefault();
@@ -29,16 +52,188 @@ function setupForms() {
     });
 }
 
-function editGame() {
+function retrieveAttributesEdit(){
+    var visible = document.querySelectorAll('div[style="display: initial;"]');
+    var substring = "Editor"
+    var regularAttr = [];
+    visible.forEach(function(element) {
+      var subset = element.querySelectorAll('div[id*="' + substring + '"]');
+      regularAttr = regularAttr.concat(Array.from(subset));
+    });
+    console.log(regularAttr)
+    var arrRegular = Array.from(regularAttr);
+    var items = {};
+    items["Name"] = document.getElementById("game-name-edit").value;
+    if (items["Name" == ""]){
+        alert("Name missing")
+        return "bad"
+    }
+    items["Description"] = document.getElementById("game-description-edit").value;
+    if (items["Description" == ""]){
+                alert("Description missing")
+                return "bad"
+    }
+    items["img"] = document.getElementById("game-img-edit").value;
+    if (items["img" == ""]){
+                alert("img missing")
+                return "bad"
+    }
+    items["Released"] = {};
+    for (var i = 0; i < arrRegular.length; i++){
+
+        var name = regularAttr[i].id.replace(substring,"");
+        console.log("attribute name: "+name)
+        var spans = regularAttr[i].getElementsByTagName('span');
+
+        if (name == "ReleaseDate"){
+
+            if (spans.length > 1){
+                alert("Only 1 Release Date allowed")
+                return "bad"
+            }
+            if (spans.length == 0){
+                alert("Release Date missing")
+                return "bad"
+            }
+            if (!isValidDateFormat(spans[0].textContent)){
+                alert("Insert a date with format 'yyyy-mm-dd' and sensible numbers")
+                return "bad"
+            }
+            items["Released"]["Release Date"] = spans[0].textContent;
+        }
+        else if (name == "Platform"){
+            if (spans.length == 0){
+                alert("Platform missing")
+                return "bad"
+            }
+            if (spans.length > 1){
+                items["Released"]["Platform"] = [];
+                for (var j = 0; j < spans.length; j++){
+                    items["Released"]["Platform"].push(spans[j].textContent);
+                }
+            }
+            else{
+                items["Released"]["Platform"] = spans[0].textContent;
+            }
+        }
+        else {
+            if (spans.length == 0){
+                alert(name+" missing")
+                return "bad"
+            }
+            if (spans.length > 1){
+                items[name] = [];
+                for (var j = 0; j < spans.length; j++){
+                    items[name].push(spans[j].textContent)
+                }
+            }
+            else if (spans.length > 0){
+                items[name] = spans[0].textContent;
+            }
+        }
+    }
+    console.log("edited game: "+JSON.stringify(items))
+    return JSON.stringify(items)
+}
+
+function retrieveAttributesPublish(){
+    var substring = "MultiPublish"
+    var regularAttr = document.querySelectorAll('div[id*="' + substring + '"]');
+    var arrRegular = Array.from(regularAttr);
+    var substring2 = "Values"
+    var newAttr = document.querySelectorAll('div[id*="' + substring2 + '"]');
+    var arrNew = Array.from(newAttr);
+    var substring3 = "entry-";
+    var entries = document.querySelectorAll('div[id*="' + substring3 + '"]');
+    var items = {};
+    items["Name"] = document.getElementById("NameSinglePublish").value;
+    if (items["Name" == ""]){
+            alert("Name missing")
+            return "bad"
+    }
+    items["Description"] = document.getElementById("DescriptionSinglePublish").value;
+    if (items["Description" == ""]){
+            alert("Description missing")
+            return "bad"
+    }
+    items["img"] = document.getElementById("imgSinglePublish").value;
+    if (items["img" == ""]){
+                alert("img missing")
+                return "bad"
+    }
+    items["Released"] = {};
+    for (var i = 0; i < arrRegular.length; i++){
+
+        var name = regularAttr[i].id.replace(substring,"");
+        var spans = regularAttr[i].getElementsByTagName('span');
+
+        if (name == "ReleaseDate"){
+            if (spans.length == 0){
+                alert("Release Date missing")
+                return "bad"
+            }
+            if (spans.length > 1){
+                alert("Only 1 Release Date allowed")
+                return "bad"
+            }
+            if (!isValidDateFormat(spans[0].textContent)){
+                alert("Insert a date with format 'yyyy-mm-dd' and sensible numbers")
+                return "bad"
+            }
+            items["Released"]["Release Date"] = spans[0].textContent;
+        }
+        else if (name == "Platform"){
+            if (spans.length == 0){
+                        alert("Platform missing")
+                        return "bad"
+            }
+            if (spans.length > 1){
+                items["Released"]["Platform"] = [];
+                for (var j = 0; j < spans.length; j++){
+                    items["Released"]["Platform"].push(spans[j].textContent);
+                }
+            }
+            else{
+                items["Released"]["Platform"] = spans[0].textContent;
+            }
+        }
+        else {
+            if (spans.length == 0){
+                alert(name+" missing")
+                return "bad"
+            }
+            if (spans.length > 1){
+                items[name] = [];
+                for (var j = 0; j < spans.length; j++){
+                    items[name].push(spans[j].textContent)
+                }
+            }
+            else {
+                items[name] = spans[0].textContent;
+            }
+        }
+    }
+    for (var i = 0; i < arrNew.length; i++){
+        var name = newAttr[i].id.replace(substring2,"");
+        var spans = newAttr[i].getElementsByTagName('span');
+        if (spans.length > 1){
+            items[name] = [];
+            for (var j = 0; j < spans.length; j++){
+                items[name][j] = spans[j].textContent;
+            }
+        }
+        else if (spans){
+            items[name] = spans[0].textContent;
+        }
+
+    }
+    return JSON.stringify(items)
+}
+
+function editGame(items) {
     data = {
-        name: document.getElementById("game-name-edit").value,
-        description: document.getElementById("game-description-edit").value,
-        image: document.getElementById("game-img-edit").value,
-        genres: getVectorEntries("game-genres-edit"),
-        platforms: getVectorEntries("game-platforms-edit"),
-        developers: getVectorEntries("game-developers-edit"),
-        publishers: getVectorEntries("game-publishers-edit"),
-        release_date: document.getElementById("game-release-date-edit").value,
+        game:items,
+        id: document.getElementById("_idHolder").textContent
     }
 
     $.ajax({
@@ -47,6 +242,7 @@ function editGame() {
         data: data,
         success: function (response) {
             alert("Game edited successfully!");
+            resetAllVectorInput();
             resetForms();
         },
         error: function (xhr, status, error) {
@@ -55,21 +251,9 @@ function editGame() {
     });
 }
 
-function publishGame() {
+function publishGame(items) {
     data = {
-        name: document.getElementById("game-name-publish").value,
-        description: document.getElementById("game-description-publish").value,
-        image: document.getElementById("game-img-publish").value,
-        genres: getVectorEntries("game-genres-publish"),
-        platforms: getVectorEntries("game-platforms-publish"),
-        developers: getVectorEntries("game-developers-publish"),
-        publishers: getVectorEntries("game-publishers-publish"),
-        release_date: document.getElementById("game-release-date-publish").value,
-        narrative: getVectorEntries("game-narrative-publish"),
-        gameplay: getVectorEntries("game-gameplay-publish"),
-        perspective: getVectorEntries("game-perspective-publish"),
-        setting: getVectorEntries("game-setting-publish"),
-        input_devices: getVectorEntries("game-input-devices-publish"),
+        game: items,
     }
 
     $.ajax({
@@ -78,6 +262,7 @@ function publishGame() {
         data: data,
         success: function (response) {
             alert("Game published successfully!");
+            resetAllVectorInput();
             resetForms();
         },
         error: function (xhr, status, error) {
@@ -115,6 +300,7 @@ function deleteGame() {
 }
 
 function resetForms() {
+
     document.getElementById("edit-form").reset();
     resetVectorInput("game-genres-edit");
     resetVectorInput("game-platforms-edit");
@@ -138,7 +324,17 @@ function resetForms() {
     document.getElementById("delete-form").reset();
 }
 
+function clearBoxes(){
+    var inputs = document.getElementsByTagName("input");
+
+    for (var i = 0; i < inputs.length; i++){
+        if (inputs[i].id != "")
+                resetVectorInput(inputs[i].id)
+    }
+}
+
 function loadGameInfo() {
+    resetAllVectorInput()
     var game_name = document.getElementById("game-name-edit").value;
     if (game_name == "") {
         return;
@@ -150,6 +346,63 @@ function loadGameInfo() {
             name: game_name
         },
         success: function (data) {
+            console.log(data)
+            console.log(data.customAttributes._id.$oid)
+            var keys = Object.keys(data.customAttributes);
+            var values = keys.map(function(v) { return data.customAttributes[v]; });
+            var pDiv = document.getElementById('attributeHolder');
+            var cDiv = pDiv.children;
+            document.getElementById("game-description-edit").style.display = "initial";
+            document.getElementById("game-img-edit").style.display = "initial";
+
+            for (var i = 0; i < cDiv.length; i++) {
+                if (Object.keys(data.customAttributes).includes(cDiv[i].id)){
+
+                    cDiv[i].style.display="initial";
+                    if (cDiv[i].id === "_id"){
+                        cDiv[i].style.display="none";
+                        document.getElementById("_idHolder").textContent = data.customAttributes._id.$oid;
+                    }
+                    if (cDiv[i].id === "Released"){
+                        document.getElementById("ReleaseDateEditorInput").value = data.customAttributes[cDiv[i].id]["Release Date"];
+                        addVectorEntry(document.getElementById("Release DateButton"))
+                        if (!Array.isArray(data.customAttributes[cDiv[i].id]["Platform"])){
+                            document.getElementById("PlatformEditorInput").value = data.customAttributes[cDiv[i].id]["Platform"];
+                            addVectorEntry(document.getElementById("PlatformButton"))
+                        }
+                        else{
+                            var len = data.customAttributes[cDiv[i].id]["Platform"].length;
+                            console.log("lennn "+len)
+                            console.log("plat"+data.customAttributes[cDiv[i].id]["Platform"])
+                            for (var j = 0; j < len; j++){
+                                document.getElementById("PlatformEditorInput").value = data.customAttributes[cDiv[i].id]["Platform"][j];
+                                addVectorEntry(document.getElementById("PlatformButton"))
+                            }
+                        }
+
+
+                    }
+                    else{
+
+                        if (!Array.isArray(data.customAttributes[cDiv[i].id])){
+                            document.getElementById(cDiv[i].id+"EditorInput").value = data.customAttributes[cDiv[i].id]
+                            addVectorEntry(document.getElementById(cDiv[i].id+"Button"))
+                        }
+                        else{
+                            var len = data.customAttributes[cDiv[i].id].length;
+                            for (var j = 0; j < len; j++){
+                                document.getElementById(cDiv[i].id+"EditorInput").value = data.customAttributes[cDiv[i].id][j]
+                                addVectorEntry(document.getElementById(cDiv[i].id+"Button"))
+                            }
+                        }
+                    }
+
+                    //cDiv[i].value = data.customAttributes[cDiv[i].id]
+                }
+                else{
+                    cDiv[i].style.display="none";
+                }
+            }
             if (data.customAttributes.Description) {
                 document.getElementById("game-description-edit").value = data.customAttributes.Description;
             } 
@@ -221,8 +474,8 @@ function loadGameInfo() {
                     addVectorEntryWithId("game-publishers-edit", data.customAttributes.Publishers);
                 }
             }
-            document.getElementById("game-release-date-edit").type = "date";
-            document.getElementById("game-release-date-edit").value = data.released;
+            //document.getElementById("game-release-date-edit").type = "date";
+            //document.getElementById("game-release-date-edit").value = data.released;
             resetVectorInput("game-narrative-edit");
             if(data.customAttributes.Narrative)
             {
@@ -298,4 +551,14 @@ function loadGameInfo() {
             console.log("Error loading game info: " + xhr.status + " " + xhr.statusText);
         }
     });
+}
+
+function addAttribute(){
+    var button = document.getElementById('moreAttributes');
+
+    var newDiv = document.createElement('div');
+
+    newDiv.setAttribute('th:replace',"~{fragments/interfaces.html :: vector_input(\'game-input-devices-edit\',\'Add a supported input device\')}");
+
+    button.parentNode.insertBefore(newDiv, button);
 }

@@ -2,6 +2,13 @@ package it.unipi.gamecritic.controllers.api;
 
 import java.util.Arrays;
 
+import com.mongodb.DBObject;
+import it.unipi.gamecritic.Util;
+import it.unipi.gamecritic.entities.Company;
+import it.unipi.gamecritic.entities.Game;
+import it.unipi.gamecritic.repositories.Game.DTO.GameDTOMongo;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,25 +41,23 @@ public class CompanyAPI {
     @RequestMapping(value = "/api/company/edit-game", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String company_edit_game(
-        @RequestParam(value = "name", required = true) String name,
-        @RequestParam(value = "description", required = true) String description,
-        @RequestParam(value = "image", required = true) String image,
-        @RequestParam(value = "publishers[]", required = true) String[] publishers,
-        @RequestParam(value = "developers[]", required = true) String[] developers,
-        @RequestParam(value = "genres[]", required = true) String[] genres,
-        @RequestParam(value = "platforms[]", required = true) String[] platforms,
-        @RequestParam(value = "release_date", required = true) String release_date,
+        @RequestParam(value = "game", required = true) String game,
+        @RequestParam(value = "id", required = true) String id,
         HttpServletRequest request,
         HttpSession session) 
     {
+
         User user = (User) session.getAttribute("user");
         if (user != null)
         {
             if(user.getAccountType().equals("Company"))
             {
-                // TODO: edit game
-                logger.info("Edit game \"" + name + "\" by " + user.username + "\ndescription: " + description + "\nimage: " + image + "\nrelease date: " + release_date + "\nplatforms: " + Arrays.toString(platforms) + "\ngenres: " + Arrays.toString(genres) + "\ndevelopers: " + Arrays.toString(developers) + "\npublishers: " + Arrays.toString(publishers));
-                return "{}";
+                if (Util.checkCorrectCompany(game, user.getCompany_name())) {
+                    gameRepository.editGame(game,id);
+                    return "{}";
+                } else {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your company is not a developer nor a publisher of this game");
+                }
             }
             else
             {
@@ -63,30 +68,30 @@ public class CompanyAPI {
         {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not logged in");
         }
+
     }
 
     @RequestMapping(value = "/api/company/publish-game", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public String company_publish_game(
-        @RequestParam(value = "name", required = true) String name,
-        @RequestParam(value = "description", required = true) String description,
-        @RequestParam(value = "image", required = true) String image,
-        @RequestParam(value = "publishers[]", required = true) String[] publishers,
-        @RequestParam(value = "developers[]", required = true) String[] developers,
-        @RequestParam(value = "genres[]", required = true) String[] genres,
-        @RequestParam(value = "platforms[]", required = true) String[] platforms,
-        @RequestParam(value = "release_date", required = true) String release_date,
+        @RequestParam(value = "game", required = true) String game,
         HttpServletRequest request,
         HttpSession session) 
     {
+
         User user = (User) session.getAttribute("user");
         if (user != null)
         {
             if(user.getAccountType().equals("Company"))
             {
-                // TODO: publish game
-                logger.info("Publish game \"" + name + "\" by " + user.username + "\ndescription: " + description + "\nimage: " + image + "\nrelease date: " + release_date + "\nplatforms: " + Arrays.toString(platforms) + "\ngenres: " + Arrays.toString(genres) + "\ndevelopers: " + Arrays.toString(developers) + "\npublishers: " + Arrays.toString(publishers));
-                return "{}";
+                if (Util.checkCorrectCompany(game, user.getCompany_name())){
+                    logger.info("go for insert");
+                    gameRepository.addGame(game);
+                    return "{}";
+                }
+                else {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your company is not a developer nor a publisher of this game");
+                }
             }
             else
             {
