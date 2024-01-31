@@ -121,7 +121,7 @@ function loadStats() {
             });
 
             msnry.layout();
-            
+            document.getElementById("stats-loading").style.display = "none";
         },
         error: function (xhr, status, error) {
             alert("Error loading stats: " + xhr.status + " " + xhr.statusText);
