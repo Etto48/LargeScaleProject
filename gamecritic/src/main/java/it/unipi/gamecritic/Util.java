@@ -13,17 +13,23 @@ public class Util {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        if (json.get("Publishers").isArray()){
-            for (JsonNode node : json.get("Publishers")){
-                if (node.asText().equals(company)) return true;
+        if(json.get("Publishers") != null)
+        {
+            if (json.get("Publishers").isArray()){
+                for (JsonNode node : json.get("Publishers")){
+                    if (node.asText().equals(company)) return true;
+                }
             }
+            else if (json.get("Publishers").asText().equals(company)) return true;
         }
-        else if (json.get("Publishers").asText().equals(company)) return true;
-        if (json.get("Developers").isArray()) {
-            for (JsonNode node : json.get("Developers")) {
-                if (node.asText().equals(company)) return true;
-            }
-        } else if (json.get("Developers").asText().equals(company)) return true;
+        if(json.get("Developers") != null)
+        {
+            if (json.get("Developers").isArray()) {
+                for (JsonNode node : json.get("Developers")) {
+                    if (node.asText().equals(company)) return true;
+                }
+            } else if (json.get("Developers").asText().equals(company)) return true;
+        }
         return false;
     }
 }
