@@ -1,14 +1,7 @@
 package it.unipi.gamecritic.controllers.api;
 
-import java.util.Arrays;
-
-import com.mongodb.DBObject;
 import it.unipi.gamecritic.Util;
-import it.unipi.gamecritic.entities.Company;
-import it.unipi.gamecritic.entities.Game;
-import it.unipi.gamecritic.repositories.Game.DTO.GameDTOMongo;
 import it.unipi.gamecritic.repositories.Game.GameRepository;
-import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Game.GameRepository;
 import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

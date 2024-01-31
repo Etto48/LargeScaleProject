@@ -10,7 +10,6 @@ import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.repositories.Game.DTO.TopGameDTO;
 
-import it.unipi.gamecritic.repositories.Game.DTO.GameDTOMongo;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;

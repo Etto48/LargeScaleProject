@@ -3,16 +3,10 @@ package it.unipi.gamecritic.repositories.Game.DTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 
-import it.unipi.gamecritic.entities.Review;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GameDTOMongo {
@@ -44,6 +38,7 @@ public class GameDTOMongo {
 
     public GameDTOMongo(String st) {
         try {
+            @SuppressWarnings("unchecked")
             Map<String, Object> map = new ObjectMapper().readValue(st, HashMap.class);
             customAttributes = map;
         } catch (Exception e) {
