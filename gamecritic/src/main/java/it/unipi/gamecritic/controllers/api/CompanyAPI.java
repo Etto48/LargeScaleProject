@@ -46,9 +46,9 @@ public class CompanyAPI {
             {
                 if (Util.checkCorrectCompany(game, user.getCompany_name())) {
                     gameRepository.editGame(game,id);
-                    return "{}";
+                    return "\"success\"";
                 } else {
-                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your company is not a developer nor a publisher of this game");
+                    return "\"Your company is not a developer nor a publisher of this game\"";
                 }
             }
             else

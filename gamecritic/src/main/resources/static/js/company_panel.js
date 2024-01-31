@@ -241,9 +241,16 @@ function editGame(items) {
         url: "/api/company/edit-game",
         data: data,
         success: function (response) {
-            alert("Game edited successfully!");
-            resetAllVectorInput();
-            resetForms();
+            if(response == "success")
+            {
+                alert("Game edited successfully!");
+                resetAllVectorInput();
+                resetForms();
+            }
+            else
+            {   
+                alert("Error editing game: " + response);
+            }
         },
         error: function (xhr, status, error) {
             alert("Error editing game: " + xhr.status + " " + xhr.statusText);
