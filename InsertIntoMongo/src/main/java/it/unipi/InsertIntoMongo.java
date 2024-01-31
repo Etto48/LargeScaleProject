@@ -2,10 +2,13 @@ package it.unipi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,6 +88,7 @@ public class InsertIntoMongo {
 
             // Insert data into the "videogames" collection
             MongoCollection<Document> videoGamesCollection = database.getCollection("videogames");
+            videoGamesCollection.createIndex(new Document("Name", 1), new IndexOptions().unique(true));
             insertDynamicData(gamesJson, videoGamesCollection);
             logger.info("Collection \"videogames\" created");
 
@@ -97,21 +101,25 @@ public class InsertIntoMongo {
 
             // Insert data into the "companies" collection
             MongoCollection<Document> companiesCollection = database.getCollection("companies");
+            companiesCollection.createIndex(new Document("Name", 1), new IndexOptions().unique(true));
             insertCompanies(companiesJson, companiesCollection);
             logger.info("Collection \"companies\" created");
 
             // Insert data into the "users" collection
             MongoCollection<Document> usersCollection = database.getCollection("users");
+            usersCollection.createIndex(new Document("username", 1), new IndexOptions().unique(true));
             insertUsers(usersJson, usersCollection);
             insertUsers(cmAndAdminsJson, usersCollection);
             logger.info("Collection \"users\" created");
 
             // Insert data into the "user_images" collection
             MongoCollection<Document> userImagesCollection = database.getCollection("user_images");
+            userImagesCollection.createIndex(new Document("username", 1), new IndexOptions().unique(true));
             insertUserImages(usersJson, userImagesCollection);
             insertUserImages(cmAndAdminsJson, userImagesCollection);
             logger.info("Collection \"user_images\" created");
 
+            
             // Close MongoDB connection
             mongoClient.close();
             logger.info("Successfully inserted data into MongoDB");
@@ -272,6 +280,24 @@ public class InsertIntoMongo {
         }
     }
 
+    private static void insert_one(MongoCollection<Document> collection, Document document, String key) {
+        try
+        {
+            collection.insertOne(document);
+        }
+        catch (MongoWriteException e)
+        {
+            if (e.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY))
+            {
+                logger.warn("Skipped document with key \""+document.get(key)+"\" because it already exists");
+            }
+            else
+            {
+                logger.error("Error inserting document with key \""+document.get(key)+"\": "+e.getMessage());
+            }
+        }
+    }
+
     private static void insertCompanies(JsonNode jsonNode, MongoCollection<Document> collection) {
         // Iterate over each element in the JSON array and insert it into MongoDB
         Iterator<JsonNode> companiesIterator = jsonNode.iterator();
@@ -281,7 +307,7 @@ public class InsertIntoMongo {
             companyDocument.append("Top3Games",new ArrayList<>());
             companyDocument.append("_id", idFromBignum(companyIdCounter));
             companyIdCounter = companyIdCounter.add(new BigInteger("1"));
-            collection.insertOne(companyDocument);
+            insert_one(collection, companyDocument, "Name");
         }
     }
 
@@ -304,7 +330,7 @@ public class InsertIntoMongo {
                 userDocument.append("is_admin", userNode.get("is_admin").asBoolean());
             }
             userIdCounter = userIdCounter.add(new BigInteger("1"));
-            collection.insertOne(userDocument);
+            insert_one(collection, userDocument, "username");
         }
     }
 
@@ -317,7 +343,7 @@ public class InsertIntoMongo {
                     .append("username", userNode.get("username").asText())
                     .append("image", userNode.get("image").asText());
             userImageIdCounter = userImageIdCounter.add(new BigInteger("1"));
-            collection.insertOne(userDocument);
+            insert_one(collection, userDocument, "username");
         }
     }
 
