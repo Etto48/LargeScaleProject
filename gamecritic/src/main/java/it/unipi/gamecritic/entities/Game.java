@@ -74,4 +74,19 @@ public class Game {
         HashMap<String,Object> released = (HashMap<String,Object>) customAttributes.get("Released");
         this.released = released.get("Release Date").toString();
     }
+
+    public Game(String st) {
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = new ObjectMapper().readValue(st, HashMap.class);
+            customAttributes = map;
+        } catch (Exception e) {
+            logger.error("Error while setting custom attributes: " + e.getMessage());
+        }
+        this.name = customAttributes.get("Name").toString();
+
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> released = (HashMap<String, Object>) customAttributes.get("Released");
+        this.released = released.get("Release Date").toString();
+    }
 }

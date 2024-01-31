@@ -41,6 +41,9 @@ public class User {
         this.top_reviews = top_reviews;
     }
 
+    public String getCompany_name() {
+        return "";
+    }
     public User() {
     }
 

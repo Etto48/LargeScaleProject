@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <body>
-        <div th:fragment="vector_input(id,placeholder)" th:id="${id}" class="vector-input d-flex flex-wrap border rounded">
+        <div th:fragment="vector_input(name,id,placeholder)" th:id="${id}" class="vector-input d-flex flex-wrap border rounded">
             <script src="/js/vector_input.js"></script>
             <script id="vector-entry-template" type="text/template">
                 <div class="m-1 bg-secondary p-1 rounded vector-entry" id="{{id}}">
@@ -10,15 +10,24 @@
                 </div>
             </script>
             <div class="d-flex flex-row rounded bg-secondary p-1 m-1 text-input">
-                <input type="text" class="form-control me-1" th:placeholder="${placeholder}"/>
-                <button class="btn btn-secondary rounded" type="button" onclick="addVectorEntry(this);">
+                <input th:id="${id}+'Input'" type="text" class="form-control me-1" th:placeholder="${placeholder}"/>
+                <button class="btn btn-secondary rounded" type="button" onclick="addVectorEntry(this);" th:id="${name}+'Button'">
                     <i class="bi bi-plus-circle-fill"></i>
                 </button>
+                <!--
+                <select id="game-name-w" class="form-select" aria-label="Game Name">
+                    <option value="" disabled selected>Type</option>
+                    <option value="date">Date("yyyy-mm-dd")</option>
+                    <option value="number">Number</option>
+                    <option value="string">String</option>
+                </select>
+
                 <script th:inline="javascript">
                     /*<![CDATA[*/
                     setupVectorInput(/*[[${id}]]*/ 'defaultId');
                     /*]]>*/
                 </script>
+                -->
             </div>
         </div>
 
@@ -29,7 +38,7 @@
                         <h5 class="card-title">{{stat.name}}</h5>
                         <div class="stat-chart-container position-relative">
                             <canvas id="{{stat.name}}-graph"></canvas>
-                        <div>
+                        </div>
                     </div>
                 </div>
             </script>
@@ -45,6 +54,35 @@
                 </div>
             </script>
             <div id="stats-container" class="w-100">
+            </div>
+        </div>
+
+        <div th:fragment="new_attributes_input()" th:id="NewAttributes" class="vector-input d-flex flex-wrap border rounded">
+            <script src="/js/vector_input.js"></script>
+            <script id="vector-entry-template1" type="text/template">
+                <div class="m-1 bg-secondary p-1 rounded vector-entry" id="{{idNew}}">
+                    <span class="mx-2 vector-entry-text">{{name}}</span>
+                    <div id="{{name}}Values">
+                        <span class="mx-2 vector-entry-text">{{value}}</span>
+                    </div>
+                        <button class="btn btn-secondary rounded" type="button" onclick="removeVectorEntry('{{idNew}}')"><i
+                                class="bi bi-x-circle-fill"></i></button>
+                </div>
+            </script>
+            <div class="d-flex flex-row rounded bg-secondary p-1 m-1 text-input">
+                <div th:text="${name}"></div>
+                <input th:id="AttributeNameInput" type="text" class="form-control me-1" placeholder="Attribute Name"/>
+                <input th:id="AttributeValueInput" type="text" class="form-control me-1" placeholder="Attribute Value"/>
+                <button class="btn btn-secondary rounded" type="button" onclick="addNewVectorEntry(this);">
+                    <i class="bi bi-plus-circle-fill"></i>
+                </button>
+                <!---
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    setupVectorInput(/*[[${id}]]*/ 'defaultId');
+                    /*]]>*/
+                -->
+                </script>
             </div>
         </div>
     </body>

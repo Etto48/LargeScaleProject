@@ -13,6 +13,8 @@ public interface CustomGameRepository {
     List<Game> findVideoGamesOfCompany(String companyName);
     List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
     List<Game> search(String query);
+    void addGame(String game);
+    void editGame(String game, String id);
     void deleteGame(String name);
     List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit);
     List<Float> companyScoreDistribution(String companyName);

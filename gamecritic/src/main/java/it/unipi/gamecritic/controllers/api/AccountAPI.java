@@ -44,6 +44,7 @@ public class AccountAPI {
         {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         }
+
         User user = users.get(0);
         try
         {
