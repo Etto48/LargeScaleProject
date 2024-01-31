@@ -188,7 +188,6 @@ public class CompanyController {
                         }
                     }
                 }
-                logger.info("allAtt: "+allAttributes.toString());
                 model.addAttribute("games", games);
                 model.addAttribute("allAttributes",allAttributes);
                 return "company_panel";
