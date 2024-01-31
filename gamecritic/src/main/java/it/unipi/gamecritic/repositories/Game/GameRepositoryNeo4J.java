@@ -22,10 +22,13 @@ public interface GameRepositoryNeo4J extends Neo4jRepository<GameDTO, UUID> {
     List<GameDTO> findSuggestedGames(
         @Param("username") String username
     );
+    @Query("MERGE (g:Game {name: $gameName})")
+    @Async
+    CompletableFuture<Void> addGame(String gameName);
 
     @Query(
         "match (g:Game {name: $name})\n"+
-        "match (g)<-[:ABOUT]-(r:Review)\n"+
+        "optional match (g)<-[:ABOUT]-(r:Review)\n"+
         "detach delete g, r"
     )
     @Async

@@ -254,6 +254,7 @@ function editGame(items) {
 function publishGame(items) {
     data = {
         game: items,
+        gameName: document.getElementById("NameSinglePublish").value,
     }
 
     $.ajax({

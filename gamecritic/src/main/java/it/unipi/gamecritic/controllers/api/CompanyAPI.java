@@ -75,6 +75,7 @@ public class CompanyAPI {
     @ResponseBody
     public String company_publish_game(
         @RequestParam(value = "game", required = true) String game,
+        @RequestParam(value = "gameName", required = true) String gameName,
         HttpServletRequest request,
         HttpSession session) 
     {
@@ -87,6 +88,7 @@ public class CompanyAPI {
                 if (Util.checkCorrectCompany(game, user.getCompany_name())){
                     logger.info("go for insert");
                     gameRepository.addGame(game);
+                    gameRepositoryNeo4J.addGame(gameName);
                     return "{}";
                 }
                 else {
