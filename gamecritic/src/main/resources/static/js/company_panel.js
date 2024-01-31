@@ -269,9 +269,16 @@ function publishGame(items) {
         url: "/api/company/publish-game",
         data: data,
         success: function (response) {
-            alert("Game published successfully!");
-            resetAllVectorInput();
-            resetForms();
+            if(response == "success")
+            {
+                alert("Game published successfully!");
+                resetAllVectorInput();
+                resetForms();
+            }
+            else
+            {   
+                alert("Error publishing game: " + response);
+            }
         },
         error: function (xhr, status, error) {
             alert("Error publishing game: " + xhr.status + " " + xhr.statusText);

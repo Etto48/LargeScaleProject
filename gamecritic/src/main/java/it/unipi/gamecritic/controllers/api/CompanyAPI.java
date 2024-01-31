@@ -81,10 +81,10 @@ public class CompanyAPI {
                     logger.info("go for insert");
                     gameRepository.addGame(game);
                     gameRepositoryNeo4J.addGame(gameName);
-                    return "{}";
+                    return "\"success\"";
                 }
                 else {
-                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your company is not a developer nor a publisher of this game");
+                    return "\"Your company is not a developer nor a publisher of this game\"";
                 }
             }
             else
