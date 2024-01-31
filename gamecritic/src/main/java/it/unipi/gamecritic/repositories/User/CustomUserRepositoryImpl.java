@@ -18,8 +18,6 @@ import org.springframework.scheduling.annotation.Async;
 
 import com.mongodb.DBObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -123,10 +121,9 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         if (months == null || months < 1) {
             throw new IllegalArgumentException("The given months must not be null nor less than 1");
         }
-        Calendar now = Calendar.getInstance();
-        DateFormat date = new SimpleDateFormat("yyyy");
-        Integer this_year = Integer.parseInt(date.format(now));
-        Integer this_month = now.get(Calendar.MONTH) + 1;
+        Calendar d = Calendar.getInstance();
+        Integer this_year = d.get(Calendar.YEAR);
+        Integer this_month = d.get(Calendar.MONTH) + 1;
         String regex = "^(";
         for(int i = 0; i < months; i++)
         {

@@ -1,23 +1,57 @@
 package it.unipi.gamecritic.controllers.api;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
 
+import it.unipi.gamecritic.entities.user.CompanyManager;
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.Game.DTO.TopGameDTO;
+import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class StatsAPI {
+    private final GameRepository gameRepository;
+    @SuppressWarnings("unused")
+    private final GameRepositoryNeo4J gameRepositoryNeo4J;
+    private final UserRepository userRepository;
+    private final UserRepositoryNeo4J userRepositoryNeo4J;
+
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(StatsAPI.class);
+
+    @Autowired
+    public StatsAPI(
+        GameRepository gameRepository, 
+        GameRepositoryNeo4J gameRepositoryNeo4J, 
+        UserRepository userRepository, 
+        UserRepositoryNeo4J userRepositoryNeo4J) 
+    {
+        this.gameRepository = gameRepository;
+        this.gameRepositoryNeo4J = gameRepositoryNeo4J;
+        this.userRepository = userRepository;
+        this.userRepositoryNeo4J = userRepositoryNeo4J;
+    }
+
     public class Stat {
         public String name;
         public String type;    
@@ -36,10 +70,10 @@ public class StatsAPI {
     }
 
     public class GraphStat extends Stat {
-        public Vector<Float> y;
-        public Vector<String> x;
+        public List<Float> y;
+        public List<String> x;
 
-        public GraphStat(String name, Vector<Float> y, Vector<String> x) {
+        public GraphStat(String name, List<Float> y, List<String> x) {
             this.name = name;
             this.type = "graph";
             this.y = y;
@@ -58,42 +92,47 @@ public class StatsAPI {
         {
             if(user.getAccountType().equals("Admin"))
             {
-                // TODO: get stats
-                Vector<Stat> stats = new Vector<Stat>();
-                stats.add(new GraphStat("Reviews", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Likes", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new TagStat("Most popular platform", "https://www.bhphotovideo.com/images/images1500x1500/dell_00x6h_5480_aio_i7_10700t_8gb_1599860.jpg", "PC"));
-                stats.add(new GraphStat("Comments", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Views", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new TagStat("Most popular developer", "https://i.imgur.com/RBmLFbS.png", "Valve"));
-                stats.add(new GraphStat("Sales", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Revenue", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Refunds", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new TagStat("Most popular genre", null, "Action"));
-                stats.add(new TagStat("Most popular publisher", "https://i.imgur.com/RBmLFbS.png", "Valve"));
-                stats.add(new GraphStat("Refund Revenue", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Refund Rate", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
+                List<Stat> stats = new Vector<Stat>();
+                
+                List<Float> globalScoreDistribution = gameRepository.globalScoreDistribution();
+                stats.add(new GraphStat("Global score distribution", globalScoreDistribution, Arrays.asList("1", "2", "3", "4","5", "6", "7", "8", "9", "10")));
+                
+                List<TopUserDTO> topUsersByLikes = userRepositoryNeo4J.topUsersByLikes();
+                if(!topUsersByLikes.isEmpty())
+                {
+                    stats.add(new GraphStat("Top users by likes", topUsersByLikes.stream().map(x -> Float.valueOf(x.score)).toList(), topUsersByLikes.stream().map(x -> x.username).toList()));
+                    UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+                    builder.pathSegment("user", topUsersByLikes.get(0).username, "image.png");
+                    stats.add(new TagStat("Most liked user", builder.build().toUri().toString(), topUsersByLikes.get(0).username));
+                }
+
+                List<TopUserDTO> topUsersByReviews = userRepository.topUsersByReviews(6);
+                if(!topUsersByReviews.isEmpty())
+                {
+                    stats.add(new GraphStat("Top users by reviews", topUsersByReviews.stream().map(x -> Float.valueOf(x.score)).toList(), topUsersByReviews.stream().map(x -> x.username).toList()));
+                    UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+                    builder.pathSegment("user", topUsersByReviews.get(0).username, "image.png");
+                    stats.add(new TagStat("Most active user", builder.build().toUri().toString(), topUsersByReviews.get(0).username));
+                }
 
                 Gson gson = new Gson();
                 return gson.toJson(stats);
             }
             else if (user.getAccountType().equals("Company"))
             {
-                // TODO: get stats
-                Vector<Stat> stats = new Vector<Stat>();
-                stats.add(new GraphStat("Reviews", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Likes", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new TagStat("Most popular platform", "https://www.bhphotovideo.com/images/images1500x1500/dell_00x6h_5480_aio_i7_10700t_8gb_1599860.jpg", "PC"));
-                stats.add(new GraphStat("Comments", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Views", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new TagStat("Most popular developer", "https://i.imgur.com/RBmLFbS.png", "Valve"));
-                stats.add(new GraphStat("Sales", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Revenue", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Refunds", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new TagStat("Most popular genre", null, "Action"));
-                stats.add(new TagStat("Most popular publisher", "https://i.imgur.com/RBmLFbS.png", "Valve"));
-                stats.add(new GraphStat("Refund Revenue", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
-                stats.add(new GraphStat("Refund Rate", new Vector<Float>(Arrays.asList(1.0f, 2.0f, 3.0f, 4.0f, 5.0f)), new Vector<String>(Arrays.asList("1", "2", "3", "4", "5"))));
+                String companyName = ((CompanyManager) user).company_name;
+
+                List<Stat> stats = new Vector<Stat>();
+
+                List<Float> companyScoreDistribution = gameRepository.companyScoreDistribution(companyName);
+                stats.add(new GraphStat("Company score distribution", companyScoreDistribution, Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")));
+
+                List<TopGameDTO> topGamesByAverageScore = gameRepository.topGamesByAverageScore(6, companyName, 10);
+                if(!topGamesByAverageScore.isEmpty())
+                {
+                    stats.add(new GraphStat("Top games by average score", topGamesByAverageScore.stream().map(x -> x.avg_score).toList(), topGamesByAverageScore.stream().map(x -> x.name).toList()));
+                    stats.add(new TagStat("Best game", topGamesByAverageScore.get(0).image, topGamesByAverageScore.get(0).name));
+                }
 
                 Gson gson = new Gson();
                 return gson.toJson(stats);

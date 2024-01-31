@@ -83,8 +83,8 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
 
     @Query(
         "match (u:User)-[:WROTE]->(r:Review)<-[l:LIKED]-(:User)\n"+
-        "return u, count(l) as likes\n"+
-        "order by likes desc\n"+
+        "return u, count(l) as score\n"+
+        "order by score desc\n"+
         "limit 10"
     )
     List<TopUserDTO> topUsersByLikes();

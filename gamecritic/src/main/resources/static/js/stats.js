@@ -1,4 +1,5 @@
 function addGraphStat(stat) {
+    console.log(stat);
     var contianer = document.getElementById("stats-container");
     var template = Handlebars.compile(document.getElementById("graph-stat-template").innerHTML);
     contianer.innerHTML += template({stat: stat});
@@ -51,12 +52,24 @@ function drawGraphStat(stat) {
             scales: {
                 y: {
                     beginAtZero: true,
+                },
+                x: {
+                    ticks: {
+                        callback: function(_value, index, _values) {
+                            var max_len = 10;
+                            var value = stat.x[index];
+                            if (value.length > max_len) {
+                                return value.substring(0, max_len-3) + "...";
+                            }
+                            return value;
+                        }
+                    }
                 }
             },
             plugins: {
                 legend: {
                     display: false
-                }
+                },
             },
             responsive: true,
             maintainAspectRatio: false

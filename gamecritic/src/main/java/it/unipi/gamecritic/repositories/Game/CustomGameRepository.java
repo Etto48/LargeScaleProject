@@ -14,6 +14,8 @@ public interface CustomGameRepository {
     List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
     List<Game> search(String query);
     void deleteGame(String name);
-    List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName);
+    List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit);
+    List<Float> companyScoreDistribution(String companyName);
+    List<Float> globalScoreDistribution();
     //List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
 }
