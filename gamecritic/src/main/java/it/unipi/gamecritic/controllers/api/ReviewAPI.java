@@ -15,18 +15,25 @@ import com.google.gson.Gson;
 import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.Review.ReviewRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ReviewAPI {
     private final ReviewRepository reviewRepository;
+    private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
+
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(ReviewAPI.class);
 
     @Autowired
-    public ReviewAPI(ReviewRepository reviewRepository) {
+    public ReviewAPI(
+        ReviewRepository reviewRepository, 
+        ReviewRepositoryNeo4J reviewRepositoryNeo4J) 
+    {
         this.reviewRepository = reviewRepository;
+        this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
     }
 
     public class NewReviewInfo {
@@ -55,6 +62,7 @@ public class ReviewAPI {
         {
             Review review = new Review(game, score, quote, user.username, null);
             String review_id = reviewRepository.insertReview(review);
+            reviewRepositoryNeo4J.insertReview(user.username, game, review_id, score);
             Gson gson = new Gson();
             return gson.toJson(new NewReviewInfo(review_id, user.username));
         }

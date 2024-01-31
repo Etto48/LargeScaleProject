@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
 import it.unipi.gamecritic.entities.Review;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,10 +25,15 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class AccountAPI {
     private final UserRepository userRepository;
+    private final UserRepositoryNeo4J userRepositoryNeo4J;
     
     @Autowired
-    public AccountAPI(UserRepository userRepository) {
+    public AccountAPI(
+        UserRepository userRepository, 
+        UserRepositoryNeo4J userRepositoryNeo4J) 
+    {
         this.userRepository = userRepository;
+        this.userRepositoryNeo4J = userRepositoryNeo4J;
     }
 
     @RequestMapping(value = "/api/login", method = RequestMethod.POST, produces = "application/json")
@@ -88,6 +94,7 @@ public class AccountAPI {
 
         if(userRepository.insertUserIfNotExists(user))
         {
+            userRepositoryNeo4J.inserUserIfNotExists(user.username);
             session.setAttribute("user", user);
             return "\"success\"";
         }

@@ -38,7 +38,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         @Param("username")String author,
         @Param("gameName")String gameName,
         @Param("reviewId")String reviewId,
-        @Param("score")String score);
+        @Param("score")Integer score);
 
     @Query(
         "MATCH (u:User {username: $username})-[l:LIKED]->(r:Review {reviewId: $reviewId})\n"+

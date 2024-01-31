@@ -88,4 +88,11 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
         "limit 10"
     )
     List<TopUserDTO> topUsersByLikes();
+
+    @Query(
+        "merge (u:User {username: $username})"
+    )
+    CompletableFuture<Void> inserUserIfNotExists(
+        @Param("username") String username
+    );
 }
