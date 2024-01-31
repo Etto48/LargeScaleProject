@@ -16,6 +16,8 @@ public interface CustomGameRepository {
     void addGame(String game);
     void editGame(String game, String id);
     void deleteGame(String name);
-    List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName);
+    List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit);
+    List<Float> companyScoreDistribution(String companyName);
+    List<Float> globalScoreDistribution();
     //List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
 }

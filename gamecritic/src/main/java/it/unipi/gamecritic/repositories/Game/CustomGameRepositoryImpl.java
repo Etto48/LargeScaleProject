@@ -19,19 +19,25 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Calendar;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.DensifyOperation;
+import org.springframework.data.mongodb.core.aggregation.DensifyOperation.Range;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class CustomGameRepositoryImpl implements CustomGameRepository {
     private final MongoTemplate mongoTemplate;
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(CustomGameRepositoryImpl.class);
 
     public CustomGameRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
@@ -239,14 +245,13 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
     }
 
     @Override
-    public List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName) {
+    public List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit) {
         if (months == null || months < 1) {
             throw new IllegalArgumentException("The given months must not be null nor less than 1");
         }
-        Calendar now = Calendar.getInstance();
-        DateFormat date = new SimpleDateFormat("yyyy");
-        Integer this_year = Integer.parseInt(date.format(now));
-        Integer this_month = now.get(Calendar.MONTH) + 1;
+        Calendar d = Calendar.getInstance();
+        Integer this_year = d.get(Calendar.YEAR);
+        Integer this_month = d.get(Calendar.MONTH) + 1;
         String regex = "^(";
         for(int i = 0; i < months; i++)
         {
@@ -275,12 +280,76 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
             Aggregation.unwind("reviews"),
             Aggregation.match(new Criteria().andOperator(
                 Criteria.where("reviews.date").regex(regex),
-                Criteria.where("reviews.score").ne(null)
+                Criteria.where("reviews.score").exists(true)
             )),
-            Aggregation.group("Name").avg("reviews.score").as("averageScore")
+            Aggregation.group("Name").avg("reviews.score").as("averageScore").count().as("reviewCount").first("img").as("img"),
+            Aggregation.sort(Sort.Direction.DESC, "averageScore").and(Sort.Direction.DESC, "reviewCount"),
+            Aggregation.limit(limit)
         );
-        List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "games", DBObject.class).getMappedResults();
-        List<TopGameDTO> games = games_dbos.stream().map(game -> new TopGameDTO(game.get("_id").toString(), (Float)game.get("averageScore"))).toList();
+        List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "videogames", DBObject.class).getMappedResults();
+        List<TopGameDTO> games = games_dbos.stream().map(game -> new TopGameDTO(game.get("_id").toString(), ((Double)game.get("averageScore")).floatValue(), game.get("img") != null?game.get("img").toString():null)).toList();
+        return games;
+    }
+
+    @Override
+    public List<Float> globalScoreDistribution()
+    {
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.unwind("reviews"),
+            Aggregation.match(new Criteria().andOperator(
+                Criteria.where("reviews.score").exists(true),
+                Criteria.where("reviews.score").gt(0)
+            )),
+            Aggregation.group("reviews.score").count().as("count"),
+            DensifyOperation.builder().densify("_id").range(Range.bounded(1, 11).incrementBy(1)).build(),
+            Aggregation.sort(Sort.Direction.ASC, "_id")
+        );
+        List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "videogames", DBObject.class).getMappedResults();
+        List<Float> games = games_dbos.stream().map(game -> 
+        {
+            if(game.get("count") != null)
+            {
+                return ((Integer)game.get("count")).floatValue();
+            }
+            else
+            {
+                return 0f;
+            }
+        }).toList();
+        return games;
+    }
+
+    @Override
+    public List<Float> companyScoreDistribution(String companyName)
+    {
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(new Criteria().orOperator(
+                Criteria.where("Developers").is(companyName),
+                Criteria.where("Publishers").is(companyName),
+                Criteria.where("Developers").elemMatch(Criteria.where("$eq").is(companyName)),
+                Criteria.where("Publishers").elemMatch(Criteria.where("$eq").is(companyName))
+            )),
+            Aggregation.unwind("reviews"),
+            Aggregation.match(new Criteria().andOperator(
+                Criteria.where("reviews.score").exists(true),
+                Criteria.where("reviews.score").gt(0)
+            )),
+            Aggregation.group("reviews.score").count().as("count"),
+            DensifyOperation.builder().densify("_id").range(Range.bounded(1, 11).incrementBy(1)).build(),
+            Aggregation.sort(Sort.Direction.ASC, "_id")
+        );
+        List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "videogames", DBObject.class).getMappedResults();
+        List<Float> games = games_dbos.stream().map(game -> 
+        {
+            if(game.get("count") != null)
+            {
+                return ((Integer)game.get("count")).floatValue();
+            }
+            else
+            {
+                return 0f;
+            }
+        }).toList();
         return games;
     }
 }
