@@ -1,4 +1,5 @@
 function setActiveForm(form) {
+    console.log("Setting active form to: " + form);
     document.getElementById("terminal").disabled = false;
     document.getElementById("stats").disabled = false;
     document.getElementById(form).disabled = true;
@@ -6,6 +7,7 @@ function setActiveForm(form) {
     document.getElementById("stats-form").classList.remove("show");
     document.getElementById(form + "-form").classList.add("show");
     if (form == "stats") {
+        document.getElementById("stats-loading").style.display = "block";
         loadStats();
     }
 }

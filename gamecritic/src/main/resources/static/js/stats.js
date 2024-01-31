@@ -1,5 +1,4 @@
 function addGraphStat(stat) {
-    console.log(stat);
     var contianer = document.getElementById("stats-container");
     var template = Handlebars.compile(document.getElementById("graph-stat-template").innerHTML);
     contianer.innerHTML += template({stat: stat});
