@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.aggregation.MergeOperation.WhenDocu
 import org.springframework.data.mongodb.core.aggregation.MergeOperation.WhenDocumentsMatch;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.Review;
@@ -16,6 +17,7 @@ import it.unipi.gamecritic.entities.Review;
 /**
  * This class exists only because Async does not work inside the same class
  */
+@Component
 public class ReviewAsyncRepository {
     private final MongoTemplate mongoTemplate;
 
