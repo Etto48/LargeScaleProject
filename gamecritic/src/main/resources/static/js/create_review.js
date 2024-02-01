@@ -73,8 +73,13 @@ function createReview() {
             closeNewReview(true);
             appendReview(data.author, quote, data.id)
         },
-        error: function (data) {
-            alert("Error creating review");
+        error: function (xhr, status, error) {
+            if(xhr.status == 409) {
+                alert("You have already reviewed this game");
+            }
+            else {
+                alert("Error creating review");
+            }
         }
     });
 }
