@@ -71,7 +71,7 @@ public class ReviewAPI {
             }
             else
             {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Error while inserting review");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Review ignored because it's a duplicate");
             }
         }
     }
