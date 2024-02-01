@@ -6,6 +6,7 @@ import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.entities.UserImage;
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.Game.GameAsyncRepository;
 import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 
 import org.springframework.data.domain.Sort;
@@ -23,8 +24,11 @@ import java.util.List;
 
 public class CustomUserRepositoryImpl implements CustomUserRepository{
     private final MongoTemplate mongoTemplate;
-    public CustomUserRepositoryImpl(MongoTemplate mongoTemplate) {
+    private final GameAsyncRepository gameAsyncRepository;
+
+    public CustomUserRepositoryImpl(MongoTemplate mongoTemplate, GameAsyncRepository gameAsyncRepository) {
         this.mongoTemplate = mongoTemplate;
+        this.gameAsyncRepository = gameAsyncRepository;
     }
     @Override
     public void insertUser(User user) {
@@ -90,6 +94,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         mongoTemplate.remove(usersQuery, User.class, "users");
         mongoTemplate.remove(imageQuery, UserImage.class, "user_images");
         mongoTemplate.remove(reviewsAndCommentsQuery, Review.class, "reviews");
+        gameAsyncRepository.completeReviewDeletionForUser(username);
         mongoTemplate.remove(reviewsAndCommentsQuery, Comment.class, "comments");
     }
 

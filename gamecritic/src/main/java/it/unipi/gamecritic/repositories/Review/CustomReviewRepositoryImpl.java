@@ -12,16 +12,17 @@ import org.springframework.scheduling.annotation.Async;
 
 import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.Review;
+import it.unipi.gamecritic.repositories.Game.GameAsyncRepository;
 
 public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     private final MongoTemplate mongoTemplate;
-    private final ReviewAsyncRepository reviewAsyncRepository; 
+    private final GameAsyncRepository gameAsyncRepository; 
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CustomReviewRepositoryImpl.class);
 
-    public CustomReviewRepositoryImpl(MongoTemplate mongoTemplate, ReviewAsyncRepository reviewAsyncRepository) {
+    public CustomReviewRepositoryImpl(MongoTemplate mongoTemplate, GameAsyncRepository reviewAsyncRepository) {
         this.mongoTemplate = mongoTemplate;
-        this.reviewAsyncRepository = reviewAsyncRepository;
+        this.gameAsyncRepository = reviewAsyncRepository;
     }
 
     @Override
@@ -77,7 +78,7 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         }
         
         String id = mongoTemplate.insert(review, "reviews").id.toHexString();
-        reviewAsyncRepository.completeReviewInsertion(review, id);
+        gameAsyncRepository.completeReviewInsertion(review, id);
         return id;
     }
 
@@ -93,6 +94,7 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
             ObjectId oid = new ObjectId(id);
             Query reviewsQuery = new Query(Criteria.where("_id").is(oid));
             Query commentsQuery = new Query(Criteria.where("reviewId").is(id));
+            gameAsyncRepository.completeReviewDeletion(id);
             mongoTemplate.remove(reviewsQuery, Review.class, "reviews");
             mongoTemplate.remove(commentsQuery, Comment.class, "comments");
         }
