@@ -15,11 +15,13 @@ import it.unipi.gamecritic.entities.Review;
 
 public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     private final MongoTemplate mongoTemplate;
+    private final ReviewAsyncRepository reviewAsyncRepository; 
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CustomReviewRepositoryImpl.class);
 
-    public CustomReviewRepositoryImpl(MongoTemplate mongoTemplate) {
+    public CustomReviewRepositoryImpl(MongoTemplate mongoTemplate, ReviewAsyncRepository reviewAsyncRepository) {
         this.mongoTemplate = mongoTemplate;
+        this.reviewAsyncRepository = reviewAsyncRepository;
     }
 
     @Override
@@ -73,8 +75,10 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         if(review == null) {
             throw new IllegalArgumentException("review must not be null");
         }
-        mongoTemplate.insert(review, "reviews");
-        return review.getId();
+        
+        String id = mongoTemplate.insert(review, "reviews").id.toHexString();
+        reviewAsyncRepository.completeReviewInsertion(review, id);
+        return id;
     }
 
     @Override
