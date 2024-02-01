@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
 
 import it.unipi.gamecritic.entities.Comment;
@@ -104,6 +105,44 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
             gameAsyncRepository.completeReviewDeletion(id);
             mongoTemplate.remove(reviewsQuery, Review.class, "reviews");
             mongoTemplate.remove(commentsQuery, Comment.class, "comments");
+        }
+        catch (IllegalArgumentException e)
+        {
+            return;
+        }
+    }
+
+    @Override
+    @Async
+    public void addLike(String id)
+    {
+        if(id == null) {
+            throw new IllegalArgumentException("id must not be null");
+        }
+        try
+        {
+            ObjectId oid = new ObjectId(id);
+            Query query = new Query(Criteria.where("_id").is(oid));
+            mongoTemplate.updateFirst(query, new Update().inc("likes", 1), "reviews");
+        }
+        catch (IllegalArgumentException e)
+        {
+            return;
+        }
+    }
+
+    @Override
+    @Async
+    public void removeLike(String id)
+    {
+        if(id == null) {
+            throw new IllegalArgumentException("id must not be null");
+        }
+        try
+        {
+            ObjectId oid = new ObjectId(id);
+            Query query = new Query(Criteria.where("_id").is(oid));
+            mongoTemplate.updateFirst(query, new Update().inc("likes", -1), "reviews");
         }
         catch (IllegalArgumentException e)
         {

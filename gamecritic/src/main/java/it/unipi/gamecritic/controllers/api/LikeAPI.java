@@ -14,17 +14,23 @@ import org.springframework.web.server.ResponseStatusException;
 import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.user.User;
+import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LikeAPI {
-    private final ReviewRepositoryNeo4J reviewRepository;
+    private final ReviewRepository reviewRepository;
+    private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
 
     @Autowired
-    public LikeAPI(ReviewRepositoryNeo4J reviewRepository) {
+    public LikeAPI(
+        ReviewRepository reviewRepository,
+        ReviewRepositoryNeo4J reviewRepositoryNeo4J) 
+    {
         this.reviewRepository = reviewRepository;
+        this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
     }
 
     @SuppressWarnings("unused")
@@ -42,11 +48,25 @@ public class LikeAPI {
         {
             if (liked)
             {
-                reviewRepository.setLike(user.username, id);   
+                if(reviewRepositoryNeo4J.setLike(user.username, id))
+                { 
+                    reviewRepository.addLike(id);
+                }
+                else
+                {
+                    logger.warn("User " + user.username + " already liked review " + id);
+                }
             }
             else
             {
-                reviewRepository.removeLike(user.username, id);
+                if(reviewRepositoryNeo4J.removeLike(user.username, id))
+                {   
+                    reviewRepository.removeLike(id);
+                }
+                else
+                {
+                    logger.warn("User " + user.username + " already unliked review " + id);
+                }
             }
             return "{}";
         }
@@ -73,13 +93,14 @@ public class LikeAPI {
         HttpServletRequest request,
         HttpSession session)
     {
+        // TODO: maybe leave this but use mongo when possible
         User user = (User) session.getAttribute("user");
         LikeInfo info = null;
-        long likes = reviewRepository.getLikes(id);
+        long likes = reviewRepositoryNeo4J.getLikes(id);
         Boolean liked = null;
         if (user != null)
         {
-            liked = reviewRepository.userLikedReview(user.username, id);
+            liked = reviewRepositoryNeo4J.userLikedReview(user.username, id);
         }
         info = new LikeInfo(liked, likes);
         Gson gson = new Gson();

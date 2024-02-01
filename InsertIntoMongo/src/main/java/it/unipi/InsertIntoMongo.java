@@ -37,6 +37,7 @@ public class InsertIntoMongo {
     private static BigInteger userImageIdCounter = new BigInteger("1");
 
     private static String gamesPath = "./dataset/games/commented_games.json";
+    private static String reviewsInfoPath = "./dataset/reviews/reviews_info.json";
     private static String companiesPath = "./dataset/companies/combined_companies.json";
     private static String usersPath = "./dataset/users/users.json";
     private static String cmAndAdminsPath = "./dataset/users/cm_and_admins.json";
@@ -81,6 +82,7 @@ public class InsertIntoMongo {
 
             // Load JSON data from a file
             JsonNode gamesJson = objectMapper.readTree(new File(gamesPath));
+            JsonNode reviewsInfoJson = objectMapper.readTree(new File(reviewsInfoPath));
             JsonNode companiesJson = objectMapper.readTree(new File(companiesPath));
             JsonNode usersJson = objectMapper.readTree(new File(usersPath));
             JsonNode cmAndAdminsJson = objectMapper.readTree(new File(cmAndAdminsPath));
@@ -96,7 +98,7 @@ public class InsertIntoMongo {
             MongoCollection<Document> reviewsCollection = database.getCollection("reviews");
             reviewsCollection.createIndex(new Document("author", 1).append("game", 1), new IndexOptions().unique(true));
             MongoCollection<Document> commentsCollection = database.getCollection("comments");
-            insertReviewsAndComments(gamesJson, reviewsCollection, commentsCollection);
+            insertReviewsAndComments(gamesJson, reviewsInfoJson, reviewsCollection, commentsCollection);
             logger.info("Collection \"reviews\" created");
             logger.info("Collection \"comments\" created");
 
@@ -227,7 +229,12 @@ public class InsertIntoMongo {
         collection.insertMany(documents);
     }
 
-    private static void insertReviewsAndComments(JsonNode jsonNode, MongoCollection<Document> reviewsCollection, MongoCollection<Document> commentsCollection) {
+    private static void insertReviewsAndComments(
+        JsonNode jsonNode, 
+        JsonNode reviewsInfoJson,
+        MongoCollection<Document> reviewsCollection, 
+        MongoCollection<Document> commentsCollection) 
+    {
         List<Document> reviews = new ArrayList<>();
         List<Document> comments = new ArrayList<>();
         for (JsonNode gameNode : jsonNode) {
@@ -245,12 +252,19 @@ public class InsertIntoMongo {
                         score = null;
                     }
                 }
+                JsonNode like_count_node = reviewsInfoJson.get(idFromBignum(reviewIdCounter).toHexString());
+                Integer like_count = 0;
+                if (like_count_node != null)
+                {
+                    like_count = like_count_node.intValue();
+                }
                 Document document = new Document("_id", idFromBignum(reviewIdCounter))
                         .append("game", gameNode.get("Name").asText())
                         .append("score", score)
                         .append("quote", reviewNode.get("quote").asText())
                         .append("author", reviewNode.get("author").asText())
-                        .append("date", reviewNode.get("date").asText());
+                        .append("date", reviewNode.get("date").asText())
+                        .append("likes", like_count);
                 for (JsonNode commentNode : reviewNode.get("comments"))
                 {
                     Document commentDocument = new Document("_id", idFromBignum(commentIdCounter))

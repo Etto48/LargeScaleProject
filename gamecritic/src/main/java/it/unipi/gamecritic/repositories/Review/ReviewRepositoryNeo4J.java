@@ -53,23 +53,30 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
     Long getLikes(@Param("reviewId")String reviewId);
 
     // set like for a user on a review
+    // chatgpt edited this query to return a boolean
     @Query(
-        "MATCH (u:User {username: $username})\n"+
-        "MATCH (r:Review {reviewId: $reviewId})\n"+
-        "MERGE (u)-[l:LIKED]->(r)")
-    @Async
-    CompletableFuture<Void> setLike(
-        @Param("username")String username,
-        @Param("reviewId")String reviewId);
-
-    @Query(
-        "MATCH (u:User {username: $username})-[l:LIKED]->(r:Review {reviewId: $reviewId})\n"+
-        "DELETE l;"
+        "merge (u:User {username: $username})-[l:LIKED]->(r:Review {reviewId: $reviewId})\n"+
+        "on create set l.created = true\n"+
+        "on match set l.created = false\n"+
+        "with l, l.created as created\n"+
+        "remove l.created\n"+
+        "return created"
     )
-    @Async
-    CompletableFuture<Void> removeLike(
-        @Param("username")String username,
-        @Param("reviewId")String reviewId);
+    Boolean setLike(
+        @Param("username") String username,
+        @Param("reviewId") String reviewId
+    );
+
+    // chatgpt edited this query to return a boolean
+    @Query(
+        "OPTIONAL MATCH (u:User {username: $username})-[l:LIKED]->(r:Review {reviewId: $reviewId})\n" +
+        "DELETE l\n" +
+        "RETURN CASE WHEN l is not null THEN true ELSE false END"
+    )
+    Boolean removeLike(
+        @Param("username") String username,
+        @Param("reviewId") String reviewId
+    );
 
     @Query(
         "match (r:Review {reviewId: $reviewId})\n"+

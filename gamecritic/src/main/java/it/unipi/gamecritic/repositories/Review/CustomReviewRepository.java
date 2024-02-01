@@ -11,4 +11,6 @@ public interface CustomReviewRepository {
     Review findSingleReview(String id);
     String insertReview(Review review);
     void deleteReview(String id);
+    void addLike(String id);
+    void removeLike(String id);
 }
