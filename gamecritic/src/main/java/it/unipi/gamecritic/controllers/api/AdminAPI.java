@@ -79,6 +79,22 @@ public class AdminAPI {
         logger.info("Delete game \"" + name + "\" by " + user.username);
     }
 
+    public void update_top_reviews(String collection) {
+        if(collection.equals("games"))
+        {
+            gameRepository.updateTop3ReviewsByLikes();
+        }
+        else if(collection.equals("users"))
+        {
+            userRepository.updateTop3ReviewsByLikes();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Invalid collection name");
+        }
+        logger.info("Updated top reviews for " + collection);
+    }
+
 
     @RequestMapping(value = "/api/admin/ban", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -262,8 +278,21 @@ public class AdminAPI {
                         } else {
                             return gson.toJson(new TerminalResponse("Usage: delete <review|comment|game> <id|name>", true));
                         }
+                    case "update":
+                        if (tokens.size() == 2){
+                            try{
+                                update_top_reviews(tokens.get(1));
+                            }
+                            catch(IllegalArgumentException e)
+                            {
+                                return gson.toJson(new TerminalResponse(e.getMessage(), true));
+                            }
+                            return gson.toJson(new TerminalResponse("Top reviews updated for " + tokens.get(1), false));
+                        } else {
+                            return gson.toJson(new TerminalResponse("Usage: update <games|users>", true));
+                        }
                     case "help":
-                        return gson.toJson(new TerminalResponse("Available commands:\nban <username>\ndelete <review|comment|game> <id|name>\nhelp\n", false));
+                        return gson.toJson(new TerminalResponse("Available commands:\nban <username>\ndelete <review|comment|game> <id|name>\nupdate <games|users>\nhelp\n", false));
                     default:
                         return gson.toJson(new TerminalResponse("Command not found, use \"help\" for a list of available commands", true));
                 }

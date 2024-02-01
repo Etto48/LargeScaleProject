@@ -18,6 +18,7 @@ public interface CustomUserRepository {
     // public List<User> findByUsername(String username);
     List<User> search(String query);
     List<TopUserDTO> topUsersByReviews(Integer months);
+    void updateTop3ReviewsByLikes();
 /*
     List<DBObject> findLatest(Integer offset);
     List<DBObject> findBest(Integer offset);

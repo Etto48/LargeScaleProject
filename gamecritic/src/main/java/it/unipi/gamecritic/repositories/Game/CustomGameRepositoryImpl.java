@@ -15,6 +15,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import java.util.List;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Calendar;
@@ -30,6 +31,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -350,6 +352,71 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
             }
         }).toList();
         return games;
+    }
+
+    @Override
+    @Async
+    public void updateTop3ReviewsByLikes()
+    {
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.stage(
+                "{\n" + //
+                "  $sort: {\n" + //
+                "    likes: -1,\n" + //
+                "  },\n" + //
+                "}"
+            ),
+            Aggregation.stage(
+                "{\n" + //
+                "  $group: {\n" + //
+                "    _id: \"$game\",\n" + //
+                "    Top3ReviewsByLikes: {\n" + //
+                "      $firstN: {\n" + //
+                "        n: 3,\n" + //
+                "        input: {\n" + //
+                "          _id: \"$_id\",\n" + //
+                "          game: \"$game\",\n" + //
+                "          quote: \"$quote\",\n" + //
+                "          author: \"$author\",\n" + //
+                "          date: \"$date\",\n" + //
+                "          likes: \"$likes\",\n" + //
+                "        },\n" + //
+                "      },\n" + //
+                "    },\n" + //
+                "  },\n" + //
+                "}"
+            ),
+            Aggregation.stage(
+                "{\n" + //
+                "  $set: {\n" + //
+                "    Name: \"$_id\",\n" + //
+                "  },\n" + //
+                "}"
+            ),
+            Aggregation.stage(
+                "{\n" + //
+                "  $project: {\n" + //
+                "    _id: 0,\n" + //
+                "    Name: 1,\n" + //
+                "    Top3ReviewsByLikes: 1,\n" + //
+                "  },\n" + //
+                "}"
+            ),
+            Aggregation.stage(
+                "{\n" + //
+                "  $merge: {\n" + //
+                "    into: \"videogames\",\n" + //
+                "    on: \"Name\",\n" + //
+                "    whenMatched: \"merge\",\n" + //
+                "    whenNotMatched: \"discard\",\n" + //
+                "  },\n" + //
+                "}"
+            )
+        ).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+        Instant start = Instant.now();
+        mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+        logger.info("Finished updating top 3 reviews by likes for all games in " + (Instant.now().toEpochMilli() - start.toEpochMilli()) + " ms");
     }
 }
 

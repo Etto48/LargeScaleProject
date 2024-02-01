@@ -19,5 +19,6 @@ public interface CustomGameRepository {
     List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit);
     List<Float> companyScoreDistribution(String companyName);
     List<Float> globalScoreDistribution();
+    void updateTop3ReviewsByLikes();
     //List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
 }

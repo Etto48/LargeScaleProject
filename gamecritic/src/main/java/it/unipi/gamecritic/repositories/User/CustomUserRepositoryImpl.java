@@ -9,6 +9,8 @@ import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.Game.GameAsyncRepository;
 import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -19,12 +21,15 @@ import org.springframework.scheduling.annotation.Async;
 
 import com.mongodb.DBObject;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.List;
 
 public class CustomUserRepositoryImpl implements CustomUserRepository{
     private final MongoTemplate mongoTemplate;
     private final GameAsyncRepository gameAsyncRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomUserRepositoryImpl.class);
 
     public CustomUserRepositoryImpl(MongoTemplate mongoTemplate, GameAsyncRepository gameAsyncRepository) {
         this.mongoTemplate = mongoTemplate;
@@ -156,5 +161,69 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         List<DBObject> user_dbos = mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
         List<TopUserDTO> users = user_dbos.stream().map(user -> new TopUserDTO(user.get("_id").toString(), (Integer)user.get("reviews"))).toList();
         return users;
+    }
+
+    @Override
+    @Async
+    public void updateTop3ReviewsByLikes() {
+        Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.stage(
+                "{\n" + //
+                "  $sort: {\n" + //
+                "    likes: -1,\n" + //
+                "  },\n" + //
+                "}"
+            ),
+            Aggregation.stage(
+                "{\n" + //
+                "  $group: {\n" + //
+                "    _id: \"$author\",\n" + //
+                "    Top3ReviewsByLikes: {\n" + //
+                "      $firstN: {\n" + //
+                "        n: 3,\n" + //
+                "        input: {\n" + //
+                "          _id: \"$_id\",\n" + //
+                "          game: \"$game\",\n" + //
+                "          quote: \"$quote\",\n" + //
+                "          author: \"$author\",\n" + //
+                "          date: \"$date\",\n" + //
+                "          likes: \"$likes\",\n" + //
+                "        },\n" + //
+                "      },\n" + //
+                "    },\n" + //
+                "  },\n" + //
+                "}"
+            ),
+            Aggregation.stage(
+                "{\n" + //
+                "  $set: {\n" + //
+                "    username: \"$_id\",\n" + //
+                "  },\n" + //
+                "}"
+            ),
+            Aggregation.stage(
+                "{\n" + //
+                "  $project: {\n" + //
+                "    _id: 0,\n" + //
+                "    username: 1,\n" + //
+                "    Top3ReviewsByLikes: 1,\n" + //
+                "  },\n" + //
+                "}"
+            ),
+            Aggregation.stage(
+                "{\n" + //
+                "  $merge: {\n" + //
+                "    into: \"users\",\n" + //
+                "    on: \"username\",\n" + //
+                "    whenMatched: \"merge\",\n" + //
+                "    whenNotMatched: \"discard\",\n" + //
+                "  },\n" + //
+                "}"
+            )
+        ).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+        Instant start = Instant.now();
+        mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+        logger.info("Finished updating top 3 reviews by likes for all users in " + (Instant.now().toEpochMilli() - start.toEpochMilli()) + " ms");
     }
 }
