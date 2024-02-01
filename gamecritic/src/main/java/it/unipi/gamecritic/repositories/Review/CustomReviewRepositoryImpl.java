@@ -77,9 +77,16 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
             throw new IllegalArgumentException("review must not be null");
         }
         
-        String id = mongoTemplate.insert(review, "reviews").id.toHexString();
-        gameAsyncRepository.completeReviewInsertion(review, id);
-        return id;
+        try
+        {
+            String id = mongoTemplate.insert(review, "reviews").id.toHexString();
+            gameAsyncRepository.completeReviewInsertion(review, id);
+            return id;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package it.unipi.gamecritic.controllers.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,9 +63,16 @@ public class ReviewAPI {
         {
             Review review = new Review(game, score, quote, user.username, null);
             String review_id = reviewRepository.insertReview(review);
-            reviewRepositoryNeo4J.insertReview(user.username, game, review_id, score);
-            Gson gson = new Gson();
-            return gson.toJson(new NewReviewInfo(review_id, user.username));
+            if(review_id != null)
+            {
+                reviewRepositoryNeo4J.insertReview(user.username, game, review_id, score);
+                Gson gson = new Gson();
+                return gson.toJson(new NewReviewInfo(review_id, user.username));
+            }
+            else
+            {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Error while inserting review");
+            }
         }
     }
 }

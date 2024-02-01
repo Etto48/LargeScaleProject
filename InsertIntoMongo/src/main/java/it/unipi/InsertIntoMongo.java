@@ -94,6 +94,7 @@ public class InsertIntoMongo {
 
             // Insert data into the "reviews" collection and the "comments" collection
             MongoCollection<Document> reviewsCollection = database.getCollection("reviews");
+            reviewsCollection.createIndex(new Document("author", 1).append("game", 1), new IndexOptions().unique(true));
             MongoCollection<Document> commentsCollection = database.getCollection("comments");
             insertReviewsAndComments(gamesJson, reviewsCollection, commentsCollection);
             logger.info("Collection \"reviews\" created");
@@ -153,12 +154,13 @@ public class InsertIntoMongo {
                         Document nestedDocument = new Document();
                         if (arrayNode.isObject()) {
                             howManyReviews++;
-                            nestedDocument.append("reviewId", reviewIdCounter.toString());
+                            nestedDocument.append("reviewId", idFromBignum(reviewIdCounter));
                             reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));                            nestedDocument.append("score", arrayNode.get("score").asDouble());
                             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                             SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
                             Date datt = dateFormat.parse(arrayNode.get("date").asText());
                             nestedDocument.append("date", outputFormat.format(datt));
+                            nestedDocument.append("author", arrayNode.get("author").asText());
                         }
                         arrayValues.add(nestedDocument);
                     }

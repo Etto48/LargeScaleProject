@@ -89,7 +89,37 @@ public class GameAsyncRepository {
     @Async
     public void completeReviewDeletionForUser(String username)
     {
-        Aggregation updateAggregation = null;
-        // TODO: remove every review of the user and recalculate the average score (maybe recalculating it from scratc is advisable)
+        Aggregation updateAggregation = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("reviews").elemMatch(Criteria.where("author").is(username))),
+            Aggregation.stage(new Document("$set", 
+                new Document("user_review", 
+                new Document("$divide", Arrays.asList(new Document("$subtract", Arrays.asList(new Document("$multiply", Arrays.asList("$reviewCount", "$user_review")), 
+                                        new Document("$getField", 
+                                        new Document("input", 
+                                        new Document("$arrayElemAt", Arrays.asList(new Document("$filter", 
+                                                        new Document("input", "$reviews")
+                                                                .append("as", "review")
+                                                                .append("cond", 
+                                                        new Document("$not", 
+                                                        new Document("$eq", Arrays.asList("$$review.author", username))))), 0L)))
+                                                .append("field", "score")))), 
+                                new Document("$subtract", Arrays.asList("$reviewCount", 1L)))))
+                        .append("reviewCount", 
+                new Document("$subtract", Arrays.asList("$reviewCount", 1L)))
+                        .append("reviews", 
+                new Document("$filter", 
+                new Document("input", "$reviews")
+                                .append("as", "review")
+                                .append("cond", 
+                new Document("$not", 
+                new Document("$eq", Arrays.asList("$$review.author", username)))))))), 
+            Aggregation.merge()
+                .intoCollection("videogames")
+                .whenDocumentsMatch(WhenDocumentsMatch.replaceDocument())
+                .whenDocumentsDontMatch(WhenDocumentsDontMatch.discardDocument())
+                .build()
+        );
+
+        mongoTemplate.aggregate(updateAggregation, Game.class, Game.class).getMappedResults();
     }
 }
