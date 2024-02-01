@@ -110,9 +110,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = ago.format(formatter);
-        Aggregation a = Aggregation.newAggregation(Aggregation.stage("{\n" +
-                "    $unwind: \"$reviews\",\n" +
-                "  }"),
+        Aggregation a = Aggregation.newAggregation(
                 Aggregation.stage("{\n" +
                 "    $match: {\n" +
                 "      \"reviews.date\": {\n" +
@@ -121,22 +119,34 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                 "    },\n" +
                 "  }"),
                 Aggregation.stage("{\n" +
-                        "    $group:\n" +
-                        "      {\n" +
-                        "        _id: \"$_id\",\n" +
-                        "        Name: {\n" +
-                        "          $first: \"$Name\",\n" +
-                        "        },\n" +
-                        "        HotReviewCount: {\n" +
-                        "          $sum: 1,\n" +
-                        "        },\n" +
-                        "        reviews: {\n" +
-                        "          $push: \"$reviews\",\n" +
-                        "        },\n" +
-                        "        allAttributes: {\n" +
-                        "          $mergeObjects: \"$$ROOT\",\n" +
+                        "    $group: {\n" +
+                        "      _id: \"$_id\",\n" +
+                        "      Name: {\n" +
+                        "        $first: \"$Name\",\n" +
+                        "      },\n" +
+                        "      HotReviewCount: {\n" +
+                        "        $sum: {\n" +
+                        "          $size: {\n" +
+                        "            $filter: {\n" +
+                        "              input: \"$reviews\",\n" +
+                        "              as: \"review\",\n" +
+                        "              cond: {\n" +
+                        "                $gte: [\n" +
+                        "                  \"$$review.date\",\n" +
+                        "                  \"2023-07-21\",\n" +
+                        "                ],\n" +
+                        "              },\n" +
+                        "            },\n" +
+                        "          },\n" +
                         "        },\n" +
                         "      },\n" +
+                        "      reviews: {\n" +
+                        "        $push: \"$reviews\",\n" +
+                        "      },\n" +
+                        "      allAttributes: {\n" +
+                        "        $mergeObjects: \"$$ROOT\",\n" +
+                        "      },\n" +
+                        "    },\n" +
                         "  }"),
                 Aggregation.stage("{\n" +
                         "    $sort:\n" +
@@ -145,18 +155,29 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "        Name: 1             \n"+
                         "      },\n" +
                         "  }"),
-                Aggregation.stage("{" +
-                        "       $replaceRoot:\n" +
-                        "      {\n" +
-                        "        newRoot: {\n" +
-                        "          $mergeObjects: [\n" +
-                        "            \"$allAttributes\",\n" +
-                        "            {\n" +
-                        "              reviews: \"$reviews\",\n" +
+                Aggregation.stage("{\n" +
+                        "    $replaceRoot: {\n" +
+                        "      newRoot: {\n" +
+                        "        $mergeObjects: [\n" +
+                        "          \"$allAttributes\",\n" +
+                        "          {\n" +
+                        "            reviews: {\n" +
+                        "              $filter: {\n" +
+                        "                input: \"$reviews\",\n" +
+                        "                as: \"review\",\n" +
+                        "                cond: {\n" +
+                        "                  $gte: [\n" +
+                        "                    \"$$review.date\",\n" +
+                        "                    \"2023-07-21\",\n" +
+                        "                  ],\n" +
+                        "                },\n" +
+                        "              },\n" +
                         "            },\n" +
-                        "          ],\n" +
-                        "        },\n" +
-                        "      }}"),
+                        "          },\n" +
+                        "        ],\n" +
+                        "      },\n" +
+                        "    },\n" +
+                        "  }"),
                 Aggregation.stage("{" +
                         "$skip: "+offset+" }"),
                 Aggregation.stage("{\n" +
