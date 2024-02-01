@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CustomCompanyRepositoryImpl implements CustomCompanyRepository{
     private final MongoTemplate mongoTemplate;
@@ -43,7 +44,8 @@ public class CustomCompanyRepositoryImpl implements CustomCompanyRepository{
         if (query == null) {
             throw new IllegalArgumentException("The given query must not be null");
         }
-        Criteria criteria = Criteria.where("Name").regex(query, "i");
+        String escapedQuery = Pattern.quote(query);
+        Criteria criteria = Criteria.where("Name").regex(escapedQuery, "i");
         Query q = new Query(criteria).limit(10);
         return mongoTemplate.find(q, Company.class, "companies");
     }

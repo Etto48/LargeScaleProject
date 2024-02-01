@@ -32,6 +32,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 public class CustomGameRepositoryImpl implements CustomGameRepository {
     private final MongoTemplate mongoTemplate;
@@ -44,10 +45,11 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
 
     @Override
     public List<Game> search(String query){
-        if(query == null) {
+        if (query == null) {
             throw new IllegalArgumentException("Query cannot be null");
         }
-        Criteria criteria = Criteria.where("Name").regex(query, "i");
+        String escapedQuery = Pattern.quote(query);
+        Criteria criteria = Criteria.where("Name").regex(escapedQuery, "i");
         Query q = new Query(criteria).limit(10).with(Sort.by(Sort.Order.desc("reviewCount")));
 
         List<DBObject> game_objects = mongoTemplate.find(q, DBObject.class, "videogames");
