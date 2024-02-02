@@ -34,6 +34,7 @@ import org.springframework.scheduling.annotation.Async;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 public class CustomGameRepositoryImpl implements CustomGameRepository {
     private final MongoTemplate mongoTemplate;
@@ -46,10 +47,11 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
 
     @Override
     public List<Game> search(String query){
-        if(query == null) {
+        if (query == null) {
             throw new IllegalArgumentException("Query cannot be null");
         }
-        Criteria criteria = Criteria.where("Name").regex(query, "i");
+        String escapedQuery = Pattern.quote(query);
+        Criteria criteria = Criteria.where("Name").regex(escapedQuery, "i");
         Query q = new Query(criteria).limit(10).with(Sort.by(Sort.Order.desc("reviewCount")));
 
         List<DBObject> game_objects = mongoTemplate.find(q, DBObject.class, "videogames");
@@ -110,9 +112,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = ago.format(formatter);
-        Aggregation a = Aggregation.newAggregation(Aggregation.stage("{\n" +
-                "    $unwind: \"$reviews\",\n" +
-                "  }"),
+        Aggregation a = Aggregation.newAggregation(
                 Aggregation.stage("{\n" +
                 "    $match: {\n" +
                 "      \"reviews.date\": {\n" +
@@ -121,22 +121,34 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                 "    },\n" +
                 "  }"),
                 Aggregation.stage("{\n" +
-                        "    $group:\n" +
-                        "      {\n" +
-                        "        _id: \"$_id\",\n" +
-                        "        Name: {\n" +
-                        "          $first: \"$Name\",\n" +
-                        "        },\n" +
-                        "        HotReviewCount: {\n" +
-                        "          $sum: 1,\n" +
-                        "        },\n" +
-                        "        reviews: {\n" +
-                        "          $push: \"$reviews\",\n" +
-                        "        },\n" +
-                        "        allAttributes: {\n" +
-                        "          $mergeObjects: \"$$ROOT\",\n" +
+                        "    $group: {\n" +
+                        "      _id: \"$_id\",\n" +
+                        "      Name: {\n" +
+                        "        $first: \"$Name\",\n" +
+                        "      },\n" +
+                        "      HotReviewCount: {\n" +
+                        "        $sum: {\n" +
+                        "          $size: {\n" +
+                        "            $filter: {\n" +
+                        "              input: \"$reviews\",\n" +
+                        "              as: \"review\",\n" +
+                        "              cond: {\n" +
+                        "                $gte: [\n" +
+                        "                  \"$$review.date\",\n" +
+                        "                  \"2023-07-21\",\n" +
+                        "                ],\n" +
+                        "              },\n" +
+                        "            },\n" +
+                        "          },\n" +
                         "        },\n" +
                         "      },\n" +
+                        "      reviews: {\n" +
+                        "        $push: \"$reviews\",\n" +
+                        "      },\n" +
+                        "      allAttributes: {\n" +
+                        "        $mergeObjects: \"$$ROOT\",\n" +
+                        "      },\n" +
+                        "    },\n" +
                         "  }"),
                 Aggregation.stage("{\n" +
                         "    $sort:\n" +
@@ -145,18 +157,29 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "        Name: 1             \n"+
                         "      },\n" +
                         "  }"),
-                Aggregation.stage("{" +
-                        "       $replaceRoot:\n" +
-                        "      {\n" +
-                        "        newRoot: {\n" +
-                        "          $mergeObjects: [\n" +
-                        "            \"$allAttributes\",\n" +
-                        "            {\n" +
-                        "              reviews: \"$reviews\",\n" +
+                Aggregation.stage("{\n" +
+                        "    $replaceRoot: {\n" +
+                        "      newRoot: {\n" +
+                        "        $mergeObjects: [\n" +
+                        "          \"$allAttributes\",\n" +
+                        "          {\n" +
+                        "            reviews: {\n" +
+                        "              $filter: {\n" +
+                        "                input: \"$reviews\",\n" +
+                        "                as: \"review\",\n" +
+                        "                cond: {\n" +
+                        "                  $gte: [\n" +
+                        "                    \"$$review.date\",\n" +
+                        "                    \"2023-07-21\",\n" +
+                        "                  ],\n" +
+                        "                },\n" +
+                        "              },\n" +
                         "            },\n" +
-                        "          ],\n" +
-                        "        },\n" +
-                        "      }}"),
+                        "          },\n" +
+                        "        ],\n" +
+                        "      },\n" +
+                        "    },\n" +
+                        "  }"),
                 Aggregation.stage("{" +
                         "$skip: "+offset+" }"),
                 Aggregation.stage("{\n" +

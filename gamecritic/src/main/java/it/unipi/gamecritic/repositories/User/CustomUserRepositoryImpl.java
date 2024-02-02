@@ -24,6 +24,7 @@ import com.mongodb.DBObject;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CustomUserRepositoryImpl implements CustomUserRepository{
     private final MongoTemplate mongoTemplate;
@@ -119,7 +120,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         if (query == null) {
             throw new IllegalArgumentException("The given query must not be null");
         }
-        Criteria criteria = Criteria.where("username").regex(query, "i");
+        String escapedQuery = Pattern.quote(query);
+        Criteria criteria = Criteria.where("username").regex(escapedQuery, "i");
         Query q = new Query(criteria).limit(10);
         List<DBObject> user_dbos = mongoTemplate.find(q, DBObject.class, "users");
         List<User> users = user_dbos.stream().map(User::userFactory).toList();
