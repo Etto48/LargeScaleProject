@@ -23,6 +23,9 @@ public class Game {
     public String name;
     @Field("Released")
     public String released;
+    @Field("Top3ReviewsByLikes")
+    public List<Review> top_reviews;
+
 
     @Field("customAttributes")
     public Map<String, Object> customAttributes = new HashMap<>();
@@ -48,18 +51,6 @@ public class Game {
         }
     }
 
-    // Used for testing
-    public Game(String name, String release, Map<String,Object> additionalAttributes, List<Review> top_reviews) {
-        this.name = name;
-        this.released = release;
-        HashMap<String, Object> tmp_additionalAttributes = new HashMap<>();
-        for (Map.Entry<String, Object> entry : additionalAttributes.entrySet()) {
-            tmp_additionalAttributes.put(entry.getKey(), entry.getValue());
-        }
-        tmp_additionalAttributes.put("top_reviews", top_reviews);
-        this.customAttributes = tmp_additionalAttributes;
-    }
-
     public Game (DBObject db){
         try {
             @SuppressWarnings("unchecked")
@@ -69,6 +60,9 @@ public class Game {
             logger.error("Error while setting custom attributes: " + e.getMessage());
         }
         this.name = customAttributes.get("Name").toString();
+        @SuppressWarnings("unchecked")
+        List<org.bson.Document> reviews_object = (List<org.bson.Document>)db.get("Top3ReviewsByLikes");
+        this.top_reviews = reviews_object.stream().map(Review::new).toList();
         
         @SuppressWarnings("unchecked")
         HashMap<String,Object> released = (HashMap<String,Object>) customAttributes.get("Released");

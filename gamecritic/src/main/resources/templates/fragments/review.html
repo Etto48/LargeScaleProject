@@ -2,7 +2,7 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
     <body>
-        <div class="d-flex top-reviews flex-md-column flex-row align-items-stretch" th:fragment="top_reviews(reviews,title_mode)">
+        <div class="d-flex top-reviews flex-column flex-md-row align-items-stretch" th:fragment="top_reviews(reviews,title_mode)">
             <div th:if="${reviews != null}" class="m-2 d-flex flex-column top-review" th:each="review : ${reviews}">
                 <div class="d-flex flex-row">
                     <div th:replace="~{fragments/score.html :: score_small(${review.score})}"></div>

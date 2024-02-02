@@ -187,6 +187,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
                 "          quote: \"$quote\",\n" + //
                 "          author: \"$author\",\n" + //
                 "          date: \"$date\",\n" + //
+                "          score: \"$score\",\n" + //
                 "          likes: \"$likes\",\n" + //
                 "        },\n" + //
                 "      },\n" + //

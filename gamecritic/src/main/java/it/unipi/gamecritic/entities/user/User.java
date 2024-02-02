@@ -4,9 +4,8 @@ package it.unipi.gamecritic.entities.user;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Vector;
+import java.util.List;
 
 import it.unipi.gamecritic.entities.Review;
 
@@ -32,9 +31,9 @@ public class User {
     @Field("email")
     public String email;
     @Field("Top3ReviewsByLikes")
-    public Vector<Review> top_reviews;
+    public List<Review> top_reviews;
 
-    public User(String username, String password_hash, String email, Vector<Review> top_reviews) {
+    public User(String username, String password_hash, String email, List<Review> top_reviews) {
         this.username = username;
         this.password_hash = password_hash;
         this.email = email;
@@ -54,8 +53,8 @@ public class User {
         this.password_hash = (String) dbObject.get("password_hash");
         this.email = (String) dbObject.get("email");
         @SuppressWarnings("unchecked")
-        ArrayList<Review> top_review = (ArrayList<Review>) dbObject.get("Top3ReviewsByLikes");
-        this.top_reviews = top_review.stream().collect(Vector::new, Vector::add, Vector::addAll);
+        List<org.bson.Document> top_review = (List<org.bson.Document>) dbObject.get("Top3ReviewsByLikes");
+        this.top_reviews = top_review.stream().map(Review::new).toList();
     }
 
     public static User userFactory(DBObject dbObject)
