@@ -9,7 +9,8 @@ a.card.user-suggestion img
     aspect-ratio: 1/1;
 }
 
-div.user-suggestion-container
+div.user-suggestion-container,
+div.game-suggestion-container
 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -18,7 +19,8 @@ div.user-suggestion-container
 
 @media (min-width: 768px)
 {
-    div.user-suggestion-container
+    div.user-suggestion-container,
+    div.game-suggestion-container
     {
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-template-rows: 1fr;

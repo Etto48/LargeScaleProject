@@ -1,5 +1,7 @@
 var current_page = 0;
-var loading_page = null;
+var loading_page_buffer = new ArrayBuffer(1);
+var loading_page = new Int8Array(loading_page_buffer);
+Atomics.store(loading_page, 0, 0);
 var kind = "hottest";
 
 function addSuggestions() {
@@ -8,7 +10,7 @@ function addSuggestions() {
         type: "GET",
         success: function (data) {
             if(Object.keys(data).length == 0 || (data.users.length == 0 && data.games.length == 0)) {
-                loading_page = null;
+                Atomics.store(loading_page, 0, 0);
                 return;
             }
             var template = Handlebars.compile(document.getElementById("suggestions-template").innerHTML);
@@ -21,14 +23,20 @@ function addSuggestions() {
                 users.push(new_user);
             });
             var games = [];
+            data.games.forEach(function (game){
+                var new_game = {};
+                new_game.name = game;
+                new_game.url = "/game/" + encodeURIComponent(new_game.name);
+                games.push(new_game);
+            })
             var template_data = {users: users, games: games};
             var html = template(template_data);
             $(html).insertBefore("#dummy-loading-game");
-            loading_page = null;
+            Atomics.store(loading_page, 0, 0);
         },
         error: function (error) {
             console.log(error);
-            loading_page = null;
+            Atomics.store(loading_page, 0, 0);
         }
     });
 }
@@ -85,7 +93,7 @@ function addGames(page) {
         },
         error: function (error) {
             console.log(error);
-            loading_page = null;
+            Atomics.store(loading_page, 0, 0);
         }
     });
 }
@@ -107,9 +115,12 @@ function setKind(new_kind) {
 
 document.addEventListener("DOMContentLoaded", function (event) {
     function checkAndAddGames() {
-        if (canSee("dummy-loading-game") && loading_page == null) {
-            loading_page = current_page;
+        var can_load = Atomics.compareExchange(loading_page,0,0,1);
+        if (canSee("dummy-loading-game") && can_load) {
             addGames(current_page++);
+        }
+        else if (!can_load) {
+            console.log("Skipping page load, already loading");
         }
     }
     addGames(current_page++);

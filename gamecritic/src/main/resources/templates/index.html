@@ -46,6 +46,15 @@
                 </a>
                 {{/each}}
             </div>
+            <div class="mb-4 gap-3 game-suggestion-container">
+                {{#each games}}
+                <a class="card shadow game-suggestion light-overlay-on-hover" href="{{url}}">
+                    <div class="card-body">
+                        <h3 class="fs-2">{{name}}</h3>
+                    </div>
+                </a>
+                {{/each}}
+            </div>
         </script>
         <main class="container flex-column" id="main">
             <article id="dummy-loading-game">
