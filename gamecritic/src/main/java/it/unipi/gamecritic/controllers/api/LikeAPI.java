@@ -33,7 +33,6 @@ public class LikeAPI {
         this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
     }
 
-    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(LikeAPI.class);
     @RequestMapping(value = "/api/like/set/review", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -93,7 +92,6 @@ public class LikeAPI {
         HttpServletRequest request,
         HttpSession session)
     {
-        // TODO: maybe leave this but use mongo when possible
         User user = (User) session.getAttribute("user");
         LikeInfo info = null;
         long likes = reviewRepositoryNeo4J.getLikes(id);
