@@ -117,10 +117,10 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
 
     @Override
     public List<User> search(String query){
-        if (query == null) {
+        String escapedQuery = Pattern.quote(query);
+        if (escapedQuery == null) {
             throw new IllegalArgumentException("The given query must not be null");
         }
-        String escapedQuery = Pattern.quote(query);
         Criteria criteria = Criteria.where("username").regex(escapedQuery, "i");
         Query q = new Query(criteria).limit(10);
         List<DBObject> user_dbos = mongoTemplate.find(q, DBObject.class, "users");

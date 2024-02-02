@@ -19,7 +19,7 @@ public class ScheduledUpdates {
         this.userRepository = userRepository;
     }
     // Every day at 3:00 AM
-    @Scheduled(cron = "0 3 * * *")
+    @Scheduled(cron = "0 3 * * * ?")
     public void updateTop3ReviewsForUsersAndGames() {
         logger.info("Updating top 3 reviews for users and games");
         gameRepository.updateTop3ReviewsByLikes();

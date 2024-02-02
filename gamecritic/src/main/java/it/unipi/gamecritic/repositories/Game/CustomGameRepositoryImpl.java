@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 
 public class CustomGameRepositoryImpl implements CustomGameRepository {
     private final MongoTemplate mongoTemplate;
-    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CustomGameRepositoryImpl.class);
 
     public CustomGameRepositoryImpl(MongoTemplate mongoTemplate) {
@@ -47,10 +46,10 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
 
     @Override
     public List<Game> search(String query){
-        if (query == null) {
-            throw new IllegalArgumentException("Query cannot be null");
-        }
         String escapedQuery = Pattern.quote(query);
+        if (escapedQuery == null) {
+            throw new IllegalArgumentException("The given query must not be null");
+        }
         Criteria criteria = Criteria.where("Name").regex(escapedQuery, "i");
         Query q = new Query(criteria).limit(10).with(Sort.by(Sort.Order.desc("reviewCount")));
 
