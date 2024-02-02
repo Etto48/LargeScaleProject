@@ -42,6 +42,8 @@ function search() {
             query: document.getElementById("search-text").value
         },
         success: function (data) {
+            console.log("search was "+document.getElementById("search-text").value)
+            console.log("data is "+data)
             handleSearchResults(data);
         },
         error: function (data) {
