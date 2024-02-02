@@ -97,6 +97,8 @@ public class InsertIntoMongo {
             // Insert data into the "reviews" collection and the "comments" collection
             MongoCollection<Document> reviewsCollection = database.getCollection("reviews");
             reviewsCollection.createIndex(new Document("author", 1).append("game", 1), new IndexOptions().unique(true));
+            reviewsCollection.createIndex(new Document("game", 1));
+            reviewsCollection.createIndex(new Document("author", 1));
             MongoCollection<Document> commentsCollection = database.getCollection("comments");
             insertReviewsAndComments(gamesJson, reviewsInfoJson, reviewsCollection, commentsCollection);
             logger.info("Collection \"reviews\" created");
