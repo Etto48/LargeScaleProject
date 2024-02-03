@@ -383,26 +383,22 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.stage(
                 "{\n" + //
-                "  $sort: {\n" + //
-                "    likes: -1,\n" + //
-                "  },\n" + //
-                "}"
-            ),
-            Aggregation.stage(
-                "{\n" + //
                 "  $group: {\n" + //
                 "    _id: \"$game\",\n" + //
                 "    Top3ReviewsByLikes: {\n" + //
-                "      $firstN: {\n" + //
+                "      $topN: {\n" + //
                 "        n: 3,\n" + //
-                "        input: {\n" + //
+                "        output: {\n" + //
                 "          _id: \"$_id\",\n" + //
                 "          game: \"$game\",\n" + //
                 "          quote: \"$quote\",\n" + //
                 "          author: \"$author\",\n" + //
                 "          date: \"$date\",\n" + //
-                "          score: \"$score\",\n" + // 
+                "          score: \"$score\",\n" + //
                 "          likes: \"$likes\",\n" + //
+                "        },\n" + //
+                "        sortBy: {\n" + //
+                "          likes: -1,\n" + //
                 "        },\n" + //
                 "      },\n" + //
                 "    },\n" + //
