@@ -80,19 +80,19 @@ public class AdminAPI {
     }
 
     public void update_top_reviews(String collection) {
-        if(collection.equals("games"))
+        if(collection.equals("games") || collection.equals("all"))
         {
             gameRepository.updateTop3ReviewsByLikes();
         }
-        else if(collection.equals("users"))
+        if(collection.equals("users") || collection.equals("all"))
         {
             userRepository.updateTop3ReviewsByLikes();
         }
         else
         {
-            throw new IllegalArgumentException("Invalid collection name");
+            throw new IllegalArgumentException("Invalid argument \""+collection+"\"");
         }
-        logger.info("Updated top reviews for " + collection);
+        logger.info("Updating top reviews for " + collection);
     }
 
 
@@ -287,12 +287,12 @@ public class AdminAPI {
                             {
                                 return gson.toJson(new TerminalResponse(e.getMessage(), true));
                             }
-                            return gson.toJson(new TerminalResponse("Top reviews updated for " + tokens.get(1), false));
+                            return gson.toJson(new TerminalResponse("Updating top reviews for " + tokens.get(1), false));
                         } else {
-                            return gson.toJson(new TerminalResponse("Usage: update <games|users>", true));
+                            return gson.toJson(new TerminalResponse("Usage: update <games|users|all>", true));
                         }
                     case "help":
-                        return gson.toJson(new TerminalResponse("Available commands:\nban <username>\ndelete <review|comment|game> <id|name>\nupdate <games|users>\nhelp\n", false));
+                        return gson.toJson(new TerminalResponse("Available commands:\nban <username>\ndelete <review|comment|game> <id|name>\nupdate <games|users|all>\nhelp\n", false));
                     default:
                         return gson.toJson(new TerminalResponse("Command not found, use \"help\" for a list of available commands", true));
                 }
