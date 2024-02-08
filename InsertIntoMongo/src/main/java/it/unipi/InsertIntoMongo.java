@@ -42,6 +42,7 @@ public class InsertIntoMongo {
     private static String usersPath = "./dataset/users/users.json";
     private static String cmAndAdminsPath = "./dataset/users/cm_and_admins.json";
     private static String configPath = "./InsertIntoMongo/config.json";
+    private static String dbUri = "mongodb://localhost:27017";
     private static final Logger logger = LogManager.getLogger(InsertIntoMongo.class);
     public static void main(String[] args) {
         
@@ -65,6 +66,11 @@ public class InsertIntoMongo {
             {
                 usersPath = users.asText();
             }
+            JsonNode dbUriNode = config.get("dbUri");
+            if (dbUriNode != null)
+            {
+                dbUri = dbUriNode.asText();
+            }
             logger.info("Loaded config from file");
         }
         catch (IOException e)
@@ -73,7 +79,7 @@ public class InsertIntoMongo {
         }
         try {
             // Connect to MongoDB (assuming it's running locally on the default port)
-            MongoClientURI uri = new MongoClientURI("mongodb://localhost:27017");
+            MongoClientURI uri = new MongoClientURI(dbUri);
 
             MongoClient mongoClient = new MongoClient(uri);
             logger.info("Connected to MongoDB");
@@ -100,6 +106,7 @@ public class InsertIntoMongo {
             reviewsCollection.createIndex(new Document("game", 1));
             reviewsCollection.createIndex(new Document("author", 1));
             MongoCollection<Document> commentsCollection = database.getCollection("comments");
+            commentsCollection.createIndex(new Document("reviewId", 1));
             insertReviewsAndComments(gamesJson, reviewsInfoJson, reviewsCollection, commentsCollection);
             logger.info("Collection \"reviews\" created");
             logger.info("Collection \"comments\" created");

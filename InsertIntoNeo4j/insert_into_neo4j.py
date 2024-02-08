@@ -17,8 +17,11 @@ def id_to_hex_str(id: int) -> str:
     ret = hex(id)[2:]
     return "0" * (24 - len(ret)) + ret
 
+def copy_file_to_server(file_path: str, server_path: str, server_addr: str, server_user: str):
+    os.system(f"scp {file_path} {server_user}@{server_addr}:{server_path}")
+
 def main(args):
-    NEO4J_URI = "bolt://localhost:7687"
+    NEO4J_URI = "bolt://10.1.1.71:7687"
     NEO4J_AUTH = ()
     if (args.auth):
         NEO4J_AUTH = (input("Neo4j username: "), input("Neo4j password: "))
@@ -65,11 +68,16 @@ def main(args):
     pd.DataFrame(simple_games).to_csv(os.path.join(args.tmp, "games.csv"), index=False)
     pd.DataFrame(simple_users).to_csv(os.path.join(args.tmp, "users.csv"), index=False)
     pd.DataFrame(reviews).to_csv(os.path.join(args.tmp, "reviews.csv"), index=False)
+    pd.read_csv(args.follows).to_csv(os.path.join(args.tmp, "follows.csv"), index=False)
     likes.to_csv(os.path.join(args.tmp, "likes.csv"), index=False)
+    
+    import_dir = "/var/lib/neo4j/import"
+    
+    #for file in os.listdir(args.tmp):
+    #    copy_file_to_server(os.path.join(args.tmp, file), import_dir, "10.1.1.71", "root")
         
     with neo.GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH) as driver:
         tmp_path = prepare_path(args.tmp)
-        follows_path = prepare_path(args.follows)
         
         with driver.session() as session:
         
@@ -119,7 +127,7 @@ def main(args):
             print("Inserting users...")
             session.run(
                 f"""
-                load csv with headers from "file:///{tmp_path}/users.csv" as row
+                load csv with headers from "file:///users.csv" as row
                 call {{
                     with row
                     create (u:User {{username: row.usernname}})
@@ -130,7 +138,7 @@ def main(args):
             print("Inserting games...")
             session.run(
                 f"""
-                load csv with headers from "file:///{tmp_path}/games.csv" as row
+                load csv with headers from "file:///games.csv" as row
                 call {{
                     with row
                     create (g:Game {{name: row.name}})
@@ -141,7 +149,7 @@ def main(args):
             print("Inserting reviews...")
             session.run(
                 f"""
-                load csv with headers from "file:///{tmp_path}/reviews.csv" as row
+                load csv with headers from "file:///reviews.csv" as row
                 call {{
                     with row
                     match (u:User {{username: row.author}})
@@ -155,7 +163,7 @@ def main(args):
             print("Inserting likes...")
             session.run(
                 f"""
-                load csv with headers from "file:///{tmp_path}/likes.csv" as row
+                load csv with headers from "file:///likes.csv" as row
                 call {{
                     with row
                     match (u:User {{username: row.name}})
@@ -168,7 +176,7 @@ def main(args):
             print("Inserting follows...")
             session.run(
                 f"""
-                load csv with headers from "file:///{follows_path}" as row
+                load csv with headers from "file:///follows.csv" as row
                 call {{
                     with row
                     match (follower:User {{username: row.follower}})
