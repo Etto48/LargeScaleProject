@@ -5,11 +5,9 @@ import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
     @Query(
@@ -17,8 +15,7 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
         "MATCH (followed:User {username: $followedUsername})\n" +
         "MERGE (follower)-[:FOLLOWS]->(followed)"
     )
-    @Async
-    CompletableFuture<Void> addFollowRelationship(
+    Void addFollowRelationship(
             @Param("followerUsername") String followerUsername,
             @Param("followedUsername") String followedUsername
     );
@@ -27,8 +24,7 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
         "MATCH (follower:User {username: $followerUsername})-[r:FOLLOWS]->(following:User {username: $followedUsername})\n" +
         "DELETE r"
     )
-    @Async
-    CompletableFuture<Void> removeFollowRelationship(
+    Void removeFollowRelationship(
             @Param("followerUsername") String followerUsername,
             @Param("followedUsername") String followedUsername
     );
@@ -76,8 +72,7 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
         "match (u)-[:WROTE]->(r:Review)\n"+
         "detach delete u, r"
     )
-    @Async
-    CompletableFuture<Void> deleteUser(
+    Void deleteUser(
         @Param("username") String username
     );
 
@@ -92,7 +87,7 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
     @Query(
         "merge (u:User {username: $username})"
     )
-    CompletableFuture<Void> inserUserIfNotExists(
+    Void insertUserIfNotExists(
         @Param("username") String username
     );
 }

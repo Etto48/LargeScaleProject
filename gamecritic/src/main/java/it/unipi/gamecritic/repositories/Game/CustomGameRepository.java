@@ -5,6 +5,8 @@ import it.unipi.gamecritic.repositories.Game.DTO.TopGameDTO;
 
 import java.util.List;
 
+import org.bson.Document;
+
 public interface CustomGameRepository {
     //List<Game> findByName(String Name);
     List<Game> findByDynamicAttribute(String attributeName, String attributeValue);
@@ -13,8 +15,8 @@ public interface CustomGameRepository {
     List<Game> findVideoGamesOfCompany(String companyName);
     List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
     List<Game> search(String query);
-    void addGame(String game);
-    void editGame(String game, String id);
+    void addGame(Document game);
+    void editGame(Document game, String id);
     void deleteGame(String name);
     List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit);
     List<Float> companyScoreDistribution(String companyName);

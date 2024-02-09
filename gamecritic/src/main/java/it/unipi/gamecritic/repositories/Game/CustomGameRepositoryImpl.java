@@ -1,8 +1,5 @@
 package it.unipi.gamecritic.repositories.Game;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 
 import it.unipi.gamecritic.entities.Comment;
@@ -15,9 +12,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import java.util.List;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Calendar;
 
 import org.slf4j.Logger;
@@ -29,7 +23,6 @@ import org.springframework.data.mongodb.core.aggregation.DensifyOperation;
 import org.springframework.data.mongodb.core.aggregation.DensifyOperation.Range;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.scheduling.annotation.Async;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -191,7 +184,6 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
     }
 
     @Override
-    @Async
     public void deleteGame(String name) {
         if(name == null) {
             throw new IllegalArgumentException("The given name must not be null");
@@ -207,62 +199,22 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         mongoTemplate.remove(reviewsQuery, Review.class, "reviews");
     }
     @Override
-    @Async
-    public void addGame(String game){
-        Document doc = Document.parse(game);
-        doc.append("reviews",new ArrayList<>());
-        doc.append("user_review",null);
-        doc.append("reviewCount",null);
-        doc.append("Top3ReviewsByLikes",new ArrayList<>());
-        System.out.println("doc: "+doc);
-        mongoTemplate.save(doc,"videogames");
+    public void addGame(Document game){
+        if(game == null) {
+            throw new IllegalArgumentException("The given game must not be null");
+        }
+        mongoTemplate.save(game,"videogames");
     }
 
     @Override
-    @Async
-    public void editGame(String game, String id) {
+    public void editGame(Document game, String id) {
+        if(game == null) {
+            throw new IllegalArgumentException("The given game must not be null");
+        }
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode json = null;
-        try {
-            json = objectMapper.readTree(game);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        Update update = new Update();
-        Iterator<String> iterator = json.fieldNames();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            System.out.println("key: "+key);
-            if (key.equals("Released")){
-                String rd = json.get(key).get("Release Date").asText();
-                update.set("Released.Release Date",rd);
-                if (json.get(key).get("Platform").isArray()){
-                    ArrayList<String> arr = new ArrayList<>();
-                    for (JsonNode node : json.get(key).get("Platform")){
-                        arr.add(node.asText());
-                    }
-                    update.set("Released.Platform", arr);
-                }
-                else {
-                    update.set("Released.Platform", json.get(key).get("Platform").asText());
-                }
-            }
-            else{
-                if (json.get(key).isArray()){
-                    ArrayList<String> arr = new ArrayList<>();
-                    for (JsonNode node : json.get(key)) {
-                        arr.add(node.asText());
-                    }
-                    update.set(key, arr);
-                }
-                else{
-                    String value = json.get(key).asText();
-                    update.set(key, value);
-                }
-            }
-        }
+        
+        Update update = Update.fromDocument(game, "_id", "Name", "reviews", "user_review", "reviewCount", "Top3ReviewsByLikes");
 
         mongoTemplate.updateFirst(query,update,"videogames");
     }
@@ -377,7 +329,6 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
     }
 
     @Override
-    @Async
     public void updateTop3ReviewsByLikes()
     {
         Aggregation aggregation = Aggregation.newAggregation(

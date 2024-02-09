@@ -16,20 +16,20 @@ import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.Review;
-import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
-import it.unipi.gamecritic.repositories.Review.ReviewRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class GameController {
-	private final ReviewRepositoryMongoDB reviewRepository;
-	private final GameRepositoryMongoDB gameRepository;
+	private final ReviewRepository reviewRepository;
+	private final GameRepository gameRepository;
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
 	@Autowired
-	public GameController(ReviewRepositoryMongoDB reviewRepository, GameRepositoryMongoDB gameRepository) {
+	public GameController(ReviewRepository reviewRepository, GameRepository gameRepository) {
 		this.reviewRepository = reviewRepository;
 		this.gameRepository = gameRepository;
 	}

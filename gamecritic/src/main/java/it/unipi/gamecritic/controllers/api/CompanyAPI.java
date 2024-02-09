@@ -1,7 +1,9 @@
 package it.unipi.gamecritic.controllers.api;
 
 import it.unipi.gamecritic.Util;
-import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
+
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +15,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CompanyAPI {
-    private final GameRepositoryMongoDB gameRepository;
-    private final GameRepositoryNeo4J gameRepositoryNeo4J;
+    private final GameRepository gameRepository;
 
     @Autowired
-    public CompanyAPI(GameRepositoryMongoDB gameRepository, GameRepositoryNeo4J gameRepositoryNeo4J) {
+    public CompanyAPI(GameRepository gameRepository) {
         this.gameRepository = gameRepository;
-        this.gameRepositoryNeo4J = gameRepositoryNeo4J;
     }
 
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CompanyAPI.class);
     @RequestMapping(value = "/api/company/edit-game", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -44,11 +45,19 @@ public class CompanyAPI {
         {
             if(user.getAccountType().equals("Company"))
             {
-                if (Util.checkCorrectCompany(game, user.getCompany_name())) {
-                    gameRepository.editGame(game,id);
-                    return "\"success\"";
-                } else {
-                    return "\"Your company is not a developer nor a publisher of this game\"";
+                try
+                {
+                    Document gameDoc = Game.documentFromJson(game);
+                    if (Util.checkCorrectCompany(gameDoc, user.getCompany_name())) {
+                        gameRepository.editGame(gameDoc,id);
+                        return "\"success\"";
+                    } else {
+                        return "\"Your company is not a developer nor a publisher of this game\"";
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid game format");
                 }
             }
             else
@@ -67,7 +76,6 @@ public class CompanyAPI {
     @ResponseBody
     public String company_publish_game(
         @RequestParam(value = "game", required = true) String game,
-        @RequestParam(value = "gameName", required = true) String gameName,
         HttpServletRequest request,
         HttpSession session) 
     {
@@ -77,14 +85,21 @@ public class CompanyAPI {
         {
             if(user.getAccountType().equals("Company"))
             {
-                if (Util.checkCorrectCompany(game, user.getCompany_name())){
-                    logger.info("go for insert");
-                    gameRepository.addGame(game);
-                    gameRepositoryNeo4J.addGame(gameName);
-                    return "\"success\"";
+                try 
+                {
+                    Document gameDoc = Game.documentFromJson(game);
+                    if (Util.checkCorrectCompany(gameDoc, user.getCompany_name())){
+                    
+                        gameRepository.addGame(gameDoc);
+                        return "\"success\"";
+                    }
+                    else {
+                        return "\"Your company is not a developer nor a publisher of this game\"";
+                    }
                 }
-                else {
-                    return "\"Your company is not a developer nor a publisher of this game\"";
+                catch (Exception e)
+                {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid game format");
                 }
             }
             else
@@ -111,7 +126,6 @@ public class CompanyAPI {
             if(user.getAccountType().equals("Company"))
             {
                 gameRepository.deleteGame(name);
-                gameRepositoryNeo4J.deleteGame(name);
                 return "{}";
             }
             else

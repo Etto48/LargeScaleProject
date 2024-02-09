@@ -14,25 +14,22 @@ import org.springframework.web.server.ResponseStatusException;
 import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Review.ReviewRepositoryMongoDB;
-import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LikeAPI {
-    private final ReviewRepositoryMongoDB reviewRepository;
-    private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
+    private final ReviewRepository reviewRepository;
 
     @Autowired
     public LikeAPI(
-        ReviewRepositoryMongoDB reviewRepository,
-        ReviewRepositoryNeo4J reviewRepositoryNeo4J) 
+        ReviewRepository reviewRepository) 
     {
         this.reviewRepository = reviewRepository;
-        this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
     }
 
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(LikeAPI.class);
     @RequestMapping(value = "/api/like/set/review", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -45,28 +42,7 @@ public class LikeAPI {
         User user = (User) session.getAttribute("user");
         if (user != null)
         {
-            if (liked)
-            {
-                if(reviewRepositoryNeo4J.setLike(user.username, id))
-                { 
-                    reviewRepository.addLike(id);
-                }
-                else
-                {
-                    logger.warn("User " + user.username + " already liked review " + id);
-                }
-            }
-            else
-            {
-                if(reviewRepositoryNeo4J.removeLike(user.username, id))
-                {   
-                    reviewRepository.removeLike(id);
-                }
-                else
-                {
-                    logger.warn("User " + user.username + " already unliked review " + id);
-                }
-            }
+            reviewRepository.setLike(user.username, id, liked);
             return "{}";
         }
         else
@@ -94,11 +70,11 @@ public class LikeAPI {
     {
         User user = (User) session.getAttribute("user");
         LikeInfo info = null;
-        long likes = reviewRepositoryNeo4J.getLikes(id);
+        long likes = reviewRepository.getLikes(id);
         Boolean liked = null;
         if (user != null)
         {
-            liked = reviewRepositoryNeo4J.userLikedReview(user.username, id);
+            liked = reviewRepository.userLikedReview(user.username, id);
         }
         info = new LikeInfo(liked, likes);
         Gson gson = new Gson();

@@ -91,7 +91,6 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     }
 
     @Override
-    @Async
     public void deleteReview(String id)
     {
         if(id == null) {

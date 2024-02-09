@@ -17,7 +17,6 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.scheduling.annotation.Async;
 
 import com.mongodb.DBObject;
 
@@ -44,7 +43,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
         mongoTemplate.insert(user, "users");
     }
     @Override
-    @Async
     public void updateUser(User user, boolean updatePassword, boolean updateEmail) {
         if (user == null) {
             throw new IllegalArgumentException("The given user must not be null");
@@ -89,7 +87,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     }
 
     @Override
-    @Async
     public void deleteUser(String username) {
         if (username == null) {
             throw new IllegalArgumentException("The given username must not be null");
@@ -166,7 +163,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository{
     }
 
     @Override
-    @Async
     public void updateTop3ReviewsByLikes() {
         Aggregation aggregation = Aggregation.newAggregation(
             Aggregation.stage(

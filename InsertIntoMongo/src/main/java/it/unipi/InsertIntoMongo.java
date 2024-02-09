@@ -2,10 +2,8 @@ package it.unipi;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
@@ -166,7 +164,8 @@ public class InsertIntoMongo {
                         if (arrayNode.isObject()) {
                             howManyReviews++;
                             nestedDocument.append("reviewId", idFromBignum(reviewIdCounter));
-                            reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));                            nestedDocument.append("score", arrayNode.get("score").asDouble());
+                            reviewIdCounter = reviewIdCounter.add(new BigInteger("1"));
+                            nestedDocument.append("score", getValidatedScore(arrayNode));
                             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                             SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
                             Date datt = dateFormat.parse(arrayNode.get("date").asText());
@@ -238,6 +237,28 @@ public class InsertIntoMongo {
         collection.insertMany(documents);
     }
 
+    private static Integer getValidatedScore(JsonNode review)
+    {
+        JsonNode scoreNode = review.get("score");
+        if(scoreNode == null)
+        {
+            return null;
+        }
+        else
+        {
+            Integer score = scoreNode.asInt();
+            if (score < 1)
+            {
+                score = 1;
+            }
+            else if (score > 10)
+            {
+                score = 10;
+            }
+            return score;
+        }
+    }
+
     private static void insertReviewsAndComments(
         JsonNode jsonNode, 
         JsonNode reviewsInfoJson,
@@ -248,19 +269,6 @@ public class InsertIntoMongo {
         List<Document> comments = new ArrayList<>();
         for (JsonNode gameNode : jsonNode) {
             for (JsonNode reviewNode : gameNode.get("reviews")) {
-                Integer score = reviewNode.get("score").asInt();
-                if (score == 0)
-                {
-                    if (reviewNode.get("score").asText().equals("0"))
-                    {
-                        score = 1;
-                    }
-                    else
-                    {
-                        logger.warn("Review with non-int score \""+reviewNode.get("score").asText()+"\" found, setting score to null");
-                        score = null;
-                    }
-                }
                 JsonNode like_count_node = reviewsInfoJson.get(idFromBignum(reviewIdCounter).toHexString());
                 Integer like_count = 0;
                 if (like_count_node != null)
@@ -269,7 +277,7 @@ public class InsertIntoMongo {
                 }
                 Document document = new Document("_id", idFromBignum(reviewIdCounter))
                         .append("game", gameNode.get("Name").asText())
-                        .append("score", score)
+                        .append("score", getValidatedScore(reviewNode))
                         .append("quote", reviewNode.get("quote").asText())
                         .append("author", reviewNode.get("author").asText())
                         .append("date", reviewNode.get("date").asText())
@@ -305,26 +313,9 @@ public class InsertIntoMongo {
         }
     }
 
-    private static void insert_one(MongoCollection<Document> collection, Document document, String key) {
-        try
-        {
-            collection.insertOne(document);
-        }
-        catch (MongoWriteException e)
-        {
-            if (e.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY))
-            {
-                logger.warn("Skipped document with key \""+document.get(key)+"\" because it already exists");
-            }
-            else
-            {
-                logger.error("Error inserting document with key \""+document.get(key)+"\": "+e.getMessage());
-            }
-        }
-    }
-
     private static void insertCompanies(JsonNode jsonNode, MongoCollection<Document> collection) {
         // Iterate over each element in the JSON array and insert it into MongoDB
+        List<Document> documents = new LinkedList<>();
         Iterator<JsonNode> companiesIterator = jsonNode.iterator();
         while (companiesIterator.hasNext()) {
             JsonNode companyNode = companiesIterator.next();
@@ -332,12 +323,14 @@ public class InsertIntoMongo {
             companyDocument.append("Top3Games",new ArrayList<>());
             companyDocument.append("_id", idFromBignum(companyIdCounter));
             companyIdCounter = companyIdCounter.add(new BigInteger("1"));
-            insert_one(collection, companyDocument, "Name");
+            documents.add(companyDocument);
         }
+        collection.insertMany(documents);
     }
 
     private static void insertUsers(JsonNode jsonNode, MongoCollection<Document> collection) {
         // Iterate over each element in the JSON array and insert it into MongoDB
+        List<Document> documents = new LinkedList<>();
         Iterator<JsonNode> usersIterator = jsonNode.iterator();
         while (usersIterator.hasNext()) {
             JsonNode userNode = usersIterator.next();
@@ -355,12 +348,14 @@ public class InsertIntoMongo {
                 userDocument.append("is_admin", userNode.get("is_admin").asBoolean());
             }
             userIdCounter = userIdCounter.add(new BigInteger("1"));
-            insert_one(collection, userDocument, "username");
+            documents.add(userDocument);
         }
+        collection.insertMany(documents);
     }
 
     private static void insertUserImages(JsonNode jsonNode, MongoCollection<Document> collection) {
         // Iterate over each element in the JSON array and insert it into MongoDB
+        List<Document> documents = new LinkedList<>();
         Iterator<JsonNode> usersIterator = jsonNode.iterator();
         while (usersIterator.hasNext()) {
             JsonNode userNode = usersIterator.next();
@@ -368,8 +363,9 @@ public class InsertIntoMongo {
                     .append("username", userNode.get("username").asText())
                     .append("image", userNode.get("image").asText());
             userImageIdCounter = userImageIdCounter.add(new BigInteger("1"));
-            insert_one(collection, userDocument, "username");
+            documents.add(userDocument);
         }
+        collection.insertMany(documents);
     }
 
     @SuppressWarnings("unused")

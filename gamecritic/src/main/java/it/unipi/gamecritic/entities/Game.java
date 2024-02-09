@@ -83,4 +83,29 @@ public class Game {
         HashMap<String, Object> released = (HashMap<String, Object>) customAttributes.get("Released");
         this.released = released.get("Release Date").toString();
     }
+
+    public static org.bson.Document documentFromJson(String json) throws IllegalArgumentException {
+        org.bson.Document doc = org.bson.Document.parse(json);
+        if (doc == null)
+        {
+            throw new IllegalArgumentException("Invalid JSON");
+        }
+        if (doc.containsKey("_id")) {
+            doc.remove("_id");
+        }
+        if (!doc.containsKey("Name")) {
+            throw new IllegalArgumentException("Name is a required field");
+        }
+        if (!doc.containsKey("Developers")) {
+            doc.put("Developers", List.of());
+        }
+        if (!doc.containsKey("Publishers")) {
+            doc.put("Publishers", List.of());
+        }
+        doc.put("reviews", List.of());
+        doc.put("user_review",null);
+        doc.put("reviewCount",0);
+        doc.put("Top3ReviewsByLikes", List.of());
+        return doc;
+    }
 }

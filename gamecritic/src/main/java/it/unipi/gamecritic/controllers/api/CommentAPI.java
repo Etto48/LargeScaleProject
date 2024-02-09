@@ -14,17 +14,17 @@ import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.Comment;
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Comment.CommentRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.Comment.CommentRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CommentAPI {
-    private final CommentRepositoryMongoDB commentRepository;
+    private final CommentRepository commentRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CommentAPI.class);
 
-    public CommentAPI(CommentRepositoryMongoDB commentRepository) {
+    public CommentAPI(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
     }
     public class NewCommentInfo {

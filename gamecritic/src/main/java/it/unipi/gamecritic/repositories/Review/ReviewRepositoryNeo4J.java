@@ -4,11 +4,9 @@ import it.unipi.gamecritic.repositories.Review.DTO.ReviewDTO;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> {
     @Query(
@@ -33,9 +31,8 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "CREATE (u)-[:WROTE]->(r:Review {reviewId: $reviewId, score: $score})\n" +
         "CREATE (r)-[:ABOUT]->(g)"
     )
-    @Async
-    CompletableFuture<Void> insertReview(
-        @Param("username")String author,
+    Void insertReview(
+        @Param("author")String author,
         @Param("gameName")String gameName,
         @Param("reviewId")String reviewId,
         @Param("score")Integer score);
@@ -82,8 +79,7 @@ public interface ReviewRepositoryNeo4J extends Neo4jRepository<ReviewDTO, UUID> 
         "match (r:Review {reviewId: $reviewId})\n"+
         "detach delete r"
     )
-    @Async
-    CompletableFuture<Void> deleteReview(
+    Void deleteReview(
         @Param("reviewId")String reviewId
     );
 }

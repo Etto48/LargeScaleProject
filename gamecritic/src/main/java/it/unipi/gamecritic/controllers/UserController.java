@@ -8,11 +8,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import it.unipi.gamecritic.repositories.Review.ReviewRepositoryMongoDB;
-import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
-import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.Review.ReviewRepository;
+import it.unipi.gamecritic.repositories.User.UserRepository;
 import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
-import it.unipi.gamecritic.repositories.UserImage.UserImageRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -38,23 +37,20 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
-    private final ReviewRepositoryMongoDB reviewRepository;
-    private final UserRepositoryMongoDB userRepository;
-    private final UserRepositoryNeo4J userRepositoryNeo4J;
-    private final UserImageRepositoryMongoDB userImageRepository;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final UserImageRepository userImageRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     public UserController(
-        ReviewRepositoryMongoDB reviewRepository, 
-        UserRepositoryMongoDB userRepository, 
-        UserRepositoryNeo4J userRepositoryNeo4J,
-        UserImageRepositoryMongoDB userImageRepository) 
+        ReviewRepository reviewRepository, 
+        UserRepository userRepository, 
+        UserImageRepository userImageRepository) 
     {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
-        this.userRepositoryNeo4J = userRepositoryNeo4J;
         this.userImageRepository = userImageRepository;
     }
 
@@ -175,7 +171,7 @@ public class UserController {
         model.addAttribute("request", request);
         model.addAttribute("viewed_user_username", username);
 
-        List<UserDTO> followers = userRepositoryNeo4J.findFollowers(username);
+        List<UserDTO> followers = userRepository.findFollowers(username);
 
         model.addAttribute("follows", followers);
         model.addAttribute("mode", "followers");
@@ -194,7 +190,7 @@ public class UserController {
         model.addAttribute("request", request);
         model.addAttribute("viewed_user_username", username);
 
-        List<UserDTO> followed = userRepositoryNeo4J.findFollowed(username);
+        List<UserDTO> followed = userRepository.findFollowed(username);
 
         model.addAttribute("follows", followed);
         model.addAttribute("mode", "followed");

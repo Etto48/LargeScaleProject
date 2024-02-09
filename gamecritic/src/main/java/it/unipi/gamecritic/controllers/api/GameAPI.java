@@ -1,7 +1,6 @@
 package it.unipi.gamecritic.controllers.api;
 
 import java.util.List;
-import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +15,20 @@ import org.springframework.web.server.ResponseStatusException;
 import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.Game;
-import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class GameAPI {
-    private final GameRepositoryMongoDB gameRepository;
-    @SuppressWarnings("unused")
-    private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
+    private final GameRepository gameRepository;
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
+
 	@Autowired
-	public GameAPI(GameRepositoryMongoDB gameRepository, ReviewRepositoryNeo4J reviewRepositoryNeo4J) {
+	public GameAPI(GameRepository gameRepository) {
 		this.gameRepository = gameRepository;
-        this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
 	}
+    
     @RequestMapping(value = "/api/game", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String game(

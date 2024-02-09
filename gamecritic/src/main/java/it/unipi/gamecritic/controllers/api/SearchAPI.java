@@ -19,17 +19,17 @@ import com.google.gson.GsonBuilder;
 
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Company.CompanyRepositoryMongoDB;
-import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
-import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.Company.CompanyRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.User.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class SearchAPI {
-    private final GameRepositoryMongoDB gameRepository;
-    private final CompanyRepositoryMongoDB companyRepository;
-    private final UserRepositoryMongoDB userRepository;
+    private final GameRepository gameRepository;
+    private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
     @SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(SearchAPI.class);
     public class UserSearchResponse {
@@ -42,7 +42,11 @@ public class SearchAPI {
         public List<String> companies;
     }
     @Autowired
-	public SearchAPI(GameRepositoryMongoDB gameRepository, CompanyRepositoryMongoDB companyRepository, UserRepositoryMongoDB userRepository) {
+	public SearchAPI(
+        GameRepository gameRepository, 
+        CompanyRepository companyRepository, 
+        UserRepository userRepository) 
+    {
 		this.gameRepository = gameRepository;
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;

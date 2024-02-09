@@ -19,37 +19,28 @@ import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.user.CompanyManager;
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
-import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.Game.GameRepository;
 import it.unipi.gamecritic.repositories.Game.DTO.TopGameDTO;
-import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
-import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
+import it.unipi.gamecritic.repositories.User.UserRepository;
 import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class StatsAPI {
-    private final GameRepositoryMongoDB gameRepository;
-    @SuppressWarnings("unused")
-    private final GameRepositoryNeo4J gameRepositoryNeo4J;
-    private final UserRepositoryMongoDB userRepository;
-    private final UserRepositoryNeo4J userRepositoryNeo4J;
+    private final GameRepository gameRepository;
+    private final UserRepository userRepository;
 
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(StatsAPI.class);
 
     @Autowired
     public StatsAPI(
-        GameRepositoryMongoDB gameRepository, 
-        GameRepositoryNeo4J gameRepositoryNeo4J, 
-        UserRepositoryMongoDB userRepository, 
-        UserRepositoryNeo4J userRepositoryNeo4J) 
+        GameRepository gameRepository, 
+        UserRepository userRepository)
     {
         this.gameRepository = gameRepository;
-        this.gameRepositoryNeo4J = gameRepositoryNeo4J;
         this.userRepository = userRepository;
-        this.userRepositoryNeo4J = userRepositoryNeo4J;
     }
 
     public class Stat {
@@ -97,7 +88,7 @@ public class StatsAPI {
                 List<Float> globalScoreDistribution = gameRepository.globalScoreDistribution();
                 stats.add(new GraphStat("Global score distribution", globalScoreDistribution, Arrays.asList("1", "2", "3", "4","5", "6", "7", "8", "9", "10")));
                 
-                List<TopUserDTO> topUsersByLikes = userRepositoryNeo4J.topUsersByLikes();
+                List<TopUserDTO> topUsersByLikes = userRepository.topUsersByLikes();
                 if(!topUsersByLikes.isEmpty())
                 {
                     stats.add(new GraphStat("Top users by likes", topUsersByLikes.stream().map(x -> Float.valueOf(x.score)).toList(), topUsersByLikes.stream().map(x -> x.username).toList()));

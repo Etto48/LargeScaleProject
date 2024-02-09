@@ -20,8 +20,17 @@ def id_to_hex_str(id: int) -> str:
 def copy_file_to_server(file_path: str, server_path: str, server_addr: str, server_user: str):
     os.system(f"scp {file_path} {server_user}@{server_addr}:{server_path}")
 
+def move_files(src: str, dst: str, remote: bool, ):
+    if remote:
+        for file in os.listdir(src):
+            copy_file_to_server(os.path.join(src, file), "/var/lib/neo4j/import", "10.1.1.71", "root")
+            
+
 def main(args):
-    NEO4J_URI = "bolt://10.1.1.71:7687"
+    if args.remote:
+        NEO4J_URI = "bolt://10.1.1.71:7687"
+    else:
+        NEO4J_URI = "bolt://localhost:7687"
     NEO4J_AUTH = ()
     if (args.auth):
         NEO4J_AUTH = (input("Neo4j username: "), input("Neo4j password: "))
@@ -71,13 +80,17 @@ def main(args):
     pd.read_csv(args.follows).to_csv(os.path.join(args.tmp, "follows.csv"), index=False)
     likes.to_csv(os.path.join(args.tmp, "likes.csv"), index=False)
     
-    import_dir = "/var/lib/neo4j/import"
-    
-    #for file in os.listdir(args.tmp):
-    #    copy_file_to_server(os.path.join(args.tmp, file), import_dir, "10.1.1.71", "root")
+    move_files(args.tmp, args.remote)
         
     with neo.GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH) as driver:
         tmp_path = prepare_path(args.tmp)
+        add_path = ""
+        if args.use_full_path:
+            if args.remote:
+                add_path = "/var/lib/neo4j/import/"
+            else:
+                add_path = f"{tmp_path}/"
+        
         
         with driver.session() as session:
         
@@ -127,7 +140,7 @@ def main(args):
             print("Inserting users...")
             session.run(
                 f"""
-                load csv with headers from "file:///users.csv" as row
+                load csv with headers from "file:///{add_path}users.csv" as row
                 call {{
                     with row
                     create (u:User {{username: row.usernname}})
@@ -138,7 +151,7 @@ def main(args):
             print("Inserting games...")
             session.run(
                 f"""
-                load csv with headers from "file:///games.csv" as row
+                load csv with headers from "file:///{add_path}games.csv" as row
                 call {{
                     with row
                     create (g:Game {{name: row.name}})
@@ -149,7 +162,7 @@ def main(args):
             print("Inserting reviews...")
             session.run(
                 f"""
-                load csv with headers from "file:///reviews.csv" as row
+                load csv with headers from "file:///{add_path}reviews.csv" as row
                 call {{
                     with row
                     match (u:User {{username: row.author}})
@@ -163,7 +176,7 @@ def main(args):
             print("Inserting likes...")
             session.run(
                 f"""
-                load csv with headers from "file:///likes.csv" as row
+                load csv with headers from "file:///{add_path}likes.csv" as row
                 call {{
                     with row
                     match (u:User {{username: row.name}})
@@ -176,7 +189,7 @@ def main(args):
             print("Inserting follows...")
             session.run(
                 f"""
-                load csv with headers from "file:///follows.csv" as row
+                load csv with headers from "file:///{add_path}follows.csv" as row
                 call {{
                     with row
                     match (follower:User {{username: row.follower}})
@@ -202,5 +215,7 @@ if __name__ == "__main__":
     parser.add_argument('--tmp', type=str, help='tmp folder', default="./tmp")
     parser.add_argument('--auth', action='store_true', help='Use authentication', default=False)
     parser.add_argument('--batch-size', type=int, help='Batch size', default=1000)
+    parser.add_argument('--remote', action='store_true', help='Use remote server', default=False)
+    parser.add_argument('--use-full-path', action='store_true', help='Use full path, use this when the import path is disabled in the neo4j config', default=True)
     args = parser.parse_args()
     main(args)

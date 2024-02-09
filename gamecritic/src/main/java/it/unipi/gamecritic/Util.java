@@ -1,34 +1,80 @@
 package it.unipi.gamecritic;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+
+import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Util {
-    public static boolean checkCorrectCompany(String game, String company){
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode json = null;
-        try {
-            json = objectMapper.readTree(game);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        if(json.get("Publishers") != null)
+    private static final int MAX_RETRIES = 5;
+    private static final int SLEEP_TIME_MS = 1000;
+    private static final Logger logger = LoggerFactory.getLogger(Util.class);
+    public static boolean checkCorrectCompany(Document game, String company){
+        try
         {
-            if (json.get("Publishers").isArray()){
-                for (JsonNode node : json.get("Publishers")){
-                    if (node.asText().equals(company)) return true;
+            List<?> publishers = game.get("Publishers", List.class);
+            for (Object publisher : publishers){
+                if (publisher != null && publisher.toString().equals(company)) return true;
+            }
+        }
+        catch (ClassCastException e)
+        {
+            try 
+            {
+                String publishers = game.get("Publishers", String.class);
+                if (publishers.equals(company)) return true;
+            }
+            catch (ClassCastException e2)
+            {
+                
+            }
+        }
+
+        try
+        {
+            List<?> developers = game.get("Developers", List.class);
+            for (Object developer : developers){
+                if (developer != null && developer.toString().equals(company)) return true;
+            }
+        }
+        catch (ClassCastException e)
+        {
+            try 
+            {
+                String publishers = game.get("Publishers", String.class);
+                if (publishers.equals(company)) return true;
+            }
+            catch (ClassCastException e2)
+            {
+                
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean retryFor(Runnable runnable)
+    {   
+        for (int i = 0; i < MAX_RETRIES; i++)
+        {
+            try
+            {
+                runnable.run();
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger.warn("Retrying for the " + i + " time: " + e.getMessage());
+                try
+                {
+                    Thread.sleep(SLEEP_TIME_MS);
+                }
+                catch (InterruptedException e2)
+                {
+                    return false;
                 }
             }
-            else if (json.get("Publishers").asText().equals(company)) return true;
-        }
-        if(json.get("Developers") != null)
-        {
-            if (json.get("Developers").isArray()) {
-                for (JsonNode node : json.get("Developers")) {
-                    if (node.asText().equals(company)) return true;
-                }
-            } else if (json.get("Developers").asText().equals(company)) return true;
         }
         return false;
     }

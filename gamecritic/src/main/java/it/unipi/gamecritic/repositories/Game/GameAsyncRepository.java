@@ -3,6 +3,7 @@ package it.unipi.gamecritic.repositories.Game;
 import java.util.Arrays;
 
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.MergeOperation.WhenDocumentsDontMatch;
@@ -11,7 +12,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import it.unipi.gamecritic.entities.Game;
+import com.mongodb.DBObject;
+
 import it.unipi.gamecritic.entities.Review;
 
 /**
@@ -21,6 +23,7 @@ import it.unipi.gamecritic.entities.Review;
 public class GameAsyncRepository {
     private final MongoTemplate mongoTemplate;
 
+    @Autowired
     public GameAsyncRepository(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }    
@@ -46,7 +49,7 @@ public class GameAsyncRepository {
                 .build()          
         );
 
-        mongoTemplate.aggregate(updateAggregation, Game.class, Game.class).getMappedResults();
+        mongoTemplate.aggregate(updateAggregation, DBObject.class, DBObject.class).getMappedResults();
     }
 
     @Async
@@ -83,7 +86,7 @@ public class GameAsyncRepository {
                 .build()
         );
 
-        mongoTemplate.aggregate(updateAggregation, Game.class, Game.class).getMappedResults();
+        mongoTemplate.aggregate(updateAggregation, DBObject.class, DBObject.class).getMappedResults();
     }
 
     @Async
@@ -120,6 +123,6 @@ public class GameAsyncRepository {
                 .build()
         );
 
-        mongoTemplate.aggregate(updateAggregation, Game.class, Game.class).getMappedResults();
+        mongoTemplate.aggregate(updateAggregation, DBObject.class, DBObject.class).getMappedResults();
     }
 }
