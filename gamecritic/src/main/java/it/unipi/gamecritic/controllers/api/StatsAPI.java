@@ -19,10 +19,10 @@ import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.user.CompanyManager;
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
 import it.unipi.gamecritic.repositories.Game.DTO.TopGameDTO;
-import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
 import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,10 +30,10 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class StatsAPI {
-    private final GameRepository gameRepository;
+    private final GameRepositoryMongoDB gameRepository;
     @SuppressWarnings("unused")
     private final GameRepositoryNeo4J gameRepositoryNeo4J;
-    private final UserRepository userRepository;
+    private final UserRepositoryMongoDB userRepository;
     private final UserRepositoryNeo4J userRepositoryNeo4J;
 
     @SuppressWarnings("unused")
@@ -41,9 +41,9 @@ public class StatsAPI {
 
     @Autowired
     public StatsAPI(
-        GameRepository gameRepository, 
+        GameRepositoryMongoDB gameRepository, 
         GameRepositoryNeo4J gameRepositoryNeo4J, 
-        UserRepository userRepository, 
+        UserRepositoryMongoDB userRepository, 
         UserRepositoryNeo4J userRepositoryNeo4J) 
     {
         this.gameRepository = gameRepository;

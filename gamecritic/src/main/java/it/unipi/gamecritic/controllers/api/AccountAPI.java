@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
 import it.unipi.gamecritic.entities.Review;
 import jakarta.servlet.ServletException;
@@ -24,12 +24,12 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AccountAPI {
-    private final UserRepository userRepository;
+    private final UserRepositoryMongoDB userRepository;
     private final UserRepositoryNeo4J userRepositoryNeo4J;
     
     @Autowired
     public AccountAPI(
-        UserRepository userRepository, 
+        UserRepositoryMongoDB userRepository, 
         UserRepositoryNeo4J userRepositoryNeo4J) 
     {
         this.userRepository = userRepository;

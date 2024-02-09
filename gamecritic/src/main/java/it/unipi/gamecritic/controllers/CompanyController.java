@@ -20,19 +20,19 @@ import it.unipi.gamecritic.entities.Company;
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.entities.user.CompanyManager;
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Company.CompanyRepository;
-import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Company.CompanyRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CompanyController {
-    private final GameRepository gameRepository;
-    private final CompanyRepository companyRepository;
+    private final GameRepositoryMongoDB gameRepository;
+    private final CompanyRepositoryMongoDB companyRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CompanyController.class);
     @Autowired
-    public CompanyController(GameRepository gameRepository, CompanyRepository companyRepository) {
+    public CompanyController(GameRepositoryMongoDB gameRepository, CompanyRepositoryMongoDB companyRepository) {
         this.gameRepository = gameRepository;
         this.companyRepository = companyRepository;
     }

@@ -16,18 +16,18 @@ import org.springframework.web.server.ResponseStatusException;
 import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.Game;
-import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class GameAPI {
-    private final GameRepository gameRepository;
+    private final GameRepositoryMongoDB gameRepository;
     @SuppressWarnings("unused")
     private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
 	private static final Logger logger = LoggerFactory.getLogger(GameAPI.class);
 	@Autowired
-	public GameAPI(GameRepository gameRepository, ReviewRepositoryNeo4J reviewRepositoryNeo4J) {
+	public GameAPI(GameRepositoryMongoDB gameRepository, ReviewRepositoryNeo4J reviewRepositoryNeo4J) {
 		this.gameRepository = gameRepository;
         this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
 	}

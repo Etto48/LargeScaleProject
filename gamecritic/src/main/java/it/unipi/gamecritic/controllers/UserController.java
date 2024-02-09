@@ -8,11 +8,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import it.unipi.gamecritic.repositories.Review.ReviewRepository;
-import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
 import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
-import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
+import it.unipi.gamecritic.repositories.UserImage.UserImageRepositoryMongoDB;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -38,19 +38,19 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
-    private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
+    private final ReviewRepositoryMongoDB reviewRepository;
+    private final UserRepositoryMongoDB userRepository;
     private final UserRepositoryNeo4J userRepositoryNeo4J;
-    private final UserImageRepository userImageRepository;
+    private final UserImageRepositoryMongoDB userImageRepository;
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     public UserController(
-        ReviewRepository reviewRepository, 
-        UserRepository userRepository, 
+        ReviewRepositoryMongoDB reviewRepository, 
+        UserRepositoryMongoDB userRepository, 
         UserRepositoryNeo4J userRepositoryNeo4J,
-        UserImageRepository userImageRepository) 
+        UserImageRepositoryMongoDB userImageRepository) 
     {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;

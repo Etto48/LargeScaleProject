@@ -1,7 +1,7 @@
 package it.unipi.gamecritic.controllers.api;
 
 import it.unipi.gamecritic.Util;
-import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +20,11 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CompanyAPI {
-    private final GameRepository gameRepository;
+    private final GameRepositoryMongoDB gameRepository;
     private final GameRepositoryNeo4J gameRepositoryNeo4J;
 
     @Autowired
-    public CompanyAPI(GameRepository gameRepository, GameRepositoryNeo4J gameRepositoryNeo4J) {
+    public CompanyAPI(GameRepositoryMongoDB gameRepository, GameRepositoryNeo4J gameRepositoryNeo4J) {
         this.gameRepository = gameRepository;
         this.gameRepositoryNeo4J = gameRepositoryNeo4J;
     }

@@ -4,5 +4,5 @@ import it.unipi.gamecritic.entities.Company;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface CompanyRepository extends MongoRepository<Company, String>, CustomCompanyRepository{
+public interface CompanyRepositoryMongoDB extends MongoRepository<Company, String>, CustomCompanyRepository{
 }

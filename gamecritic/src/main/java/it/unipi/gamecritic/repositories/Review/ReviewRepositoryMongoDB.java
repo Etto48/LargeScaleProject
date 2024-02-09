@@ -4,6 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import it.unipi.gamecritic.entities.Review;
 
-public interface ReviewRepository extends MongoRepository<Review, String>, CustomReviewRepository {
+public interface ReviewRepositoryMongoDB extends MongoRepository<Review, String>, CustomReviewRepository {
     
 }

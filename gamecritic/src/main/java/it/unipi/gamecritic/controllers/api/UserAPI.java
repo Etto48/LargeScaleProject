@@ -21,25 +21,25 @@ import it.unipi.gamecritic.entities.UserImage;
 import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
 import it.unipi.gamecritic.repositories.Game.DTO.GameDTO;
-import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
 import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
-import it.unipi.gamecritic.repositories.UserImage.UserImageRepository;
+import it.unipi.gamecritic.repositories.UserImage.UserImageRepositoryMongoDB;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserAPI {
-    private final UserRepository userRepository;
-    private final UserImageRepository userImageRepository;
+    private final UserRepositoryMongoDB userRepository;
+    private final UserImageRepositoryMongoDB userImageRepository;
     private final UserRepositoryNeo4J userRepositoryNeo4J;
     private final GameRepositoryNeo4J gameRepositoryNeo4J;
     private static final Logger logger = LoggerFactory.getLogger(UserAPI.class);
 
     @Autowired
     public UserAPI(
-        UserRepository userRepository, 
-        UserImageRepository userImageRepository, 
+        UserRepositoryMongoDB userRepository, 
+        UserImageRepositoryMongoDB userImageRepository, 
         UserRepositoryNeo4J userRepositoryNeo4J,
         GameRepositoryNeo4J gameRepositoryNeo4J) {
         this.userRepository = userRepository;

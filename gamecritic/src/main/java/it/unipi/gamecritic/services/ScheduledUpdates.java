@@ -1,7 +1,7 @@
 package it.unipi.gamecritic.services;
 
-import it.unipi.gamecritic.repositories.Game.GameRepository;
-import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ScheduledUpdates {
-    private final GameRepository gameRepository;
-    private final UserRepository userRepository;
+    private final GameRepositoryMongoDB gameRepository;
+    private final UserRepositoryMongoDB userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledUpdates.class);
-    public ScheduledUpdates(GameRepository gameRepository, UserRepository userRepository) {
+    public ScheduledUpdates(GameRepositoryMongoDB gameRepository, UserRepositoryMongoDB userRepository) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
     }

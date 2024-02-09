@@ -16,35 +16,35 @@ import org.springframework.web.server.ResponseStatusException;
 import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Comment.CommentRepository;
-import it.unipi.gamecritic.repositories.Game.GameRepository;
+import it.unipi.gamecritic.repositories.Comment.CommentRepositoryMongoDB;
+import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.Game.GameRepositoryNeo4J;
-import it.unipi.gamecritic.repositories.Review.ReviewRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
-import it.unipi.gamecritic.repositories.User.UserRepository;
+import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.User.UserRepositoryNeo4J;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminAPI {
-    private final UserRepository userRepository;
+    private final UserRepositoryMongoDB userRepository;
     private final UserRepositoryNeo4J userRepositoryNeo4J;
-    private final ReviewRepository reviewRepository;
+    private final ReviewRepositoryMongoDB reviewRepository;
     private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
-    private final GameRepository gameRepository;
+    private final GameRepositoryMongoDB gameRepository;
     private final GameRepositoryNeo4J gameRepositoryNeo4J;
-    private final CommentRepository commentRepository;
+    private final CommentRepositoryMongoDB commentRepository;
 
     @Autowired
     public AdminAPI(
-        UserRepository userRepository, 
+        UserRepositoryMongoDB userRepository, 
         UserRepositoryNeo4J userRepositoryNeo4J,
-        ReviewRepository reviewRepository, 
+        ReviewRepositoryMongoDB reviewRepository, 
         ReviewRepositoryNeo4J reviewRepositoryNeo4J,
-        GameRepository gameRepository, 
+        GameRepositoryMongoDB gameRepository, 
         GameRepositoryNeo4J gameRepositoryNeo4J,
-        CommentRepository commentRepository) 
+        CommentRepositoryMongoDB commentRepository) 
     {
         this.userRepository = userRepository;
         this.userRepositoryNeo4J = userRepositoryNeo4J;

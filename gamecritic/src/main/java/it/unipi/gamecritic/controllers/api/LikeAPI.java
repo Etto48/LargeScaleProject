@@ -14,19 +14,19 @@ import org.springframework.web.server.ResponseStatusException;
 import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.user.User;
-import it.unipi.gamecritic.repositories.Review.ReviewRepository;
+import it.unipi.gamecritic.repositories.Review.ReviewRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.Review.ReviewRepositoryNeo4J;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LikeAPI {
-    private final ReviewRepository reviewRepository;
+    private final ReviewRepositoryMongoDB reviewRepository;
     private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
 
     @Autowired
     public LikeAPI(
-        ReviewRepository reviewRepository,
+        ReviewRepositoryMongoDB reviewRepository,
         ReviewRepositoryNeo4J reviewRepositoryNeo4J) 
     {
         this.reviewRepository = reviewRepository;
