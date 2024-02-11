@@ -35,7 +35,7 @@
 				<input id="game-img-edit" type="url" class="form-control" placeholder="Game Image URL"
 					   style="display:none;"/>
 				<div id = "attributeHolder">
-					<div th:each="att : ${allAttributes}" th:id="${att}" style="display:none">
+					<div th:each="att : ${allAttributes}" th:id="${att}" class="top" style="display:none">
 						<div th:switch="${att}">
 							<div th:case="'Released'">
 								<div th:replace="~{fragments/interfaces.html :: vector_input('Release Date','ReleaseDateEditor', 'Add Release Date' )}"></div>

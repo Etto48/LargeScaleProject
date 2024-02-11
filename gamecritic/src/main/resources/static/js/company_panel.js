@@ -246,6 +246,7 @@ function editGame(items) {
                 alert("Game edited successfully!");
                 resetAllVectorInput();
                 resetForms();
+                hideAllEditors();
             }
             else
             {   
@@ -256,6 +257,13 @@ function editGame(items) {
             alert("Error editing game: " + xhr.status + " " + xhr.statusText);
         }
     });
+}
+
+function hideAllEditors(){
+    var tops = document.getElementsByClassName("top");
+    for (var i = 0; i < tops.length; i++){
+        tops[i].style.display = "none";
+    }
 }
 
 function publishGame(items) {
@@ -369,10 +377,8 @@ function loadGameInfo() {
             var cDiv = pDiv.children;
             document.getElementById("game-description-edit").style.display = "initial";
             document.getElementById("game-img-edit").style.display = "initial";
-
             for (var i = 0; i < cDiv.length; i++) {
                 if (Object.keys(data.customAttributes).includes(cDiv[i].id)){
-
                     cDiv[i].style.display="initial";
                     if (cDiv[i].id === "_id"){
                         cDiv[i].style.display="none";

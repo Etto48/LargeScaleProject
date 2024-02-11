@@ -181,7 +181,7 @@ public class CompanyController {
                 excludedAttributes.add("img");
                 excludedAttributes.add("Releases by Date (by platform)");
                 for (Game g : games){
-
+                    logger.info(g.name);
                     for (String att : g.customAttributes.keySet()){
                         if (!allAttributes.contains(att) && !excludedAttributes.contains(att)){
                             allAttributes.add(att);
