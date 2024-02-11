@@ -69,7 +69,7 @@ public interface UserRepositoryNeo4J extends Neo4jRepository<UserDTO, UUID> {
 
     @Query(
         "match (u:User {username: $username})\n"+
-        "match (u)-[:WROTE]->(r:Review)\n"+
+        "optional match (u)-[:WROTE]->(r:Review)\n"+
         "detach delete u, r"
     )
     Void deleteUser(
