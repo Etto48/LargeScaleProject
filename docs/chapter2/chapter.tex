@@ -1,0 +1,51 @@
+\chapter{Dataset and Web Scraping}
+To populate our data, we did both web scraping and random data generation.
+\section{Data Scraping}
+The two sources for the scraping are the following:
+\begin{itemize}
+	\item \textbf{MetaCritic}
+	\item \textbf{MobyGames}
+\end{itemize}
+From the first we retrieved most of the reviews and usernames of our database.
+In particular, we retrieved the score, date, author name, text, and the name of the game reviewed.
+From the second one, we retrieved all of the information concerning videogames.
+We kept the most important attributes, such as Name, Genre, Release Date etc. and we discarded
+some MobyGames-specific attributes that were not relevant in our use case.
+
+\section{Data Generation}
+
+Some games that we found on MobyGames were not present on MetaCritic, so we randomly generated some
+reviews and users to associate to those games.
+To do so, we used Python algorithms. 
+\textit{insert how algorithms work}
+
+\begin{itemize}
+	\item \textbf{Variety} : we exploited two real different sources, having different formats 
+	\item \textbf{Velocity/Variability} : 
+	\begin{itemize}
+		\item Comments are frequently added/liked/responded to 
+		\item Most active users change periodically
+	\end{itemize}
+\end{itemize}
+\section{Raw Data}
+Data was retrieved from: 
+\begin{itemize}
+	\item MobyGames
+	\item MetaCritic 
+	\item generated data 
+\end{itemize}
+\section{Scraping Algorithms}
+We used \emph{Python} for scraping and data generation
+\subsection{Videogames Scraping}
+Data is scraped from \emph{MobyGames} for videogames info
+\subsection{Users and Review Scraping}
+Some data is scraped from \emph{Metacritic} for reviews, while other reviews are generated.
+Comment on reviews are generated using algorithms 
+\section{Resulting Dataset}
+The final volume wanders around 400 MB, which are the result of:
+\begin{itemize}
+	\item 70k videogames
+	\item 250k reviews 
+	\item 625k comments
+\end{itemize}
+

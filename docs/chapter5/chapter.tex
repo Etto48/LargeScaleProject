@@ -1,0 +1,357 @@
+\chapter{Queries}
+\section{Mongo DB}
+\subsection{Users}
+\subsubsection{Get top Users from Reviews}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1 , escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/CustomUserRepositoryImpl.java*/
+public List<TopUserDTO> topUsersByReviews(Integer months) {
+	if (months == null || months < 1) {
+		throw new IllegalArgumentException("The given months must not be null nor less than 1");
+	}
+	Calendar d = Calendar.getInstance();
+	Integer this_year = d.get(Calendar.YEAR);
+	Integer this_month = d.get(Calendar.MONTH) + 1;
+	String regex = "^(";
+	for(int i = 0; i < months; i++)
+	{
+		Integer month = this_month - i;
+		Integer year = this_year;
+		if(month <= 0)
+		{
+			month += 12;
+			year -= 1;
+		}
+		regex += year.toString() + "-" + String.format("%02d", month);
+		if(i != months - 1)
+		{
+			regex += "|";
+		}
+	}
+	regex += ")";
+	
+	Aggregation aggregation = Aggregation.newAggregation(
+	Aggregation.match(Criteria.where("date").regex(regex)),
+	Aggregation.group("author").count().as("reviews"),
+	Aggregation.sort(Sort.Direction.DESC, "reviews"),
+	Aggregation.limit(10)
+	);
+	List<DBObject> user_dbos = mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+	List<TopUserDTO> users = user_dbos.stream().map(user -> new TopUserDTO(user.get("_id").toString(), (Integer)user.get("reviews"))).toList();
+	return users;
+}
+\end{lstlisting}
+
+\subsubsection{Get top 3 Users' Reviews from Likes}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1 , escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/CustomUserRepositoryImpl.java*/
+public void updateTop3ReviewsByLikes() {
+	Aggregation aggregation = Aggregation.newAggregation(
+	Aggregation.stage(
+	"{\n" + //
+		"  $group: {\n" + //
+			"    _id: \"$author\",\n" + //
+			"    Top3ReviewsByLikes: {\n" + //
+				"      $topN: {\n" + //
+					"        n: 3,\n" + //
+					"        output: {\n" + //
+						"          _id: \"$_id\",\n" + //
+						"          game: \"$game\",\n" + //
+						"          quote: \"$quote\",\n" + //
+						"          author: \"$author\",\n" + //
+						"          date: \"$date\",\n" + //
+						"          score: \"$score\",\n" + //
+						"          likes: \"$likes\",\n" + //
+						"        },\n" + //
+					"        sortBy: {\n" + //
+						"          likes: -1,\n" + //
+						"        },\n" + //
+					"      },\n" + //
+				"    },\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $set: {\n" + //
+			"    username: \"$_id\",\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $project: {\n" + //
+			"    _id: 0,\n" + //
+			"    username: 1,\n" + //
+			"    Top3ReviewsByLikes: 1,\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $merge: {\n" + //
+			"    into: \"users\",\n" + //
+			"    on: \"username\",\n" + //
+			"    whenMatched: \"merge\",\n" + //
+			"    whenNotMatched: \"discard\",\n" + //
+			"  },\n" + //
+		"}"
+	)
+	).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+	
+	Instant start = Instant.now();
+	mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+	logger.info("Finished updating top 3 reviews by likes for all users in " + (Instant.now().toEpochMilli() - start.toEpochMilli()) + " ms");
+}
+}
+\end{lstlisting}
+\subsection{Videogames}
+\subsubsection{Get top Games from Average Score}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit) {
+	if (months == null || months < 1) {
+		throw new IllegalArgumentException("The given months must not be null nor less than 1");
+	}
+	Calendar d = Calendar.getInstance();
+	Integer this_year = d.get(Calendar.YEAR);
+	Integer this_month = d.get(Calendar.MONTH) + 1;
+	String regex = "^(";
+	for(int i = 0; i < months; i++)
+	{
+		Integer month = this_month - i;
+		Integer year = this_year;
+		if(month <= 0)
+		{
+			month += 12;
+			year -= 1;
+		}
+		regex += year.toString() + "-" + String.format("%02d", month);
+		if(i != months - 1)
+		{
+			regex += "|";
+		}
+	}
+	regex += ")";
+	
+	Aggregation aggregation = Aggregation.newAggregation(
+	Aggregation.match(new Criteria().orOperator(
+	Criteria.where("Developers").is(companyName),
+	Criteria.where("Publishers").is(companyName),
+	Criteria.where("Developers").elemMatch(new Criteria().is(companyName)),
+	Criteria.where("Publishers").elemMatch(new Criteria().is(companyName))
+	)),
+	Aggregation.unwind("reviews"),
+	Aggregation.match(new Criteria().andOperator(
+	Criteria.where("reviews.date").regex(regex),
+	Criteria.where("reviews.score").exists(true)
+	)),
+	Aggregation.group("Name").avg("reviews.score").as("averageScore").count().as("reviewCount").first("img").as("img"),
+	Aggregation.sort(Sort.Direction.DESC, "averageScore").and(Sort.Direction.DESC, "reviewCount"),
+	Aggregation.limit(limit)
+	);
+	List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "videogames", DBObject.class).getMappedResults();
+	List<TopGameDTO> games = games_dbos.stream().map(game -> new TopGameDTO(game.get("_id").toString(), ((Double)game.get("averageScore")).floatValue(), game.get("img") != null?game.get("img").toString():null)).toList();
+	return games;
+}
+
+\end{lstlisting}
+\subsubsection{Get top 3 Videogames' Reviews from Likes}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public void updateTop3ReviewsByLikes()
+{
+	Aggregation aggregation = Aggregation.newAggregation(
+	Aggregation.stage(
+	"{\n" + //
+		"  $group: {\n" + //
+			"    _id: \"$game\",\n" + //
+			"    Top3ReviewsByLikes: {\n" + //
+				"      $topN: {\n" + //
+					"        n: 3,\n" + //
+					"        output: {\n" + //
+						"          _id: \"$_id\",\n" + //
+						"          game: \"$game\",\n" + //
+						"          quote: \"$quote\",\n" + //
+						"          author: \"$author\",\n" + //
+						"          date: \"$date\",\n" + //
+						"          score: \"$score\",\n" + //
+						"          likes: \"$likes\",\n" + //
+						"        },\n" + //
+					"        sortBy: {\n" + //
+						"          likes: -1,\n" + //
+						"        },\n" + //
+					"      },\n" + //
+				"    },\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $set: {\n" + //
+			"    Name: \"$_id\",\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $project: {\n" + //
+			"    _id: 0,\n" + //
+			"    Name: 1,\n" + //
+			"    Top3ReviewsByLikes: 1,\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $merge: {\n" + //
+			"    into: \"videogames\",\n" + //
+			"    on: \"Name\",\n" + //
+			"    whenMatched: \"merge\",\n" + //
+			"    whenNotMatched: \"discard\",\n" + //
+			"  },\n" + //
+		"}"
+	)
+	).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+	
+	Instant start = Instant.now();
+	mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+	logger.info("Finished updating top 3 reviews by likes for all games in " + (Instant.now().toEpochMilli() - start.toEpochMilli()) + " ms");
+}
+}
+\end{lstlisting}
+\subsubsection{Company Score Distribution}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public List<Float> companyScoreDistribution(String companyName)
+{
+	Aggregation aggregation = Aggregation.newAggregation(
+		Aggregation.match(new Criteria().orOperator(
+		Criteria.where("Developers").is(companyName),
+		Criteria.where("Publishers").is(companyName),
+		Criteria.where("Developers").elemMatch(Criteria.where("$eq").is(companyName)),
+		Criteria.where("Publishers").elemMatch(Criteria.where("$eq").is(companyName))
+	)),
+	Aggregation.unwind("reviews"),
+	Aggregation.match(new Criteria().andOperator(
+		Criteria.where("reviews.score").exists(true),
+		Criteria.where("reviews.score").gt(0)
+	)),
+	Aggregation.group("reviews.score").count().as("count"),
+	DensifyOperation.builder().densify("_id").range(Range.bounded(1, 11).incrementBy(1)).build(),
+	Aggregation.sort(Sort.Direction.ASC, "_id")
+	);
+	List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "videogames", DBObject.class).getMappedResults();
+	List<Float> games = games_dbos.stream().map(game -> 
+	{
+		if(game.get("count") != null)
+		{
+			return ((Integer)game.get("count")).floatValue();
+		}
+		else
+		{
+			return 0f;
+		}
+	}).toList();
+	return games;
+}
+\end{lstlisting}
+\section{Neo4j}
+\subsection{Reviews}
+\subsubsection{Get more liked Reviews}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Review/ReviewRepositoryNeo4J.java*/
+@Query(
+	"MATCH (user:User {username: $username})-[:WROTE]->(review:Review)\n" +
+	"OPTIONAL MATCH (review)<-[like:LIKED]-()\n" +
+	"WITH review, COUNT(like) AS likeCount\n" +
+	"ORDER BY likeCount DESC\n" +
+	"LIMIT 3\n" +
+	"RETURN review, likeCount;"
+)
+List<ReviewDTO> findMostLikedReviewsForUsers(
+	@Param("username") String username
+);
+
+@Query(
+	"MATCH (game:Game {name: $name})<-[:ABOUT]-(review:Review)\n" +
+	"OPTIONAL MATCH (review)<-[like:LIKED]-()\n" +
+	"WITH review, COUNT(like) AS likeCount\n" +
+	"ORDER BY likeCount DESC\n" +
+	"LIMIT 3\n" +
+	"RETURN review, likeCount;"
+)
+List<ReviewDTO> findMostLikedReviewsForGames(@Param("name") String name);
+	
+\end{lstlisting}
+\subsubsection{Users}
+\subsubsection{Get Followers}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/UserRepositoryNeo4J.java*/
+@Query(
+	"MATCH (u:User {username: $username})\n"+
+	"MATCH (u)<-[:FOLLOWS]-(f:User)\n"+
+	"RETURN f"
+)
+List<UserDTO> findFollowers(
+	@Param("username") String username
+);
+\end{lstlisting}
+\subsubsection{Get Following}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/UserRepositoryNeo4J.java*/
+@Query(
+	"MATCH (u:User {username: $username})\n"+
+	"MATCH (u)-[:FOLLOWS]->(f:User)\n"+
+	"RETURN f"
+)
+List<UserDTO> findFollowed(
+	@Param("username") String username
+);
+\end{lstlisting}
+\subsection{Friends' suggestions}
+\subsubsection{From users' relationships}
+\subsubsection{From common interests}
+\section{Indexes}
+\subsection{MongoDB}
+	\begin{center}
+		\begin{tabular}{ |c|c|c|c|c|c| } 
+			\hline
+			\multicolumn{5}{|c|}{\textbf{MongoDB}}\\
+			\hline
+			\textbf{Query} & \textbf{Collection} &\textbf{Index Keys} & \textbf{Documents examined} &\textbf{ms} \\ 
+			\hline
+			\multirow{2}{*}{find({"Name":name})} & \multirow{2}{*}{videogames} & - & 69553 & 38 $ms$ \\ &&Name & 1  & 0 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{find({"author":author})} & \multirow{2}{*}{reviews} & - & 250981 & 92 $ms$ \\ && author & 1 & 3 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{Query3} & \multirow{2}{*}{reviews} & - & numDoc & $ms$ \\ && \{author, game\} & numDoc & $ms$  \\ 
+			\hline
+			\multirow{2}{*}{find({"game":game})} & \multirow{2}{*}{reviews} & - & 250981 & 92 $ms$ \\ && game & 5 & 3 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{find({"reviewId":reviewId})} & \multirow{2}{*}{comments} & - & 625435 & 681 $ms$ \\ && game & 3 & 0 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{find({"Name": Name})} & \multirow{2}{*}{companies} & - & 6556 & 10 $ms$ \\ && reviewId & 1 & 1 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{find({"username": username})} & \multirow{2}{*}{users} & - & 170594 & 80 $ms$ \\ && username & 1 & 1 $ms$  \\
+			\hline
+			\multirow{2}{*}{find({"username": username})} & \multirow{2}{*}{userImages} & - & 170594 & 78 $ms$ \\ && username & 1 & 1 $ms$  \\  
+			\hline
+		\end{tabular}
+	\end{center}
+
+\subsection{Neo4j}
+	\begin{center}
+	\begin{tabular}{ |c|c|c|c|c|c| } 
+		\hline
+		\multicolumn{6}{|c|}{\textbf{Neo4j}}\\
+		\hline
+		\textbf{Query}&\textbf{Index Name} & \textbf{Nodes' Label} &\textbf{Property} & \textbf{Hits} & \textbf{(ms)} \\ 
+		\hline
+		\multirow{2}{*}{Query1} & - & - & - & numHits & $ms$ \\ & \emph{username\_index} & User & username & numHits & $ms$  \\ 
+		\hline
+		\multirow{2}{*}{Query2} & - & - & - & numHits & $ms$ \\ & \emph{game\_index} & Game & name & numHits & $ms$  \\
+		\hline 
+		\multirow{2}{*}{Query3} & - & - & - & numHits & $ms$ \\ & \emph{review\_index} & Review & reviewId & numHits & $ms$  \\ 
+		\hline
+	\end{tabular}
+\end{center}
