@@ -9,7 +9,18 @@ a.card.user-suggestion img
     aspect-ratio: 1/1;
 }
 div.container-sugg{
+    text-align: center;
+    display: inline-block;
+    border-radius: 10px;
+    border-style: solid;
+    border-width:thin;
+    border-color: rgba(255, 255, 255, 0.15);
+    margin-bottom: 24px;
+    padding: 10px;
 
+}
+div.text-secondary{
+    font-size: 20px;
 }
 
 div.user-suggestion-container,
