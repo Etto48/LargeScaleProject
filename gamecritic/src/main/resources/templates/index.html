@@ -36,7 +36,7 @@
             </article>
         </script>
         <script id="suggestions-template" type="text/template">
-            <div class="container-sugg text-secondary"> Recommended Users
+            <div id="rec_users" class="container-sugg text-secondary" style="{{usersStyle}}"> Recommended Users
                 <div class="mb-4 gap-3 user-suggestion-container">
                     {{#each users}}
                     <a class="card shadow user-suggestion light-overlay-on-hover" href="{{url}}">
@@ -48,7 +48,7 @@
                     {{/each}}
                 </div>
             </div>
-            <div class="container-sugg text-secondary"> Recommended Games
+            <div id="rec_games" class="container-sugg text-secondary" style="{{gamesStyle}}"> Recommended Games
                 <div class="mb-4 gap-3 game-suggestion-container">
                     {{#each games}}
                     <a class="card shadow game-suggestion light-overlay-on-hover" href="{{url}}">
