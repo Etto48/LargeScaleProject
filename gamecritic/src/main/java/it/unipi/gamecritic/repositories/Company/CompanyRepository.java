@@ -2,6 +2,7 @@ package it.unipi.gamecritic.repositories.Company;
 
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import it.unipi.gamecritic.entities.Company;
@@ -22,5 +23,11 @@ public class CompanyRepository implements CustomCompanyRepository {
     public List<Company> search(String query)
     {
         return companyRepositoryMongoDB.search(query);
+    }
+
+    @Async
+    public void updateTop3Games()
+    {
+        companyRepositoryMongoDB.updateTop3Games();
     }
 }

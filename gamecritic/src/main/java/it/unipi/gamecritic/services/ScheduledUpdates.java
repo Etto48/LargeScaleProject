@@ -1,5 +1,6 @@
 package it.unipi.gamecritic.services;
 
+import it.unipi.gamecritic.repositories.Company.CompanyRepository;
 import it.unipi.gamecritic.repositories.Game.GameRepositoryMongoDB;
 import it.unipi.gamecritic.repositories.User.UserRepositoryMongoDB;
 
@@ -12,11 +13,17 @@ import org.springframework.stereotype.Service;
 public class ScheduledUpdates {
     private final GameRepositoryMongoDB gameRepository;
     private final UserRepositoryMongoDB userRepository;
+    private final CompanyRepository companyRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledUpdates.class);
-    public ScheduledUpdates(GameRepositoryMongoDB gameRepository, UserRepositoryMongoDB userRepository) {
+    public ScheduledUpdates(
+        GameRepositoryMongoDB gameRepository, 
+        UserRepositoryMongoDB userRepository,
+        CompanyRepository companyRepository) 
+    {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
+        this.companyRepository = companyRepository;
     }
     // Every day at 3:00 AM
     @Scheduled(cron = "0 3 * * * ?")
@@ -24,6 +31,7 @@ public class ScheduledUpdates {
         logger.info("Updating top 3 reviews for users and games");
         gameRepository.updateTop3ReviewsByLikes();
         userRepository.updateTop3ReviewsByLikes();
+        companyRepository.updateTop3Games();
     }
 
 }

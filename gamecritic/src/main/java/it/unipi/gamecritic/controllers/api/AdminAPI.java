@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 
 import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.Comment.CommentRepository;
+import it.unipi.gamecritic.repositories.Company.CompanyRepository;
 import it.unipi.gamecritic.repositories.Game.GameRepository;
 import it.unipi.gamecritic.repositories.Review.ReviewRepository;
 import it.unipi.gamecritic.repositories.User.UserRepository;
@@ -28,6 +29,7 @@ public class AdminAPI {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final GameRepository gameRepository;
+    private final CompanyRepository companyRepository;
     private final CommentRepository commentRepository;
 
     @Autowired
@@ -35,11 +37,13 @@ public class AdminAPI {
         UserRepository userRepository, 
         ReviewRepository reviewRepository, 
         GameRepository gameRepository, 
+        CompanyRepository companyRepository,
         CommentRepository commentRepository) 
     {
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
         this.gameRepository = gameRepository;
+        this.companyRepository = companyRepository;
         this.commentRepository = commentRepository;
     }
 
@@ -64,7 +68,8 @@ public class AdminAPI {
         logger.info("Delete game \"" + name + "\" by " + user.username);
     }
 
-    public void update_top_reviews(String collection) {
+    public String update_top_reviews(String collection) {
+        String response = "";
         if(collection.equals("games") || collection.equals("all"))
         {
             gameRepository.updateTop3ReviewsByLikes();
@@ -73,11 +78,28 @@ public class AdminAPI {
         {
             userRepository.updateTop3ReviewsByLikes();
         }
-        else
+        if(collection.equals("companies") || collection.equals("all"))
+        {
+            companyRepository.updateTop3Games();
+        }
+        if(!collection.equals("games") && !collection.equals("users") && !collection.equals("companies") && !collection.equals("all"))
         {
             throw new IllegalArgumentException("Invalid argument \""+collection+"\"");
         }
-        logger.info("Updating top reviews for " + collection);
+        if(collection.equals("all"))
+        {
+            response = "Updating top reviews for games, users and top games for companies";
+        }
+        else if(collection.equals("companies"))
+        {
+            response = "Updating top games for companies";
+        }
+        else
+        {
+            response = "Updating top reviews for " + collection;
+        }
+        logger.info(response);
+        return response;
     }
 
 
@@ -266,18 +288,18 @@ public class AdminAPI {
                     case "update":
                         if (tokens.size() == 2){
                             try{
-                                update_top_reviews(tokens.get(1));
+                                String response = update_top_reviews(tokens.get(1));
+                                return gson.toJson(new TerminalResponse(response, false));
                             }
                             catch(IllegalArgumentException e)
                             {
                                 return gson.toJson(new TerminalResponse(e.getMessage(), true));
                             }
-                            return gson.toJson(new TerminalResponse("Updating top reviews for " + tokens.get(1), false));
                         } else {
-                            return gson.toJson(new TerminalResponse("Usage: update <games|users|all>", true));
+                            return gson.toJson(new TerminalResponse("Usage: update <games|users|companies|all>", true));
                         }
                     case "help":
-                        return gson.toJson(new TerminalResponse("Available commands:\nban <username>\ndelete <review|comment|game> <id|name>\nupdate <games|users|all>\nhelp\n", false));
+                        return gson.toJson(new TerminalResponse("Available commands:\nban <username>\ndelete <review|comment|game> <id|name>\nupdate <games|users|companies|all>\nhelp\n", false));
                     default:
                         return gson.toJson(new TerminalResponse("Command not found, use \"help\" for a list of available commands", true));
                 }
