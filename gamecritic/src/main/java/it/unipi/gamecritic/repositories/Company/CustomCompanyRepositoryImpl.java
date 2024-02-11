@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 public class CustomCompanyRepositoryImpl implements CustomCompanyRepository{
     private final MongoTemplate mongoTemplate;
-    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CustomCompanyRepositoryImpl.class);
 
     public CustomCompanyRepositoryImpl(MongoTemplate mongoTemplate) {
