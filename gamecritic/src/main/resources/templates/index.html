@@ -36,24 +36,28 @@
             </article>
         </script>
         <script id="suggestions-template" type="text/template">
-            <div class="mb-4 gap-3 user-suggestion-container">
-                {{#each users}}
-                <a class="card shadow user-suggestion light-overlay-on-hover" href="{{url}}">
-                    <div class="card-body">
-                        <img src="{{img}}" class="rounded-circle mb-2" alt="User Image">
-                        <h3 class="fs-2">{{username}}</h3>
-                    </div>
-                </a>
-                {{/each}}
+            <div class="container-sugg text-secondary"> Recommended Users
+                <div class="mb-4 gap-3 user-suggestion-container">
+                    {{#each users}}
+                    <a class="card shadow user-suggestion light-overlay-on-hover" href="{{url}}">
+                        <div class="card-body">
+                            <img src="{{img}}" class="rounded-circle mb-2" alt="User Image">
+                            <h3 class="fs-2">{{username}}</h3>
+                        </div>
+                    </a>
+                    {{/each}}
+                </div>
             </div>
-            <div class="mb-4 gap-3 game-suggestion-container">
-                {{#each games}}
-                <a class="card shadow game-suggestion light-overlay-on-hover" href="{{url}}">
-                    <div class="card-body">
-                        <h3 class="fs-2">{{name}}</h3>
-                    </div>
-                </a>
-                {{/each}}
+            <div class="container-sugg text-secondary"> Recommended Games
+                <div class="mb-4 gap-3 game-suggestion-container">
+                    {{#each games}}
+                    <a class="card shadow game-suggestion light-overlay-on-hover" href="{{url}}">
+                        <div class="card-body">
+                            <h3 class="fs-2">{{name}}</h3>
+                        </div>
+                    </a>
+                    {{/each}}
+                </div>
             </div>
         </script>
         <main class="container flex-column" id="main">

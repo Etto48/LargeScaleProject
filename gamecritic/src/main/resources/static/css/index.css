@@ -8,6 +8,16 @@ a.card.user-suggestion img
     width: 100%;
     aspect-ratio: 1/1;
 }
+div.container-sugg{
+    text-align: center;
+    display: inline-block;
+    margin-bottom: 24px;
+    padding: 10px;
+
+}
+div.text-secondary{
+    font-size: 20px;
+}
 
 div.user-suggestion-container,
 div.game-suggestion-container
