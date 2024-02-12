@@ -20,7 +20,7 @@ def id_to_hex_str(id: int) -> str:
 def copy_file_to_server(file_path: str, server_path: str, server_addr: str, server_user: str):
     os.system(f"scp {file_path} {server_user}@{server_addr}:{server_path}")
 
-def move_files(src: str, dst: str, remote: bool, ):
+def move_files(src: str, remote: bool, ):
     if remote:
         for file in os.listdir(src):
             copy_file_to_server(os.path.join(src, file), "/var/lib/neo4j/import", "10.1.1.71", "root")
@@ -216,6 +216,6 @@ if __name__ == "__main__":
     parser.add_argument('--auth', action='store_true', help='Use authentication', default=False)
     parser.add_argument('--batch-size', type=int, help='Batch size', default=1000)
     parser.add_argument('--remote', action='store_true', help='Use remote server', default=False)
-    parser.add_argument('--use-full-path', action='store_true', help='Use full path, use this when the import path is disabled in the neo4j config', default=True)
+    parser.add_argument('--use-full-path', type=bool, help='Use full path, use this when the import path is disabled in the neo4j config', default=True)
     args = parser.parse_args()
     main(args)
