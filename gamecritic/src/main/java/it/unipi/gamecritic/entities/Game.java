@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,8 +63,10 @@ public class Game {
         this.name = customAttributes.get("Name").toString();
         @SuppressWarnings("unchecked")
         List<org.bson.Document> reviews_object = (List<org.bson.Document>)db.get("Top3ReviewsByLikes");
-        this.top_reviews = reviews_object.stream().map(Review::new).toList();
-        
+        if (reviews_object != null){
+            this.top_reviews = reviews_object.stream().map(Review::new).toList();
+        }
+        else this.top_reviews = new ArrayList<>();
         @SuppressWarnings("unchecked")
         HashMap<String,Object> released = (HashMap<String,Object>) customAttributes.get("Released");
         this.released = released.get("Release Date").toString();

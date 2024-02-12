@@ -9,12 +9,17 @@ function addSuggestions() {
         url: "/api/user/suggest",
         type: "GET",
         success: function (data) {
+            var usersStyle = "";
+            var gamesStyle = "";
             if(Object.keys(data).length == 0 || (data.users.length == 0 && data.games.length == 0)) {
                 Atomics.store(loading_page, 0, 0);
                 return;
             }
             var template = Handlebars.compile(document.getElementById("suggestions-template").innerHTML);
             var users = [];
+            if (data.users.length == 0){
+                usersStyle = "display:none";
+            }
             data.users.forEach(function (user) {
                 var new_user = {};
                 new_user.username = user;
@@ -23,13 +28,16 @@ function addSuggestions() {
                 users.push(new_user);
             });
             var games = [];
+            if (data.games.length == 0){
+                gamesStyle = "display:none";
+            }
             data.games.forEach(function (game){
                 var new_game = {};
                 new_game.name = game;
                 new_game.url = "/game/" + encodeURIComponent(new_game.name);
                 games.push(new_game);
             })
-            var template_data = {users: users, games: games};
+            var template_data = {users: users, games: games, usersStyle:usersStyle, gamesStyle:gamesStyle};
             var html = template(template_data);
             $(html).insertBefore("#dummy-loading-game");
             Atomics.store(loading_page, 0, 0);

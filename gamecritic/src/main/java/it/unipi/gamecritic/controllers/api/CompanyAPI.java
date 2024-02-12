@@ -47,7 +47,7 @@ public class CompanyAPI {
             {
                 try
                 {
-                    Document gameDoc = Game.documentFromJson(game);
+                    Document gameDoc = Document.parse(game);
                     if (Util.checkCorrectCompany(gameDoc, user.getCompany_name())) {
                         gameRepository.editGame(gameDoc,id);
                         return "\"success\"";
