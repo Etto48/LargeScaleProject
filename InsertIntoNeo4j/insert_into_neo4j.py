@@ -22,8 +22,10 @@ def copy_file_to_server(file_path: str, server_path: str, server_addr: str, serv
 
 def move_files(src: str, remote: bool, ):
     if remote:
+        local_files = ""
         for file in os.listdir(src):
-            copy_file_to_server(os.path.join(src, file), "/var/lib/neo4j/import", "10.1.1.71", "root")
+            local_files += f" {os.path.join(src, file)}"
+        copy_file_to_server(local_files, "/var/lib/neo4j/import", "10.1.1.71", "root")
             
 
 def main(args):
@@ -85,7 +87,7 @@ def main(args):
     with neo.GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH) as driver:
         tmp_path = prepare_path(args.tmp)
         add_path = ""
-        if args.use_full_path:
+        if not args.use_short_path:
             if args.remote:
                 add_path = "/var/lib/neo4j/import/"
             else:
@@ -216,6 +218,6 @@ if __name__ == "__main__":
     parser.add_argument('--auth', action='store_true', help='Use authentication', default=False)
     parser.add_argument('--batch-size', type=int, help='Batch size', default=1000)
     parser.add_argument('--remote', action='store_true', help='Use remote server', default=False)
-    parser.add_argument('--use-full-path', type=bool, help='Use full path, use this when the import path is disabled in the neo4j config', default=True)
+    parser.add_argument('--use-short-path', action='store_true', help='Use short path, use this when the import path is enabled in the neo4j config', default=False)
     args = parser.parse_args()
     main(args)
