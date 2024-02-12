@@ -142,7 +142,9 @@ public class InsertIntoMongo {
     private static void insertDynamicData(JsonNode jsonNode, MongoCollection<Document> collection) throws ParseException {
         List<Document> documents = new ArrayList<>();
         int howManyReviews = 0;
-
+        List<String> ignore_attributes = List.of(
+            "Critics", "Official Site", "Releases by Date (by platform)"
+        );
         for (JsonNode gameNode : jsonNode) {
             howManyReviews = 0;
             Document document = new Document("_id", idFromBignum(gameIdCounter));
@@ -153,9 +155,6 @@ public class InsertIntoMongo {
                 String fieldName = fieldNames.next();
 
                 JsonNode fieldValue = gameNode.get(fieldName);
-                if (fieldName.equals("Official Site")){
-                    continue;
-                }
                 if (fieldName.equals("reviews")) {
                     List<Object> arrayValues = new ArrayList<>();
 
@@ -215,6 +214,9 @@ public class InsertIntoMongo {
                     d.append("Platform", plat);
                     document.append(fieldName,d);
 
+                }
+                else if(ignore_attributes.contains(fieldName)){
+                    continue;
                 }
                 else if (fieldValue.isObject() || fieldValue.isTextual()) {
                     document.append(fieldName, fieldValue.asText());

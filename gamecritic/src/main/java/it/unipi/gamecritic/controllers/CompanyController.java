@@ -175,11 +175,9 @@ public class CompanyController {
                 excludedAttributes.add("reviewCount");
                 excludedAttributes.add("Top3ReviewsByLikes");
                 //excludedAttributes.add("_id");
-                excludedAttributes.add("Critics");
                 excludedAttributes.add("Name");
                 excludedAttributes.add("Description");
                 excludedAttributes.add("img");
-                excludedAttributes.add("Releases by Date (by platform)");
                 for (Game g : games){
 
                     for (String att : g.customAttributes.keySet()){
