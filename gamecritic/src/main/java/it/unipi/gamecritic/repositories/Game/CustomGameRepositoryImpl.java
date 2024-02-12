@@ -220,8 +220,11 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         logger.info("name of game "+game.get("Name"));
         Update update = new Update();
         for (String key : game.keySet()){
-            logger.info(key);
-            update.set(key,game.get(key));
+            if(key!=null)
+            {
+                logger.info(key);
+                update.set(key,game.get(key));
+            }
         }
         mongoTemplate.updateFirst(query,update,"videogames");
     }
