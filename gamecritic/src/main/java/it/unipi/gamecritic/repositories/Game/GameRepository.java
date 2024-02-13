@@ -46,9 +46,9 @@ public class GameRepository implements CustomGameRepository {
         return gameRepositoryMongoDB.findVideoGamesOfCompany(companyName);
     }
 
-    public List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest)
+    public List<Game> findHottest(Integer offset)
     {
-        return gameRepositoryMongoDB.findVideoGamesWithMostReviewsLastMonth(offset, latest);
+        return gameRepositoryMongoDB.findHottest(offset);
     }
 
     public List<Game> search(String query)

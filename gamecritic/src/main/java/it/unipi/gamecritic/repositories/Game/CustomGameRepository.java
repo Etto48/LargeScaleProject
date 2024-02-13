@@ -13,7 +13,7 @@ public interface CustomGameRepository {
     List<Game> findLatest(Integer offset);
     List<Game> findBest(Integer offset);
     List<Game> findVideoGamesOfCompany(String companyName);
-    List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest);
+    List<Game> findHottest(Integer offset);
     List<Game> search(String query);
     void addGame(Document game);
     void editGame(Document game, String id);

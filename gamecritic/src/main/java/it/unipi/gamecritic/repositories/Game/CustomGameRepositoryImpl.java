@@ -96,16 +96,10 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
     }
 
     @Override
-    public List<Game> findVideoGamesWithMostReviewsLastMonth(Integer offset, String latest) {
+    public List<Game> findHottest(Integer offset) {
         LocalDate currentDate = LocalDate.now();
         LocalDate ago;
-        if (latest.equals("month")){
-            ago = currentDate.minusMonths(6);
-            // per ora metto 6 per testing
-        }
-        else {
-            ago = currentDate.minusMonths(6);
-        }
+        ago = currentDate.minusMonths(6);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = ago.format(formatter);
         Aggregation a = Aggregation.newAggregation(

@@ -62,7 +62,7 @@ public class GameAPI {
         Integer offset = page * num_results;
         if (kind.equals("hottest"))
         {
-            List<Game> games = gameRepository.findVideoGamesWithMostReviewsLastMonth(offset,"month");
+            List<Game> games = gameRepository.findHottest(offset);
             if (games.isEmpty()){
                 logger.warn("No games found on \""+kind+"\" page "+page.toString());
             }
