@@ -29,7 +29,6 @@ import jakarta.servlet.http.HttpSession;
 public class CompanyController {
     private final GameRepository gameRepository;
     private final CompanyRepository companyRepository;
-    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(CompanyController.class);
     @Autowired
     public CompanyController(GameRepository gameRepository, CompanyRepository companyRepository) {

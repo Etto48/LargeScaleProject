@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import it.unipi.gamecritic.Util;
 import it.unipi.gamecritic.entities.user.User;
 import it.unipi.gamecritic.repositories.User.DTO.TopUserDTO;
 import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
@@ -13,16 +13,13 @@ import it.unipi.gamecritic.repositories.User.DTO.UserDTO;
 @Component
 public class UserRepository implements CustomUserRepository {
     private final UserRepositoryMongoDB userRepositoryMongoDB;
-    private final UserAsyncRepository userAsyncRepository;
     private final UserRepositoryNeo4J userRepositoryNeo4J;
 
     public UserRepository(
         UserRepositoryMongoDB userRepositoryMongoDB, 
-        UserAsyncRepository userAsyncRepository,
         UserRepositoryNeo4J userRepositoryNeo4J) 
     {
         this.userRepositoryMongoDB = userRepositoryMongoDB;
-        this.userAsyncRepository = userAsyncRepository;
         this.userRepositoryNeo4J = userRepositoryNeo4J;
     }
 
@@ -44,11 +41,13 @@ public class UserRepository implements CustomUserRepository {
     }
 
     @Override
-    public boolean insertUserIfNotExists(User user) {
+    @Transactional
+    public boolean insertUserIfNotExists(User user)
+    {
         try {
             if(userRepositoryMongoDB.insertUserIfNotExists(user))
             {   
-                userAsyncRepository.completeInsertIfNotExists(user);
+                userRepositoryNeo4J.insertUserIfNotExists(user.username);
                 return true;
             }
             else
@@ -61,20 +60,11 @@ public class UserRepository implements CustomUserRepository {
     }
 
     @Override
-    public void deleteUser(String username) {
-        try {
-            userRepositoryMongoDB.deleteUser(username);
-        }
-        catch (Exception e)
-        {
-            throw new IllegalArgumentException("Error while deleting user");
-        }
-        if(!Util.retryFor(() -> {
-            userRepositoryNeo4J.deleteUser(username);
-        }))
-        {
-            throw new IllegalArgumentException("Error while deleting user from Neo4J");
-        }
+    @Transactional
+    public void deleteUser(String username)
+    {
+        userRepositoryMongoDB.deleteUser(username);
+        userRepositoryNeo4J.deleteUser(username);
     }
 
     @Override

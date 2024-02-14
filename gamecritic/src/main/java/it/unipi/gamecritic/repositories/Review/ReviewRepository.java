@@ -6,25 +6,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
-import it.unipi.gamecritic.Util;
 import it.unipi.gamecritic.entities.Review;
 import it.unipi.gamecritic.repositories.Review.DTO.ReviewDTO;
 
 @Controller
 public class ReviewRepository implements CustomReviewRepository {
     private final ReviewRepositoryMongoDB reviewRepositoryMongoDB;
-    private final ReviewAsyncRepository reviewAsyncRepository;
     private final ReviewRepositoryNeo4J reviewRepositoryNeo4J;
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(ReviewRepository.class);
 
     public ReviewRepository(
         ReviewRepositoryMongoDB reviewRepositoryMongoDB, 
-        ReviewAsyncRepository reviewAsyncRepository,
         ReviewRepositoryNeo4J reviewRepositoryNeo4J) 
     {
         this.reviewRepositoryMongoDB = reviewRepositoryMongoDB;
-        this.reviewAsyncRepository = reviewAsyncRepository;
         this.reviewRepositoryNeo4J = reviewRepositoryNeo4J;
     }
 
@@ -50,36 +48,21 @@ public class ReviewRepository implements CustomReviewRepository {
     }
 
     @Override
-    public String insertReview(Review review) {
-        try
-        {
-            String id = reviewRepositoryMongoDB.insertReview(review);
-            reviewAsyncRepository.completeReviewInsertion(review, id);
-            return id;
-        }
-        catch (Exception e)
-        {
-            throw new IllegalArgumentException("Error while inserting review");
-        }
+    @Transactional
+    public String insertReview(Review review)
+    {
+        String id = reviewRepositoryMongoDB.insertReview(review);
+        reviewRepositoryNeo4J.insertReview(review.author, review.game, id, review.score);
+        return id;
     }
 
     @Override
     @Async
-    public void deleteReview(String id) {
-        try
-        {
-            reviewRepositoryMongoDB.deleteReview(id);
-        }
-        catch (Exception e)
-        {
-            throw new IllegalArgumentException("Review not found");
-        }
-        if(!Util.retryFor(() -> {
-            reviewRepositoryNeo4J.deleteReview(id);
-        }))
-        {
-            logger.error("Error while deleting review from Neo4J");
-        }
+    @Transactional
+    public void deleteReview(String id)
+    {
+        reviewRepositoryMongoDB.deleteReview(id);
+        reviewRepositoryNeo4J.deleteReview(id);
     }
 
     @Override
@@ -95,41 +78,22 @@ public class ReviewRepository implements CustomReviewRepository {
     }
 
     @Async
-    public void setLike(String reviewId, String username, boolean like) {
-        boolean ok = false;
-        try
-        {
-            if(like)
-            {   
-                if(reviewRepositoryNeo4J.setLike(reviewId, username))
-                {
-                    ok = true;
-                }
-            }
-            else
+    @Transactional
+    public void setLike(String reviewId, String username, boolean like)
+    {
+        if(like)
+        {   
+            if(reviewRepositoryNeo4J.setLike(reviewId, username))
             {
-                if(reviewRepositoryNeo4J.removeLike(reviewId, username))
-                {
-                    ok = true;
-                }
+                reviewRepositoryMongoDB.addLike(reviewId);
             }
         }
-        catch (Exception e)
+        else
         {
-            throw new IllegalArgumentException("Error while setting like");
-        }
-        if(ok)
-        {
-            if(!Util.retryFor(() -> {
-                if (like)
-                {
-                    reviewRepositoryMongoDB.addLike(reviewId);
-                }
-                else
-                {
-                    reviewRepositoryMongoDB.removeLike(reviewId);
-                }
-            }));
+            if(reviewRepositoryNeo4J.removeLike(reviewId, username))
+            {
+                reviewRepositoryMongoDB.removeLike(reviewId);
+            }
         }
     }
 

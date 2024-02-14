@@ -13,12 +13,12 @@ function login() {
                 window.location.href = "/";
             } else {
                 document.getElementById("main").classList.add("error");
-                document.getElementById("error").innerHTML = "Invalid username or password";
+                document.getElementById("error").innerHTML = data;
             }
         },
-        error: function (data) {
+        error: function (xhr, status, error) {
             document.getElementById("main").classList.add("error");
-            document.getElementById("error").innerHTML = "Invalid username or password";
+            document.getElementById("error").innerHTML = "Error: " + xhr.status;
         }
     });
 }
@@ -48,12 +48,12 @@ function sign_up() {
                     window.location.href = "/";
                 } else {
                     document.getElementById("main").classList.add("error");
-                    document.getElementById("error").innerHTML = "Invalid username or password";
+                    document.getElementById("error").innerHTML = data;
                 }
             },
-            error: function (data) {
+            error: function (xhr, status, error) {
                 document.getElementById("main").classList.add("error");
-                document.getElementById("error").innerHTML = "Invalid username or password";
+                document.getElementById("error").innerHTML = "Error: " + xhr.status;
             }
         });
     }

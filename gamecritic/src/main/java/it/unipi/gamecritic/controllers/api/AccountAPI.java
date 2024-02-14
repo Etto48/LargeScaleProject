@@ -44,7 +44,7 @@ public class AccountAPI {
         List<User> users = userRepository.findByDynamicAttribute("username", username);
         if (users.size() == 0)
         {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+            return "\"Invalid username or password\"";
         }
 
         User user = users.get(0);
@@ -52,7 +52,7 @@ public class AccountAPI {
         {
             if (!user.checkPassword(password))
             {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+                return "\"Invalid username or password\"";
             }
         }
         catch (NoSuchAlgorithmException e)
@@ -95,7 +95,7 @@ public class AccountAPI {
         }
         else
         {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
+            return "\"Username already exists\"";
         }
     }
 

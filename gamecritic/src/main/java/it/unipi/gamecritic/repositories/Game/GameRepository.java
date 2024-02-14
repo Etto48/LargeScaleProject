@@ -7,10 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.mongodb.MongoWriteException;
-
-import it.unipi.gamecritic.Util;
 import it.unipi.gamecritic.entities.Game;
 import it.unipi.gamecritic.repositories.Game.DTO.GameDTO;
 import it.unipi.gamecritic.repositories.Game.DTO.TopGameDTO;
@@ -57,22 +55,11 @@ public class GameRepository implements CustomGameRepository {
     }
 
     @Async
+    @Transactional
     public void addGame(Document game)
     {
-        try
-        {
-            gameRepositoryMongoDB.addGame(game);
-        }
-        catch (MongoWriteException e)
-        {
-            throw new IllegalArgumentException("Game already exists");
-        }
-        if (!Util.retryFor(() -> {
-            gameRepositoryNeo4J.addGame(game.getString("Name"));
-        }))
-        {
-            logger.error("Neo4J add game failed");
-        }
+        gameRepositoryMongoDB.addGame(game);
+        gameRepositoryNeo4J.addGame(game.getString("Name"));
     }
 
     @Async
@@ -82,22 +69,11 @@ public class GameRepository implements CustomGameRepository {
     }
 
     @Async
+    @Transactional
     public void deleteGame(String name)
     {
-        try
-        {
-            gameRepositoryMongoDB.deleteGame(name);
-        }
-        catch (Exception e)
-        {
-            throw new IllegalArgumentException("Game not found");
-        }
-        if (!Util.retryFor(() -> {
-            gameRepositoryNeo4J.deleteGame(name);
-        }))
-        {
-            logger.error("Neo4J delete game failed");
-        }
+        gameRepositoryMongoDB.deleteGame(name);
+        gameRepositoryNeo4J.deleteGame(name);
     }
 
     public List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit)
