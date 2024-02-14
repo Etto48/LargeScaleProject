@@ -87,11 +87,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                 Criteria.where("Publishers").elemMatch(new Criteria().is(companyName))
             )
         );
-        logger.info("list of games: ");
         List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
-        for(DBObject d : game_objects){
-            logger.info(d.toString());
-        }
         return game_objects.stream().map(Game::new).toList();
     }
 
@@ -211,12 +207,10 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
         }
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
-        logger.info("name of game "+game.get("Name"));
         Update update = new Update();
         for (String key : game.keySet()){
             if(key!=null)
             {
-                logger.info(key);
                 update.set(key,game.get(key));
             }
         }

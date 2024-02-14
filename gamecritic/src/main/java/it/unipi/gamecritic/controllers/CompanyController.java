@@ -178,7 +178,6 @@ public class CompanyController {
                 excludedAttributes.add("Description");
                 excludedAttributes.add("img");
                 for (Game g : games){
-                    logger.info(g.name);
                     for (String att : g.customAttributes.keySet()){
                         if (!allAttributes.contains(att) && !excludedAttributes.contains(att)){
                             allAttributes.add(att);
