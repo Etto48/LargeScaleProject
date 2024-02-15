@@ -121,7 +121,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "              cond: {\n" +
                         "                $gte: [\n" +
                         "                  \"$$review.date\",\n" +
-                        "                  \"2023-07-21\",\n" +
+                        "                  \""+formattedDate+"\",\n" +
                         "                ],\n" +
                         "              },\n" +
                         "            },\n" +
@@ -148,20 +148,7 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "      newRoot: {\n" +
                         "        $mergeObjects: [\n" +
                         "          \"$allAttributes\",\n" +
-                        "          {\n" +
-                        "            reviews: {\n" +
-                        "              $filter: {\n" +
-                        "                input: \"$reviews\",\n" +
-                        "                as: \"review\",\n" +
-                        "                cond: {\n" +
-                        "                  $gte: [\n" +
-                        "                    \"$$review.date\",\n" +
-                        "                    \"2023-07-21\",\n" +
-                        "                  ],\n" +
-                        "                },\n" +
-                        "              },\n" +
-                        "            },\n" +
-                        "          },\n" +
+                        "          \n" +
                         "        ],\n" +
                         "      },\n" +
                         "    },\n" +
