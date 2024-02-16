@@ -1,0 +1,52 @@
+\chapter{Queries}
+\section{Mongo DB}
+\section{Neo4j}
+\subsection{Get Followers}
+\subsection{Get Following}
+\subsection{Friends' suggestions}
+\subsubsection{From users' relationships}
+\subsubsection{From common interests}
+\section{Indexes}
+\subsection{MongoDB}
+	\begin{center}
+		\begin{tabular}{ |c|c|c|c|c|c| } 
+			\hline
+			\multicolumn{6}{|c|}{\textbf{MongoDB}}\\
+			\hline
+			\textbf{Query} & \textbf{Collection} &\textbf{Index Keys} & \textbf{Keys examined} & \textbf{Documents examined} &\textbf{ms} \\ 
+			\hline
+			\multirow{2}{*}{Query1} & \multirow{2}{*}{videogames} & - & numKeys & numDoc & $ms$ \\ &&Name & numKeys & numDoc & $ms$  \\ 
+			\hline
+			\multirow{2}{*}{Query2} & \multirow{2}{*}{reviews} & - & numKeys & numDoc & $ms$ \\ && author & numKeys & numDoc & $ms$  \\ 
+			\hline
+			\multirow{2}{*}{Query3} & \multirow{2}{*}{reviews} & - & numKeys & numDoc & $ms$ \\ && \{author, game\} & numKeys & numDoc & $ms$  \\ 
+			\hline
+			\multirow{2}{*}{Query4} & \multirow{2}{*}{reviews} & - & numKeys & numDoc & $ms$ \\ && game & numKeys & numDoc & $ms$  \\ 
+			\hline
+			\multirow{2}{*}{Query5} & \multirow{2}{*}{comments} & - & numKeys & numDoc & $ms$ \\ && reviewId & numKeys & numDoc & $ms$  \\ 
+			\hline
+			\multirow{2}{*}{Query6} & \multirow{2}{*}{companies} & - & numKeys & numDoc & $ms$ \\ && Name & numKeys & numDoc & $ms$  \\
+			\hline 
+			\multirow{2}{*}{Query7} & \multirow{2}{*}{users} & - & numKeys & numDoc & $ms$ \\ && username & numKeys & numDoc & $ms$  \\
+			\hline
+			\multirow{2}{*}{Query8} & \multirow{2}{*}{userImages} & - & numKeys & numDoc & $ms$ \\ && username & numKeys & numDoc & $ms$  \\  
+			\hline
+		\end{tabular}
+	\end{center}
+
+\subsection{Neo4j}
+	\begin{center}
+	\begin{tabular}{ |c|c|c|c|c|c| } 
+		\hline
+		\multicolumn{6}{|c|}{\textbf{Neo4j}}\\
+		\hline
+		\textbf{Query}&\textbf{Index Name} & \textbf{Nodes' Label} &\textbf{Property} & \textbf{Hits} & \textbf{(ms)} \\ 
+		\hline
+		\multirow{2}{*}{Query1} & - & - & - & numHits & $ms$ \\ & \emph{username\_index} & User & username & numHits & $ms$  \\ 
+		\hline
+		\multirow{2}{*}{Query2} & - & - & - & numHits & $ms$ \\ & \emph{game\_index} & Game & name & numHits & $ms$  \\
+		\hline 
+		\multirow{2}{*}{Query3} & - & - & - & numHits & $ms$ \\ & \emph{review\_index} & Review & reviewId & numHits & $ms$  \\ 
+		\hline
+	\end{tabular}
+\end{center}

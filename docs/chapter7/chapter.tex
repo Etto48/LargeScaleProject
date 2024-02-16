@@ -1,0 +1,51 @@
+\chapter{User Manual}
+\section{Index Page}
+The index page is the home page of the application. At the top there is a search bar, that can be used to find users, games, or companies. On the top right there are the buttons for login and signup. Once a user is logged in, the top right side of the application will show the name and profile picture of the user. By clicking on it, they will be able to access various pages, depending on the type of user they are. 
+
+By default, the index page shows the Hottest Games, but one can switch to Newest or Best Games through the respective buttons. Clicking on a game will take the user to that game's page. Scrolling further down, more games will be loaded, and the suggested games and users will be shown (if any are available).
+\section{Game Page}
+In this page all the information about a game is shown, along with the top 3 reviews (by number of likes) for that game. The user can view all the reviews for the game by clicking on "SHOW ALL". The names in "Developers" and "Publishers" have links that lead to that company's page.
+\section{Reviews Page}
+The Reviews page shows all reviews for a particular game. On the right is a chart showing the distribution of the score. To add a review, a user has to click on the "+" icon that is at the bottom of the game's page or the one that is above all reviews in the Reviews page.
+\section{User's profile} The user can like a review by clicking on the heart, and he can view all comments for that review by clicking the "Comments" button.
+To comment on a review, the user has to click on the "comics cloud" shaped icon.
+Every user has a profile page that shows their info, along with the top 3 reviews they wrote that received the highest amount of likes. A symbol next to the name will indicate if the user is an administrator or a company manager. One can see the Followers or Followed users of an account by clicking on the respective buttons. Once a user is logged in, they can modify their info by clicking on the edit button. 
+\section{Company Panel}
+This page is only accessed by Company Managers. It allows them to publish new games, edit existing ones or delete them. It also shows the statistics for the games of the company. To choose the operation to perform, the user clicks on one of the buttons below the search bar.
+\subsection{Publishing a Game}
+To publish a game, the following attributes are mandatory:
+\begin{itemize}
+    \item Name
+    \item Description
+    \item Image URL
+    \item Release Date
+    \item Platform
+    \item Publishers
+    \item Developers
+    \item Genre
+\end{itemize}
+Name, Description and Image URL simply have to be written inside the input element. Every other attribute must be added by clicking on the "+" button.
+The user can add any number of values for the attributes with the "+" button, and in any format, \emph{except} for Release Date. Only one Release Date can be inserted, and it \emph{must} be in the following format: \texttt{yyyy-mm-dd}.
+The last input element lets the user add his own attributes. They must write the name of the attribute on the left, the value of the attribute on the right, and then click the "+" button.
+To delete an attribute value, the user can click on the "X" button next to it.
+\subsection{Editing a Game}
+To edit a game, the user must first select one through the dropdown menu.
+Then they can modify or add new attribure values, the same way it is done for the publishing.
+\section{Control Panel}
+This page can only be accessed by administrators. Here they can view statistics on the Stats tab, and access the administrator's terminal on the Terminal tab.
+\subsection{Terminal}
+Here are the available commands:
+\begin{itemize}
+    \item \texttt{help} : shows all available commands.
+    \item \texttt{ban <username>} : bans (deletes from database) a user
+    \item \texttt{delete <review|comment|game> <id|name>} : deletes any specified review, comment, or game
+    \item \texttt{update <games|users|companies|all>}
+        \begin{itemize}
+            \item \texttt{games} : it runs the method that updates the top 3 reviews by number of likes, for every game
+            \item \texttt{users} : it runs the method that updates the top 3 reviews by number of likes, for every user
+            \item \texttt{companies}: it runs the method that updates the top 3 games by average score, for every company
+            \item \texttt{all} : runs all 3 methods.
+        \end{itemize}
+    \item 
+    
+\end{itemize}

@@ -1,1 +1,805 @@
-\chapter{Chapter}
+\chapter{Queries}
+In this chapter we illustrate all of the non-trivial queries that are run by our application.
+\section{Mongo DB}
+\subsection{Search}
+This query is run every time the user inserts a character in the search bar. It finds every user, game and company that have in their name all of the characters typed. It works in the same way for all three elements; the only difference is the collection and the attribute name the query is ran with. Below is reported the game version of the query as an example.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.videogames.find(
+   { "Name": { $regex: /escapedQuery/i } }
+).sort(
+   { "reviewCount": -1 }
+).limit(10)
+\end{Verbatim}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1 , escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public List<Game> search(String query){
+        String escapedQuery = Pattern.quote(query);
+        if (escapedQuery == null) {
+            throw new IllegalArgumentException("The given query must not be null");
+        }
+        Criteria criteria = Criteria.where("Name").regex(escapedQuery, "i");
+        Query q = new Query(criteria).limit(10).with(Sort.by(Sort.Order.desc("reviewCount")));
+
+        List<DBObject> game_objects = mongoTemplate.find(q, DBObject.class, "videogames");
+        return game_objects.stream().map(Game::new).toList();
+    }
+\end{lstlisting}
+\subsection{Users}
+\subsubsection{Get top Users from Reviews}
+This query finds the top 10 users that wrote the most reviews in the last X months, with X being variable. It is executed whenever an administrator loads the Stats page.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.reviews.aggregate([
+    { $match: { "date": { $regex: regex } } },
+    { $group: { _id: "$author", reviews: { $sum: 1 } } },
+    { $sort: { reviews: -1 } },
+    { $limit: 10 }
+])
+\end{Verbatim}
+The regex indicates all dates that are included in the last X months.
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1 , escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/CustomUserRepositoryImpl.java*/
+public List<TopUserDTO> topUsersByReviews(Integer months) {
+	if (months == null || months < 1) {
+		throw new IllegalArgumentException("The given months must not be null nor less than 1");
+	}
+	Calendar d = Calendar.getInstance();
+	Integer this_year = d.get(Calendar.YEAR);
+	Integer this_month = d.get(Calendar.MONTH) + 1;
+	String regex = "^(";
+	for(int i = 0; i < months; i++)
+	{
+		Integer month = this_month - i;
+		Integer year = this_year;
+		if(month <= 0)
+		{
+			month += 12;
+			year -= 1;
+		}
+		regex += year.toString() + "-" + String.format("%02d", month);
+		if(i != months - 1)
+		{
+			regex += "|";
+		}
+	}
+	regex += ")";
+	
+	Aggregation aggregation = Aggregation.newAggregation(
+	Aggregation.match(Criteria.where("date").regex(regex)),
+	Aggregation.group("author").count().as("reviews"),
+	Aggregation.sort(Sort.Direction.DESC, "reviews"),
+	Aggregation.limit(10)
+	);
+	List<DBObject> user_dbos = mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+	List<TopUserDTO> users = user_dbos.stream().map(user -> new TopUserDTO(user.get("_id").toString(), (Integer)user.get("reviews"))).toList();
+	return users;
+}
+\end{lstlisting}
+
+\subsubsection{Get top 3 Users' Reviews from Likes}
+This query finds the top 3 reviews by number of likes for each user, and updates their respective field Top3ReviewsByLikes. This is an expensive operation, thus we only execute it periodically (daily) and whenever an administrator requires it.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.reviews.aggregate([
+  {
+    $group: {
+      _id: "$author",
+      Top3ReviewsByLikes: {
+        $push: {
+          _id: "$_id",
+          game: "$game",
+          quote: "$quote",
+          author: "$author",
+          date: "$date",
+          score: "$score",
+          likes: "$likes"
+        }
+      }
+    }
+  },
+  {
+    $set: {
+      username: "$_id"
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      username: 1,
+      Top3ReviewsByLikes: {
+        $slice: ["$Top3ReviewsByLikes", 3]
+      }
+    }
+  },
+  {
+    $merge: {
+      into: "users",
+      on: "username",
+      whenMatched: "merge",
+      whenNotMatched: "discard"
+    }
+  }
+]);
+
+\end{Verbatim}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1 , escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/CustomUserRepositoryImpl.java*/
+public void updateTop3ReviewsByLikes() {
+	Aggregation aggregation = Aggregation.newAggregation(
+	Aggregation.stage(
+	"{\n" + //
+		"  $group: {\n" + //
+			"    _id: \"$author\",\n" + //
+			"    Top3ReviewsByLikes: {\n" + //
+				"      $topN: {\n" + //
+					"        n: 3,\n" + //
+					"        output: {\n" + //
+						"          _id: \"$_id\",\n" + //
+						"          game: \"$game\",\n" + //
+						"          quote: \"$quote\",\n" + //
+						"          author: \"$author\",\n" + //
+						"          date: \"$date\",\n" + //
+						"          score: \"$score\",\n" + //
+						"          likes: \"$likes\",\n" + //
+						"        },\n" + //
+					"        sortBy: {\n" + //
+						"          likes: -1,\n" + //
+						"        },\n" + //
+					"      },\n" + //
+				"    },\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $set: {\n" + //
+			"    username: \"$_id\",\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $project: {\n" + //
+			"    _id: 0,\n" + //
+			"    username: 1,\n" + //
+			"    Top3ReviewsByLikes: 1,\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $merge: {\n" + //
+			"    into: \"users\",\n" + //
+			"    on: \"username\",\n" + //
+			"    whenMatched: \"merge\",\n" + //
+			"    whenNotMatched: \"discard\",\n" + //
+			"  },\n" + //
+		"}"
+	)
+	).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+	
+	Instant start = Instant.now();
+	mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+	logger.info("Finished updating top 3 reviews by likes for all users in " + (Instant.now().toEpochMilli() - start.toEpochMilli()) + " ms");
+}
+}
+\end{lstlisting}
+\subsection{Videogames}
+\subsubsection{Find Hottest Games}
+This query finds the games that have received the most reviews in the last 6 months, 10 at a time. It is executed whenever the Hottest page is loaded. The offset depends on how many games have already been loaded in the page.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.videogames.aggregate([
+  {
+    $match: {
+      "reviews.date": {
+        $gte: 6MonthsAgo,
+      },
+    },
+  },
+  {
+    $group: {
+      _id: "$_id",
+      Name: {
+        $first: "$Name",
+      },
+      HotReviewCount: {
+        $sum: {
+          $size: {
+            $filter: {
+              input: "$reviews",
+              as: "review",
+              cond: {
+                $gte: [
+                  "$$review.date",
+                  6MonthsAgo,
+                ],
+              },
+            },
+          },
+        },
+      },
+      allAttributes: {
+        $mergeObjects: "$$ROOT",
+      },
+    },
+  },
+  {
+    $sort: {
+      HotReviewCount: -1,
+      Name: 1,
+    },
+  },
+  {
+    $skip: offset,
+  },
+  {
+    $limit: 10,
+  },
+  {
+    $replaceRoot: {
+      newRoot: {
+        $mergeObjects: ["$allAttributes"],
+      },
+    },
+  },
+]);
+\end{Verbatim}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1 , escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+    public List<Game> findHottest(Integer offset) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate ago;
+        ago = currentDate.minusMonths(6);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = ago.format(formatter);
+        Aggregation a = Aggregation.newAggregation(
+                Aggregation.stage("{\n" +
+                "    $match: {\n" +
+                "      \"reviews.date\": {\n" +
+                "        $gte: \""+formattedDate+"\",\n" +
+                "      },\n" +
+                "    },\n" +
+                "  }"),
+                Aggregation.stage("{\n" +
+                        "    $group: {\n" +
+                        "      _id: \"$_id\",\n" +
+                        "      Name: {\n" +
+                        "        $first: \"$Name\",\n" +
+                        "      },\n" +
+                        "      HotReviewCount: {\n" +
+                        "        $sum: {\n" +
+                        "          $size: {\n" +
+                        "            $filter: {\n" +
+                        "              input: \"$reviews\",\n" +
+                        "              as: \"review\",\n" +
+                        "              cond: {\n" +
+                        "                $gte: [\n" +
+                        "                  \"$$review.date\",\n" +
+                        "                  \""+formattedDate+"\",\n" +
+                        "                ],\n" +
+                        "              },\n" +
+                        "            },\n" +
+                        "          },\n" +
+                        "        },\n" +
+                        "      },\n" +
+                        "      allAttributes: {\n" +
+                        "        $mergeObjects: \"$$ROOT\",\n" +
+                        "      },\n" +
+                        "    },\n" +
+                        "  }"),
+                Aggregation.stage("{\n" +
+                        "    $sort:\n" +
+                        "      {\n" +
+                        "        HotReviewCount: -1,\n" +
+                        "        Name: 1             \n"+
+                        "      },\n" +
+                        "  }"),
+                Aggregation.stage("{" +
+                        "$skip: " + offset + " }"),
+                Aggregation.stage("{\n" +
+                        "    $limit:\n" +
+                        "      10,\n" +
+                        "  }"),
+                Aggregation.stage("{\n" +
+                        "    $replaceRoot: {\n" +
+                        "      newRoot: {\n" +
+                        "        $mergeObjects: [\n" +
+                        "          \"$allAttributes\",\n" +
+                        "          \n" +
+                        "        ],\n" +
+                        "      },\n" +
+                        "    },\n" +
+                        "  }")
+        );
+        List<DBObject> game_objects = mongoTemplate.aggregate(a, "videogames", DBObject.class).getMappedResults();
+        return game_objects.stream().map(Game::new).toList();
+    }
+\end{lstlisting}
+\subsubsection{Find Newest Games}
+This query orders games from newest to oldest\footnote{Some videogames we scraped from MobyGames had no Release Date attribute, hence for those documents we set it to a default value "Undated".}, and returns 10 games at a time. As before, the offset depends on how many games have already been loaded in the page. It is executed whenever the Newest Page is loaded.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.videogames.find({
+  "Released.Release Date": { $ne: "Undated" }
+})
+.sort({ "Released.Release Date": -1 })
+.skip(offset)
+.limit(10)
+\end{Verbatim}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1 , escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public List<Game> findLatest(Integer offset){
+    Query query = new Query();
+    query.addCriteria(Criteria.where("Released.Release Date").ne("Undated"));
+    query.with(Sort.by(Sort.Order.desc("Released.Release Date"))).skip(offset).limit(10);
+    List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
+    return game_objects.stream().map(Game::new).toList();
+}
+\end{lstlisting}
+\subsubsection{Find Best Games}
+This query orders the games by best average score and most reviews, and again returns 10 games at a time, with the offset depending on how many games are already being shown in the page.
+It is executed whenever the Best page is loaded.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.collection.find()
+  .sort({ "user_review": -1, "reviewCount": -1 })
+  .skip(offset)
+  .limit(10)
+\end{Verbatim}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1 , escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public List<Game> findBest(Integer offset) {
+    Query query = new Query();
+    query.with(Sort.by(Sort.Order.desc("user_review"), Sort.Order.desc("reviewCount"))).skip(offset).limit(10);
+    List<DBObject> game_objects = mongoTemplate.find(query, DBObject.class, "videogames");
+    return game_objects.stream().map(Game::new).toList();
+}
+\end{lstlisting}
+\subsubsection{Get top Games from Average Score}
+This query finds the top games by average score, in the last X months, of a certain company. It is executed every time a Company manager accesses the Stats page for his company.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.collection.aggregate([
+  {
+    $match: {
+      $or: [
+        { Developers: companyName },
+        { Publishers: companyName },
+        { Developers: { $elemMatch: { $eq: companyName } } },
+        { Publishers: { $elemMatch: { $eq: companyName } } }
+      ]
+    }
+  },
+  { $unwind: "$reviews" },
+  {
+    $match: {
+      "reviews.date": { $regex: regex },
+      "reviews.score": { $exists: true }
+    }
+  },
+  {
+    $group: {
+      _id: "$Name",
+      averageScore: { $avg: "$reviews.score" },
+      reviewCount: { $sum: 1 },
+      img: { $first: "$img" }
+    }
+  },
+  {
+    $sort: {
+      averageScore: -1,
+      reviewCount: -1
+    }
+  },
+  { $limit: limit }
+]);
+\end{Verbatim}
+Again, the regex indicates every date in the last X months.
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public List<TopGameDTO> topGamesByAverageScore(Integer months, String companyName, Integer limit) {
+	if (months == null || months < 1) {
+		throw new IllegalArgumentException("The given months must not be null nor less than 1");
+	}
+	Calendar d = Calendar.getInstance();
+	Integer this_year = d.get(Calendar.YEAR);
+	Integer this_month = d.get(Calendar.MONTH) + 1;
+	String regex = "^(";
+	for(int i = 0; i < months; i++)
+	{
+		Integer month = this_month - i;
+		Integer year = this_year;
+		if(month <= 0)
+		{
+			month += 12;
+			year -= 1;
+		}
+		regex += year.toString() + "-" + String.format("%02d", month);
+		if(i != months - 1)
+		{
+			regex += "|";
+		}
+	}
+	regex += ")";
+	
+	Aggregation aggregation = Aggregation.newAggregation(
+	Aggregation.match(new Criteria().orOperator(
+	Criteria.where("Developers").is(companyName),
+	Criteria.where("Publishers").is(companyName),
+	Criteria.where("Developers").elemMatch(new Criteria().is(companyName)),
+	Criteria.where("Publishers").elemMatch(new Criteria().is(companyName))
+	)),
+	Aggregation.unwind("reviews"),
+	Aggregation.match(new Criteria().andOperator(
+	Criteria.where("reviews.date").regex(regex),
+	Criteria.where("reviews.score").exists(true)
+	)),
+	Aggregation.group("Name").avg("reviews.score").as("averageScore").count().as("reviewCount").first("img").as("img"),
+	Aggregation.sort(Sort.Direction.DESC, "averageScore").and(Sort.Direction.DESC, "reviewCount"),
+	Aggregation.limit(limit)
+	);
+	List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "videogames", DBObject.class).getMappedResults();
+	List<TopGameDTO> games = games_dbos.stream().map(game -> new TopGameDTO(game.get("_id").toString(), ((Double)game.get("averageScore")).floatValue(), game.get("img") != null?game.get("img").toString():null)).toList();
+	return games;
+}
+
+\end{lstlisting}
+\subsubsection{Get top 3 Videogames' Reviews from Likes}
+This query finds the top 3 reviews of a game by number of likes received, and embeds the results in the Top3ReviewsByLikes attribute of the respective videogame document. This is another expensive query, so we also run this periodically (daily) and whenever an administrator asks.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.reviews.aggregate([
+  {
+    $group: {
+      _id: "$game",
+      Top3ReviewsByLikes: {
+        $topN:{
+          n:3,
+          output: {
+            _id: "$_id",
+            game: "$game",
+            quote: "$quote",
+            author: "$author",
+            date: "$date",
+            score: "$score",
+            likes: "$likes",
+          },
+        	sortBy:{
+        		likes:-1
+          }
+      	}
+      }
+    }
+  },
+  {
+    $set: {
+      Name: "$_id"
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      Name: 1,
+      Top3ReviewsByLikes: 1
+    }
+  },
+  {
+    $merge: {
+      into: "videogames",
+      on: "Name",
+      whenMatched: "merge",
+      whenNotMatched: "discard"
+    }
+  }
+]);
+\end{Verbatim}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public void updateTop3ReviewsByLikes()
+{
+	Aggregation aggregation = Aggregation.newAggregation(
+	Aggregation.stage(
+	"{\n" + //
+		"  $group: {\n" + //
+			"    _id: \"$game\",\n" + //
+			"    Top3ReviewsByLikes: {\n" + //
+				"      $topN: {\n" + //
+					"        n: 3,\n" + //
+					"        output: {\n" + //
+						"          _id: \"$_id\",\n" + //
+						"          game: \"$game\",\n" + //
+						"          quote: \"$quote\",\n" + //
+						"          author: \"$author\",\n" + //
+						"          date: \"$date\",\n" + //
+						"          score: \"$score\",\n" + //
+						"          likes: \"$likes\",\n" + //
+						"        },\n" + //
+					"        sortBy: {\n" + //
+						"          likes: -1,\n" + //
+						"        },\n" + //
+					"      },\n" + //
+				"    },\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $set: {\n" + //
+			"    Name: \"$_id\",\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $project: {\n" + //
+			"    _id: 0,\n" + //
+			"    Name: 1,\n" + //
+			"    Top3ReviewsByLikes: 1,\n" + //
+			"  },\n" + //
+		"}"
+	),
+	Aggregation.stage(
+	"{\n" + //
+		"  $merge: {\n" + //
+			"    into: \"videogames\",\n" + //
+			"    on: \"Name\",\n" + //
+			"    whenMatched: \"merge\",\n" + //
+			"    whenNotMatched: \"discard\",\n" + //
+			"  },\n" + //
+		"}"
+	)
+	).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+	
+	Instant start = Instant.now();
+	mongoTemplate.aggregate(aggregation, "reviews", DBObject.class).getMappedResults();
+	logger.info("Finished updating top 3 reviews by likes for all games in " + (Instant.now().toEpochMilli() - start.toEpochMilli()) + " ms");
+}
+}
+\end{lstlisting}
+\subsubsection{Company Score Distribution}
+This query calculates the distribution of the average score for the games of a given company. It is executed every time a Company Manager accesses the Stats page for his company.
+\begin{Verbatim}[fontsize=\footnotesize]
+db.videogames.aggregate([
+  {
+    $match: {
+      $or: [
+        {
+          Developers: companyName,
+        },
+        {
+          Publishers: companyName,
+        },
+        {
+          Developers: {
+            $elemMatch: {
+              $eq: companyName,
+            },
+          },
+        },
+        {
+          Publishers: {
+            $elemMatch: {
+              $eq: companyName,
+            },
+          },
+        },
+      ],
+    },
+  },
+  {
+    $unwind: "$reviews",
+  },
+  {
+    $match: {
+      "reviews.score": {
+        $exists: true,
+      },
+      "reviews.score": {
+        $gt: 0,
+      },
+    },
+  },
+  {
+    $group: {
+      _id: "$reviews.score",
+      count: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $densify:
+      {
+        field: "_id",
+        range: {
+          step: 1,
+          bounds: [1, 11],
+        },
+      },
+  },
+]);
+\end{Verbatim}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/Game/CustomGameRepositoryImpl.java*/
+public List<Float> companyScoreDistribution(String companyName)
+{
+	Aggregation aggregation = Aggregation.newAggregation(
+		Aggregation.match(new Criteria().orOperator(
+		Criteria.where("Developers").is(companyName),
+		Criteria.where("Publishers").is(companyName),
+		Criteria.where("Developers").elemMatch(Criteria.where("$eq").is(companyName)),
+		Criteria.where("Publishers").elemMatch(Criteria.where("$eq").is(companyName))
+	)),
+	Aggregation.unwind("reviews"),
+	Aggregation.match(new Criteria().andOperator(
+		Criteria.where("reviews.score").exists(true),
+		Criteria.where("reviews.score").gt(0)
+	)),
+	Aggregation.group("reviews.score").count().as("count"),
+	DensifyOperation.builder().densify("_id").range(Range.bounded(1, 11).incrementBy(1)).build(),
+	Aggregation.sort(Sort.Direction.ASC, "_id")
+	);
+	List<DBObject> games_dbos = mongoTemplate.aggregate(aggregation, "videogames", DBObject.class).getMappedResults();
+	List<Float> games = games_dbos.stream().map(game -> 
+	{
+		if(game.get("count") != null)
+		{
+			return ((Integer)game.get("count")).floatValue();
+		}
+		else
+		{
+			return 0f;
+		}
+	}).toList();
+	return games;
+}
+\end{lstlisting}
+\section{Neo4j}
+For these queries, the Cypher text version is immediately visible inside the @Query annotation.
+\subsection{Reviews}
+\subsubsection{Users}
+\subsubsection{Get Followers}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/UserRepositoryNeo4J.java*/
+@Query(
+	"MATCH (u:User {username: $username})\n"+
+	"MATCH (u)<-[:FOLLOWS]-(f:User)\n"+
+	"RETURN f"
+)
+List<UserDTO> findFollowers(
+	@Param("username") String username
+);
+\end{lstlisting}
+\subsubsection{Get Following}
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/UserRepositoryNeo4J.java*/
+@Query(
+	"MATCH (u:User {username: $username})\n"+
+	"MATCH (u)-[:FOLLOWS]->(f:User)\n"+
+	"RETURN f"
+)
+List<UserDTO> findFollowed(
+	@Param("username") String username
+);
+\end{lstlisting}
+\subsection{Suggestions}
+\subsubsection{Games}
+This query finds at most 4 games to suggest to a user, based on what his followed users have reviewed and ordered by average score and total number of reviews.
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/GameRepositoryNeo4J.java*/
+@Query(
+        "match (u1:User {username: $username})-[:FOLLOWS]->(u2:User)-[:WROTE]->(r:Review)-[:ABOUT]->(g:Game)\n"+
+        "where not (u1)-[:WROTE]->(:Review)-[:ABOUT]->(g)\n"+
+        "with g,r,u2, sum(r.score)/count(u2) as avgScore, count(r) as reviewCount\n"+
+        "return g\n"+
+        "order by avgScore desc, reviewCount desc limit 4"
+    )
+    List<GameDTO> findSuggestedGames(
+        @Param("username") String username
+    );@Param("username") String username
+);
+\end{lstlisting}
+\subsubsection{Users}
+This query finds at most 4 users that have given scores that are the most similar to those of the active user, thus suggesting them as recommended users to follow.
+\begin{lstlisting}[language = Java , frame = trBL , firstnumber = 1, escapeinside={(*@}{@*)}]
+/*gamecritic/repositories/User/UserRepositoryNeo4J.java*/
+@Query(
+        "match (u1:User {username: $username})-[:WROTE]->(r1:Review)-[:ABOUT]->(g:Game)\n"+
+        "<-[:ABOUT]-(r2:Review)<-[:WROTE]-(u2:User)\n"+
+        "where u2.username <> u1.username and not (u1)-[:FOLLOWS]->(u2)\n"+
+        "with u2, r1, r2, sum(abs(r1.score-r2.score))/count(r1) as avgDelta, count(r1) as reviewCount\n"+
+        "return u2\n"+
+        "order by avgDelta asc, reviewCount desc limit 4"
+    )
+    List<UserDTO> findSuggestedUsers(
+        @Param("username") String username
+    );
+\end{lstlisting}
+\section{Inserting and Deleting Elements}
+What follows are the non-trivial methods for inserting and deleting elements of both the MongoDB and Neo4J databases.
+\subsection{Videogames}
+\subsubsection{Insertion}
+Whenever a videogame is inserted, we add a new document in the "videogames" MongoDB collection and a Node in Neo4J.
+\subsubsection{Deletion}
+Whenever a videogame is deleted, the following actions are performed (not in this order):
+\begin{itemize}
+    \item We delete every review associated with the game in MongoDB and in Neo4J
+    \item We delete every comment associated with every one of those reviews
+    \item We delete the game from the "videogames" collection in MongoDB
+    \item We delete the game's Node from Neo4J.
+\end{itemize}
+\subsection{Reviews}
+\subsubsection{Insertion}
+Whenever a review is inserted, the following steps are performed:
+\begin{itemize}
+    \item We add a new document in the "reviews" collection
+    \item  We embed a simplified version inside the videogame document the review is for, in the "videogames" collection
+    \item We increase the "reviewCount" attribute in the videogame document by one
+    \item We update the "user\_review" attribute in the videogame document by recalculating the average score
+    \item We add a new review Node in Neo4J, and connect it to the author with a \texttt{[:WROTE]} relationship
+\end{itemize}
+\subsubsection{Deletion}
+Whenever a review is deleted, the following steps are performed:
+\begin{itemize}
+    \item We find all comments associated with that review and delete them from MongoDB
+    \item We find the embedded version of the review inside the game the review is about and delete it
+    \item We update the reviewCount and user\_score fields of the game the review is about
+    \item We delete the review from Neo4J
+    \item We delete the review from the "reviews" collection in MongoDB.
+\end{itemize}
+\subsection{Users}
+\subsubsection{Insertion}
+Whenever a new User is created, we simply insert the new user document inside the "users" collection in MongoDB and then we create a new User Node in Neo4J.
+\subsubsection{Deletion}
+Whenever a User is deleted, the following steps are performed:
+\begin{itemize}
+    \item We delete every comment made by the user
+    \item We delete every review made by the user
+    \item We delete the image associated to the user in the "user\_images" collection
+    \item We delete the user's document in the "users" collection
+    \item We delete the user's Node from Neo4J.
+\end{itemize}
+\subsection{Likes}
+\subsubsection{Insertion}
+Whenever a "like" is dropped on a review, the following steps are performed:
+\begin{itemize}
+    \item The attribute "likes" inside the document of the review is increased by one
+    \item A new \texttt{[:LIKED]} relationship is created between the user and the review inside Neo4J
+\end{itemize}
+\subsubsection{Deletion}
+Whenever a user removes a "like", the following steps are performed:
+\begin{itemize}
+    \item The attribute "likes" inside the document of the review is decreased by one
+    \item The \texttt{[:LIKED]} relationship between the user and the review inside Neo4J is deleted
+\end{itemize}
+\subsection{Comments}
+The insertion and deletion of comments is very simple, since it involves only adding or deleting a single document in the "comments" collection.
+\section{Indexes}
+\subsection{MongoDB}
+We adopted a series of indexes on our MongoDB collections to improve performance. Table \ref{table:indexes} shows this improvement for some of the most frequently executed queries.
+\begin{table}
+
+\resizebox{\columnwidth}{!}{
+	
+		\begin{tabular}{ |c|c|c|c|c|c| } 
+			\hline
+			\multicolumn{5}{|c|}{\textbf{MongoDB}}\\
+			\hline
+			\textbf{Query} & \textbf{Collection} &\textbf{Index Keys} & \textbf{Documents examined} &\textbf{ms (avg)} \\ 
+			\hline
+			\multirow{2}{*}{\texttt{find({"Name":name})}} & \multirow{2}{*}{videogames} & - & 69553 & 38 $ms$ \\ && \texttt{Name} & 1  & 0 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{\texttt{find({"author":author})}} & \multirow{2}{*}{reviews} & - & 250981 & 92 $ms$ \\ && \texttt{author} & 1 & 3 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{\texttt{find({"game":game})}} & \multirow{2}{*}{reviews} & - & 250981 & 92 $ms$ \\ && \texttt{game} & 5 (avg) & 3 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{\texttt{find({"reviewId":reviewId})}} & \multirow{2}{*}{comments} & - & 625435 & 681 $ms$ \\ && \texttt{game} & 3 (avg) & 0 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{\texttt{find({"Name": Name})}} & \multirow{2}{*}{companies} & - & 6556 & 10 $ms$ \\ && \texttt{reviewId} & 1 & 1 $ms$  \\ 
+			\hline
+			\multirow{2}{*}{\texttt{find({"username": username})}} & \multirow{2}{*}{users} & - & 170594 & 80 $ms$ \\ && \texttt{username} & 1 & 1 $ms$  \\
+			\hline
+			\multirow{2}{*}{\texttt{find({"username": username})}} & \multirow{2}{*}{userImages} & - & 170594 & 78 $ms$ \\ && \texttt{username} & 1 & 1 $ms$  \\  
+			\hline
+		\end{tabular}
+	
+}
+
+\caption{\label{table:indexes}}
+\end{table}
+\subsection{Neo4j}
+For Neo4J we implemented an index for each of our Nodes, on their only attribute. While the improvement for read queries wasn't very noticeable, the improvement for write queries was substantial. The initial setup of the database initially took up to an hour to complete, but after adding indexes, it only took a few seconds.
