@@ -128,9 +128,6 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "          },\n" +
                         "        },\n" +
                         "      },\n" +
-                        "      reviews: {\n" +
-                        "        $push: \"$reviews\",\n" +
-                        "      },\n" +
                         "      allAttributes: {\n" +
                         "        $mergeObjects: \"$$ROOT\",\n" +
                         "      },\n" +
@@ -143,6 +140,12 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "        Name: 1             \n"+
                         "      },\n" +
                         "  }"),
+                Aggregation.stage("{" +
+                        "$skip: " + offset + " }"),
+                Aggregation.stage("{\n" +
+                        "    $limit:\n" +
+                        "      10,\n" +
+                        "  }"),
                 Aggregation.stage("{\n" +
                         "    $replaceRoot: {\n" +
                         "      newRoot: {\n" +
@@ -152,12 +155,6 @@ public class CustomGameRepositoryImpl implements CustomGameRepository {
                         "        ],\n" +
                         "      },\n" +
                         "    },\n" +
-                        "  }"),
-                Aggregation.stage("{" +
-                        "$skip: "+offset+" }"),
-                Aggregation.stage("{\n" +
-                        "    $limit:\n"+
-                        "      10,\n" +
                         "  }")
         );
         List<DBObject> game_objects = mongoTemplate.aggregate(a, "videogames", DBObject.class).getMappedResults();
